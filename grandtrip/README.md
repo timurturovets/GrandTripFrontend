@@ -1,0 +1,1 @@
+Фронтовая часть сайта GrandTrip. Стек: React, TypeScript
