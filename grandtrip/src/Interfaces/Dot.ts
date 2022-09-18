@@ -1,3 +1,8 @@
 export default interface Dot {
-    latlngs: number[]
+    PositionX: number,
+    PositionY: number,
+    desc: string,
+    link: string,
+    name: string,
+    id: number
 }

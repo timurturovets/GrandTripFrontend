@@ -4,18 +4,19 @@ import RouteInfo from '../Components/RouteInfo'
 import RouteInformation from '../Interfaces/RouteInformation'
 import Dot from '../Interfaces/Dot'
 import Line from '../Interfaces/Line'
-import { MapContainer, TileLayer, Marker } from 'react-leaflet'
 import getPointBySearch from '../Functions/getPointBySearch'
+import { getRouteById } from '../Functions/getRouteById'
 
 type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature'
 type Season = 'none' | 'summer' | 'winter'
-type Time = 'none' | number
+type Time = "none" | number
 
 interface RouteCriteries {
     theme: Theme,
     season: Season,
     time: Time
 }
+
 interface MapInfo {
     enabled: boolean,
     map?: L.Map,
@@ -23,12 +24,14 @@ interface MapInfo {
     dots: Dot[],
     lines: Line[]
 }
+
 interface StateRoutes {
     clicked: Boolean,
     isLoading: Boolean,
     result: RouteInformation[],
     error?: string
 }
+
 interface RoutesPageState {
     mapInfo: MapInfo,
     criteries: RouteCriteries
@@ -52,7 +55,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             criteries: {
                 theme: "none",
                 season: "none",
-                time: "none"    
+                time: 5
             },
             routes: {
                 clicked: false, 
@@ -111,8 +114,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                         ? <p>Загрузка...</p>
                         : error
                             ? <p className="text-danger">{error}</p>
-                            : result.map(route => <RouteInfo 
-                                info={route} onRouteRendering={this.handleRouteRendering} />)
+                            : result.map(route => <div key={route.id}><RouteInfo info={route} 
+                            onRouteRendering={this.handleRouteRendering} /></div>)
                 }
             </div>
         </div>
@@ -123,7 +126,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         </div>
     }
 
-    handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
         const { criteries } = this.state;
@@ -133,22 +136,55 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             return;
         }
         
+        const filters = JSON.stringify({
+            start: 0,
+            end: 10000,
+            criteries: [
+                "theme",
+                "season"
+            ],
+            values: [
+                theme,
+                season
+            ]
+        });
+
+        await fetch(`http://localhost:8081/get_routes_by_filter?filters=${filters}`).then(async res=>{
+            const ids = JSON.parse(await res.text()).ids;
+            console.log(ids);
+            const routeInformations: RouteInformation[] = []
+            for(const id of ids) {
+                await getRouteById(id).then(response => {
+                    console.log(response);
+                    routeInformations.push(response);
+                }).catch(err=>{
+                    console.log(err)
+                });
+            }
+            this.setState({
+                routes: {
+                    ...this.state.routes,
+                    result: routeInformations
+                }
+            })
+        }).catch(err=>{
+            alert('Произошла ошибка. Попробуйте позже.');
+        })
     }
 
-    handleRouteRendering = (routeId: string) => {
-        
-    }
-
-    /*render_route = async (routeJson: string) => {
-        const { map } = this.state;
-        if(!map) return;
-
-        const route = JSON.parse(routeJson);
+    handleRouteRendering = (routeId: number) => {
+        const { result } = this.state.routes;
+        const { enabled, map } = this.state.mapInfo;
+        if(!enabled) this.handleShowMap();
+        let route: RouteInformation = result[1]//.find(r => r.id === routeId)!;
+        console.log(routeId);
+        console.log(route);
         for (const dot of route.dots) {
-            let dotLatLng: LatLngExpression = [dot.PositionX, dot.PositionY];
-            let newMarker = L.marker(dotLatLng);
-            let content =
-                `id=${dot.id} Точка ${dot.name}. Описание - ${dot.desc}. <div id="dot${dot.id}"></div>`;
+            console.log(dot);
+            let newMarker = L.marker([dot.PositionX, dot.PositionY]);
+            newMarker.addTo(map!);
+            /*let content =
+                `Точка ${dot.name}. Описание - ${dot.desc}.`;
             let popup = L.popup()
                 .setLatLng(dotLatLng)
                 .setContent(content);
@@ -162,13 +198,19 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                 let iframe = document.createElement("iframe");
                 iframe.setAttribute("src", `/desc_page${dot.link}`);
                 elem.appendChild(iframe);
-            });
+            });*/
         }
         for (const line of route.lines) {
-            L.polyline(line.latlngs, { color: 'rgba(255, 157, 18, 1)', weight: 5 })
-                .addTo(map);
+            console.log(line);
+            let realLatLngs = [];
+            for(let latlng of line.latlngs) {
+                realLatLngs.push({lat: latlng[0], lng: latlng[1]});
+            }
+            L.polyline(realLatLngs as L.LatLngExpression[], { color: 'rgba(255, 157, 18, 1)', weight: 5 })
+                .addTo(map!);
         }
-}*/
+    }
+
     handleThemeChange = (theme: Theme) : void => {
         const { criteries } = this.state;
         this.setState({
@@ -210,7 +252,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         container.style.width = `${width}px`;
 
         const map = L.map('MAP-ID').setView([51.0, 0], 13);
-        this.setState({mapInfo: {...this.state.mapInfo, enabled: true}});
+        this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 18,

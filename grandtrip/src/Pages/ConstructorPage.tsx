@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 
-export default class SupportPage extends Component {
+export default class ConstructorPage extends Component {
     render() {
         return <div>
-
+            
         </div>
     }
 }

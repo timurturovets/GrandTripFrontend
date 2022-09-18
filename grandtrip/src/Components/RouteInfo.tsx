@@ -3,7 +3,7 @@ import RouteInformation from '../Interfaces/RouteInformation'
 
 interface RouteInfoProps {
     info: RouteInformation,
-    onRouteRendering: (id: string) => void;
+    onRouteRendering: (id: number) => void;
 }
 export default class RouteInfo extends Component<RouteInfoProps, any> {
     render() {
