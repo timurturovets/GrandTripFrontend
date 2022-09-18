@@ -1,0 +1,392 @@
+import React, { Component } from 'react'
+import L from 'leaflet'
+import Dot from '../Interfaces/Dot'
+import Line from '../Interfaces/Line'
+import DotsList from './DotsList' 
+import LinesList from './LinesList'
+import { RouteMode } from '../Interfaces/RouteMode'
+import { orsAccessToken } from '../Constants'
+import { get } from '../Functions/requests'
+import getPointBySearch from '../Functions/getPointBySearch'
+
+interface ConstructorToolbarProps {
+    map: L.Map
+}
+interface MapLine {
+    id: number,
+    line: L.Polyline
+}
+
+interface ConstructorToolbarState {
+    browsingLines: boolean,
+    routeName?: string,
+    routeDesc?: string,
+    dots: Dot[],
+    lines: Line[],
+    mapLines: MapLine[],
+    markers: L.Marker[],
+    lastId: number,
+    lastLineId: number,
+    tracingInfo: {
+        tracingNow: boolean,
+        startDotId: number,
+        endDotId: number,
+        mode: RouteMode,
+    },
+    buildingLineInfo: {
+        buildingNow: boolean,
+        line?: Line,
+        latlngs: L.LatLngExpression[],
+        markers: L.Marker[]
+    },
+    searchingInfo: {
+        searchQuery?: string
+    }
+}
+
+export default class ConstructorToolbar extends Component<ConstructorToolbarProps, ConstructorToolbarState> {
+    constructor(props: ConstructorToolbarProps) {
+        super(props);
+
+        this.state = {
+            browsingLines: false,
+            routeName: undefined, 
+            routeDesc: undefined, 
+            dots: [],
+            lines: [],
+            mapLines: [],
+            markers: [],
+            lastId: 1,
+            lastLineId: 1,
+            tracingInfo: { tracingNow: false, startDotId: NaN, endDotId: NaN, mode: "foot-walking" },
+            buildingLineInfo: { buildingNow: false, line: undefined, latlngs: [], markers: [] },
+            searchingInfo: { searchQuery: undefined }
+        };
+    }
+
+    render() {
+        const { tracingInfo, buildingLineInfo, searchingInfo } = this.state;
+        return <div>
+                <input className="form-control" type="text" name="searchquery" placeholder="Текст поиска"
+                    onChange={e => {
+                        searchingInfo.searchQuery = e.target.value;
+                        this.setState({searchingInfo});
+                    }} />
+                <button onClick={e => this.handleSearch(e)}>Найти точку</button>
+                {buildingLineInfo.buildingNow 
+                ? <div>
+                    <h2 className="text-light">
+                        Нажмите на карту, чтобы {buildingLineInfo.latlngs.length < 1
+                            ? "поставить первую точку линии"
+                            : "продолжить проводить линию"}
+                    </h2>
+                    <button onClick={e=>this.endDrawingLine(e)}>Закончить проводить линию</button>
+                </div>
+                : tracingInfo.tracingNow
+                    ? <div>
+                        <button onClick={e=>{
+                            e.preventDefault();
+                            tracingInfo.tracingNow = false;
+                            tracingInfo.startDotId = NaN;
+                            tracingInfo.endDotId = NaN;
+                            this.setState({tracingInfo: tracingInfo});
+                        }}>Отмена</button>
+                        <div className="form-check form-switch form-check-inline">
+                            <input className="form-check-input" type="radio" name="mode" 
+                                onClick={()=>{
+                                    tracingInfo.mode = "foot-walking";
+                                    this.setState({tracingInfo: tracingInfo});
+                                }} defaultChecked/>
+                            <label className="form-check-label text-light" htmlFor="mode">Пешком</label>
+                        </div>
+                        <div className="form-check form-switch form-check-inline">
+                            <input className="form-check-input" type="radio" name="mode" 
+                                onClick={()=>{
+                                    tracingInfo.mode = "driving-car";
+                                    this.setState({tracingInfo: tracingInfo});
+                                }}/>
+                            <label className="form-check-label text-light" htmlFor="mode">На машине</label>
+                        </div>
+                        <div className="form-group mx-sm-3">
+                            <input type="number" min="1" placeholder="Номер первой точки" 
+                                onChange={e=>{
+                                    e.preventDefault();
+                                    tracingInfo.startDotId = parseInt(e.target.value);
+                                    this.setState({tracingInfo: tracingInfo});
+                                }}/>
+                        </div>
+                        <div className="form-group mx-sm-3">
+                            <input type="number" min="2" placeholder="Номер второй точки" 
+                                onChange={e => {
+                                    e.preventDefault();
+                                    tracingInfo.endDotId = parseInt(e.target.value);
+                                    this.setState({tracingInfo: tracingInfo});
+                                }}/>
+                        </div>
+                        <button onClick={e => this.handleTracing(e)}>Соединить точки</button>
+                    </div>
+                    : <div>
+                        {this.state.dots.length > 1
+                            ? <button onClick={e => {
+                                e.preventDefault();
+                                tracingInfo.tracingNow = true;
+                                this.setState({tracingInfo: tracingInfo});
+                                }}>Проложить маршрут между двумя точками</button>
+                            : null}
+                        <button onClick={e=>{
+                            e.preventDefault();
+                            buildingLineInfo.buildingNow = true;
+                            this.setState({buildingLineInfo: buildingLineInfo});
+                        }}>Провести линию</button>
+                        </div>
+                }
+                {this.state.browsingLines
+                    ? <div>
+                        <button onClick={e=>{
+                            e.preventDefault();
+                            this.setState({browsingLines: false})
+                        }}>
+                            Просмотреть поставленные точки
+                        </button>
+                        <LinesList 
+                        lines={this.state.lines}
+                        onLineHighlighted={this.handleLineHighlight}
+                        onLineDeleted={this.handleLineDelete}
+                         /></div>
+                    : <div>
+                        <button onClick={e => {e.preventDefault();
+                        this.setState({browsingLines: true});}}>
+                            Просмотреть поставленные линии
+                            </button>
+                        <DotsList 
+                        dots={this.state.dots}
+                        onDotDeleted={this.handleDotDelete}
+                        onDotUpdated={this.handleDotUpdate} />
+                        </div>
+                }
+                {tracingInfo.tracingNow
+                    ? null
+                    : <div>
+                        <div className="form-group">
+                        <h3 className="text-light">Информация о маршруте</h3>
+                        <input type="text" name="routeName" className="form-control"
+                            placeholder="Название маршрута" onChange={e=>this.handleInfoChange(e, "routeName")} />
+                        <input type="text" name="routeDesc" className="form-control"
+                            placeholder="Описание маршрута" onChange={e=>this.handleInfoChange(e, "routeDesc")} />
+                        </div>
+                        <div className="form-group">
+                            <button onClick={e=>this.onSubmit(e)}>Отправить маршрут на обработку</button>
+                        </div>
+                    </div>}
+            </div>
+    }
+
+    handleInfoChange = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+        e.preventDefault();
+
+        const { value } = e.target;
+        if(type === "routeName"){
+            this.setState({routeName: value});
+        } else if(type === "routeDesc") {
+            this.setState({routeDesc: value});
+        } else console.log('err');
+    }
+
+    handleLineHighlight = (id: number) => {
+        console.log(`highlighting id is ${id}`);
+        const mapLines = this.state.mapLines;
+        console.log(this.state);
+        const lineObject = mapLines.find(l => l.id === id)!;
+        console.log(lineObject);
+        const latlngs = lineObject.line.getLatLngs() as L.LatLngExpression[];
+        lineObject.line.remove();
+    
+        const newLine = L.polyline(latlngs, {color: 'green', weight: 5}).addTo(this.props.map);
+        setTimeout(()=>{
+            newLine.remove();
+            const sourceLine = L.polyline(latlngs, {color: 'blue', weight:5});
+            sourceLine.addTo(this.props.map);
+        }, 1000);
+    }
+
+    handleLineDelete = (id: number) => {
+        console.log(`deleting id is ${id}`);
+
+        const {lines, mapLines} = this.state;
+        console.log(lines); console.log(mapLines);
+        const line = lines.find(l => l.id === id)!;
+        const mapLine = mapLines.find(l => l.id === id)!;
+        console.log(`found mapLine:`);
+        console.log(mapLine);
+        lines.splice(lines.indexOf(line), 1);
+
+        mapLine.line.remove();
+        mapLines.splice(mapLines.indexOf(mapLine), 1);
+
+        this.setState({lines: lines, mapLines: mapLines});
+        
+    }
+    handleDotDelete = (id: number) => {
+        let { lastId } = this.state;
+        const { dots, markers, tracingInfo } = this.state;
+        for(const obj of dots){
+            if(obj.id === id){
+                dots.splice(dots.indexOf(obj), 1);
+                for(const m of markers){
+                    const latlng = m.getLatLng();
+                    if(latlng.lat === obj.PositionX && latlng.lng === obj.PositionY){
+                        m.remove();
+                        markers.splice(markers.indexOf(m), 1);
+                        break;
+                    }
+                }
+                for(const d of dots){
+                    if(d.id < id) continue;
+                    d.id--;
+                }
+                break;
+            }
+        }        
+        if(dots.length < 2) {
+            tracingInfo.tracingNow = false;
+            tracingInfo.startDotId = NaN;
+            tracingInfo.endDotId = NaN;
+        }
+
+        lastId--;
+
+        this.setState({lastId: lastId, dots: dots, markers: markers, tracingInfo: tracingInfo});
+        
+    }
+
+    handleDotUpdate = (id: number, field: string, value: string) => {
+        const dots = this.state.dots;
+        for(const obj of dots){
+            if(obj.id === id){
+                if(field === "name") obj.name = value;
+                else if(field ===" desc") obj.desc = value;
+                else if(field === "link") obj.link = value;
+                else return;
+                break;
+            }
+        }
+        this.setState({dots: dots});
+    }
+    //TODO fix
+    onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+
+        const { routeName, routeDesc, dots, lines } = this.state;
+        const object = {
+            routeName,
+            routeDesc,
+            dots,
+            lines
+        };
+        const json = JSON.stringify(object);
+        const request = get('/add_route', {route: json}).then(response => {
+            alert(response);
+        });
+        console.log(request);
+        await request;
+    }
+
+    handleSearch = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+
+        const { searchingInfo, dots, markers } = this.state;
+        let { lastId } = this.state;
+        const { searchQuery } = searchingInfo;
+        if(!searchQuery) return;
+
+        const result = await getPointBySearch(searchQuery);
+        let latlng = [];
+        const point = result.features[0].center;
+        latlng[0] = point[1];
+        latlng[1] = point[0];
+
+        const marker = L.marker(latlng as L.LatLngExpression);
+        marker.addTo(this.props.map);
+        markers.push(marker);
+
+        dots.push({id: lastId, desc: "", name: "", link: "", PositionX: latlng[0], PositionY: latlng[1]});
+        lastId++;
+        this.setState({searchingInfo, lastId, dots, markers});
+    }
+
+    handleTracing = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+
+        const tracingInfo = this.state.tracingInfo;
+        const startDotId = tracingInfo.startDotId, endDotId = tracingInfo.endDotId;
+        if(startDotId === endDotId || startDotId === null || endDotId === null) return;
+
+        let startDot: Dot, endDot: Dot, mode = tracingInfo.mode;
+        for(const obj of this.state.dots){
+            if(obj.id === startDotId) startDot = obj;
+            if(obj.id === endDotId) endDot = obj;
+        }
+        let url = 'https://api.openrouteservice.org/v2/directions/';
+        url += `${mode}?`
+        url += `api_key=${orsAccessToken}`;
+        //Конвертация в забугорный формат
+        url += `&start=${startDot!.PositionY},${startDot!.PositionX}`;
+        url += `&end=${endDot!.PositionY},${endDot!.PositionX}`;
+        const result = await fetch(url).then(response=>response.json());
+        const coordinates = result.features[0].geometry.coordinates;
+
+        //Конвертация в отечественный формат
+        for(let point of coordinates){
+            let temp = point[0];
+            point[0] = point[1];
+            point[1] = temp;
+        }
+
+
+        let lastLineId = this.state.lastLineId;
+        const { lines } = this.state;
+        lines.push({id: lastLineId, latlngs: coordinates as L.LatLngExpression[]});
+
+        const mapLines = this.state.mapLines;
+        const mapLine = L.polyline(coordinates, {color:'blue', weight:5});
+
+        mapLines.push({id: lastLineId, line: mapLine});
+        mapLine.addTo(this.props.map);
+
+        lastLineId++;
+
+        tracingInfo.tracingNow = false;
+        tracingInfo.startDotId = NaN;
+        tracingInfo.endDotId = NaN;
+        tracingInfo.mode = "foot-walking";
+        this.setState({lines: lines, mapLines: mapLines, lastLineId: lastLineId, tracingInfo: tracingInfo});
+    }
+
+    endDrawingLine = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+
+        const { buildingLineInfo } = this.state;
+        const {lines, mapLines} = this.state;
+
+        const latlngs = buildingLineInfo.latlngs;
+        let lastLineId = this.state.lastLineId;
+        if(latlngs.length > 0){
+            const mapLine = L.polyline(latlngs, {color: 'blue', weight: 5});
+            mapLine.addTo(this.props.map);
+            lines.push({id: lastLineId, latlngs});
+            mapLines.push({id: lastLineId, line: mapLine});
+            lastLineId++;
+        }
+        for(const marker of buildingLineInfo.markers){
+            marker.remove();
+        }
+        buildingLineInfo.buildingNow = false;
+        buildingLineInfo.latlngs = [];
+        buildingLineInfo.markers = [];  
+
+        this.setState({lastLineId, 
+            mapLines,
+            buildingLineInfo,
+            lines});
+    }
+}

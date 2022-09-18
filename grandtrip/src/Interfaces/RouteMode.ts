@@ -1,0 +1,1 @@
+export type RouteMode = "none" | "foot-walking" | "driving-car"

@@ -183,28 +183,13 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             console.log(dot);
             let newMarker = L.marker([dot.PositionX, dot.PositionY]);
             newMarker.addTo(map!);
-            /*let content =
-                `Точка ${dot.name}. Описание - ${dot.desc}.`;
-            let popup = L.popup()
-                .setLatLng(dotLatLng)
-                .setContent(content);
-            newMarker.bindPopup(popup);
-            newMarker.openPopup();
-            newMarker.addTo(map);
-            newMarker.on('click', e => {
-                let elems = document.getElementsByClassName('leaflet-popup-content')
-                let elem = elems[1];
-                if (!elem) elem = elems[0];
-                let iframe = document.createElement("iframe");
-                iframe.setAttribute("src", `/desc_page${dot.link}`);
-                elem.appendChild(iframe);
-            });*/
         }
         for (const line of route.lines) {
             console.log(line);
             let realLatLngs = [];
             for(let latlng of line.latlngs) {
-                realLatLngs.push({lat: latlng[0], lng: latlng[1]});
+                const unwrapped = latlng as number[];
+                realLatLngs.push({lat: unwrapped[0], lng: unwrapped[1]});
             }
             L.polyline(realLatLngs as L.LatLngExpression[], { color: 'rgba(255, 157, 18, 1)', weight: 5 })
                 .addTo(map!);
