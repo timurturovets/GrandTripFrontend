@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 
-interface LinesListProps {
+interface LineInfoProps {
     id: number,
     onHighlighted: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => void,
     onDeleted: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => void
 }
-export default class LinesList extends Component<LinesListProps, any> { 
+
+export default class LineInfo extends Component<LineInfoProps, any> { 
     render() {
         const { id, onHighlighted, onDeleted } = this.props;
 

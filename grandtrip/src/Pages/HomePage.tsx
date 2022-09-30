@@ -5,10 +5,10 @@ export default class HomePage extends Component {
         return <div className="d-flex flex-column">
         <div className="card text-center m-lg-5">
             <img src="wwwroot/sobor.png" className="card-img-top" alt="" />
-            <h3 className="card-header">1. Что сюда написать?</h3>
+            {/*<h3 className="card-header">1. Что сюда написать?</h3>
             <p className="card-text">
                 2. А сюда?
-            </p>
+    </p>*/}
         </div>
         <div>
             <div className="d-flex flex-row">

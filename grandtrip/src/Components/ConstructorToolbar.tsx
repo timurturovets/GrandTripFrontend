@@ -35,7 +35,7 @@ interface ConstructorToolbarState {
     },
     buildingLineInfo: {
         buildingNow: boolean,
-        line?: Line,
+        line?: L.Polyline,
         latlngs: L.LatLngExpression[],
         markers: L.Marker[]
     },
@@ -62,6 +62,52 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             buildingLineInfo: { buildingNow: false, line: undefined, latlngs: [], markers: [] },
             searchingInfo: { searchQuery: undefined }
         };
+        const { map } = props;
+        map.on("click", e=> {
+            const latlng = e.latlng; 
+            let {buildingLineInfo, mapLines, lastId, lastLineId, markers, dots} = this.state;
+
+            if (buildingLineInfo.buildingNow) {
+                buildingLineInfo.latlngs.push(latlng);
+
+                const marker = L.marker(latlng);
+                marker.addTo(map);
+                buildingLineInfo.markers.push(marker);
+                
+                if(buildingLineInfo.latlngs.length > 1){
+                    const line = buildingLineInfo.line!;
+                    line.addLatLng(latlng);
+                    line.remove();
+                    line.addTo(map);
+                } else {
+                    const line = L.polyline(buildingLineInfo.latlngs, {color:'blue', weight: 5});
+                    buildingLineInfo.line = line;
+                    mapLines.push({id: lastLineId, line: line});
+                    console.log('----------------');
+                    console.log(line);
+                    console.log('----------------');
+                    lastLineId++;
+                }
+                this.setState({
+                    buildingLineInfo: buildingLineInfo, 
+                    mapLines: mapLines, 
+                    lastLineId: lastLineId});
+            } else {
+                for(const obj of this.state.dots){
+                    if(obj.PositionX === latlng.lat && obj.PositionY === latlng.lng) return;
+                }
+
+                const marker = L.marker(latlng);
+                markers.push(marker);
+                marker.addTo(map);
+                //const dot = new Dot(lastId, "", latlng.lat, latlng.lng, "", "");
+                dots.push({id: lastId, name: "", desc: "", link: "", PositionX: latlng.lat, PositionY: latlng.lng});
+
+                lastId++;
+
+                this.setState({lastId: lastId, dots: dots, markers: markers,});
+            }
+        });
     }
 
     render() {
@@ -71,7 +117,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                     onChange={e => {
                         searchingInfo.searchQuery = e.target.value;
                         this.setState({searchingInfo});
-                    }} />
+                    }} value={searchingInfo.searchQuery}/>
                 <button onClick={e => this.handleSearch(e)}>Найти точку</button>
                 {buildingLineInfo.buildingNow 
                 ? <div>
@@ -127,12 +173,11 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                     </div>
                     : <div>
                         {this.state.dots.length > 1
-                            ? <button onClick={e => {
+                            && <button onClick={e => {
                                 e.preventDefault();
-                                tracingInfo.tracingNow = true;
-                                this.setState({tracingInfo: tracingInfo});
+                                this.setState({tracingInfo: {...this.state.tracingInfo, tracingNow: true}});
                                 }}>Проложить маршрут между двумя точками</button>
-                            : null}
+                            }
                         <button onClick={e=>{
                             e.preventDefault();
                             buildingLineInfo.buildingNow = true;
@@ -195,37 +240,34 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
     handleLineHighlight = (id: number) => {
         console.log(`highlighting id is ${id}`);
         const mapLines = this.state.mapLines;
-        console.log(this.state);
         const lineObject = mapLines.find(l => l.id === id)!;
-        console.log(lineObject);
         const latlngs = lineObject.line.getLatLngs() as L.LatLngExpression[];
         lineObject.line.remove();
     
-        const newLine = L.polyline(latlngs, {color: 'green', weight: 5}).addTo(this.props.map);
+        const newLine = L.polyline(latlngs, {color: 'green', weight: 7}).addTo(this.props.map);
         setTimeout(()=>{
             newLine.remove();
             const sourceLine = L.polyline(latlngs, {color: 'blue', weight:5});
+            mapLines.find(l => l.id === id)!.line = sourceLine;
             sourceLine.addTo(this.props.map);
+            this.setState({mapLines});
         }, 1000);
     }
 
     handleLineDelete = (id: number) => {
         console.log(`deleting id is ${id}`);
 
-        const {lines, mapLines} = this.state;
-        console.log(lines); console.log(mapLines);
+        const { lines, mapLines} = this.state;
         const line = lines.find(l => l.id === id)!;
         const mapLine = mapLines.find(l => l.id === id)!;
-        console.log(`found mapLine:`);
         console.log(mapLine);
-        lines.splice(lines.indexOf(line), 1);
-
-        mapLine.line.remove();
-        mapLines.splice(mapLines.indexOf(mapLine), 1);
-
-        this.setState({lines: lines, mapLines: mapLines});
-        
+        const what = mapLine.line.remove();
+        console.log(what);
+        /*lines.splice(lines.indexOf(line), 1);
+        mapLines.splice(mapLines.indexOf(mapLine), 1);*/
+        this.setState({lines, mapLines});    
     }
+
     handleDotDelete = (id: number) => {
         let { lastId } = this.state;
         const { dots, markers, tracingInfo } = this.state;
@@ -266,7 +308,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                 if(field === "name") obj.name = value;
                 else if(field ===" desc") obj.desc = value;
                 else if(field === "link") obj.link = value;
-                else return;
+                else return;            
                 break;
             }
         }
@@ -309,8 +351,9 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         marker.addTo(this.props.map);
         markers.push(marker);
 
-        dots.push({id: lastId, desc: "", name: "", link: "", PositionX: latlng[0], PositionY: latlng[1]});
+        dots.push({id: lastId, desc: "", name: searchQuery, link: "", PositionX: latlng[0], PositionY: latlng[1]});
         lastId++;
+        searchingInfo.searchQuery = undefined;
         this.setState({searchingInfo, lastId, dots, markers});
     }
 
@@ -330,13 +373,12 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         url += `${mode}?`
         url += `api_key=${orsAccessToken}`;
         //Конвертация в забугорный формат
-        url += `&start=${startDot!.PositionY},${startDot!.PositionX}`;
+        url += `&start=${startDot!.PositionY},${startDot!.PositionX}`; 
         url += `&end=${endDot!.PositionY},${endDot!.PositionX}`;
         const result = await fetch(url).then(response=>response.json());
         const coordinates = result.features[0].geometry.coordinates;
 
-        //Конвертация в отечественный формат
-        for(let point of coordinates){
+        for(let point of coordinates){ //Конвертация в отечественный формат
             let temp = point[0];
             point[0] = point[1];
             point[1] = temp;
@@ -371,8 +413,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         const latlngs = buildingLineInfo.latlngs;
         let lastLineId = this.state.lastLineId;
         if(latlngs.length > 0){
-            const mapLine = L.polyline(latlngs, {color: 'blue', weight: 5});
-            mapLine.addTo(this.props.map);
+            const mapLine = L.polyline(latlngs, {color: 'blue', weight: 5}).addTo(this.props.map);
             lines.push({id: lastLineId, latlngs});
             mapLines.push({id: lastLineId, line: mapLine});
             lastLineId++;

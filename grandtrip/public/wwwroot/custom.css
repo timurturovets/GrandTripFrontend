@@ -55,12 +55,13 @@ body {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-button {
+
+/*button {
     background: transparent;
     color: black;
     border: 2px white solid;
     border-radius: 5px;
-}
+}*/
 
 #time-input {
     width: 13%;
@@ -164,9 +165,6 @@ nav {
 }
 
 #MySideNav {
-    z-index: 100;
-    margin-top: 0px;
-    left: 0;
     width: 30%;
     background: rgb(219, 207, 219);
     color: black;
@@ -174,6 +172,8 @@ nav {
     /* white-space: nowrap; */
     border-bottom-right-radius: 5px;
     user-select: none;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 #MySideNav a {
@@ -197,6 +197,34 @@ nav {
 
 #sidenav-button:hover {
     background: rgb(124, 193, 184);
+}
+
+.route-btn {
+    width: 100%;
+    color: white;
+    background-color: rgb(124, 193, 184);
+    border: 3px solid white;
+    border-bottom: none;
+    transition: background-color 750ms;
+}
+
+.route-btn:hover {
+    background-color: rgb(78, 123, 117)
+}
+
+.route-div {
+    width: calc(100%-3px);
+    padding: 3px;
+    border: 3px solid white;
+    border-top: none;
+}
+
+.navbar-link h1 {
+    color: black
+}
+
+.navbar-link-active h1 {
+    color: rgb(59, 59, 59);
 }
 
 .img-container {
@@ -317,6 +345,11 @@ nav {
     transform: translate(-50%, -50%);
 }
 
+.navibar-centered h1 {
+    margin: 0;
+    padding-top: 4.4%;
+}
+
 .navibar-right {
     margin-right: 10%;
     float: right;
@@ -337,7 +370,6 @@ nav {
 }
 
 .navibar a.active {
-    background-color: #04AA6D;
     color: white;
 }
 

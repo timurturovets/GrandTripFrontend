@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Dot from '../Interfaces/Dot'
+import DotInfo from './DotInfo'
 
 interface DotsListProps {
     dots: Dot[],
@@ -20,7 +21,6 @@ export default class DotsList extends Component<DotsListProps, any> {
                     link={dot.link}
                     posX={dot.PositionX}
                     posY={dot.PositionY}
-
                     onDeleted={this.handleDotDeleted}
                     onFieldChanged={this.handleDotFieldChanged}
                 />

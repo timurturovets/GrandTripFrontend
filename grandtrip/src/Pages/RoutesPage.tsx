@@ -22,7 +22,9 @@ interface MapInfo {
     map?: L.Map,
     center: number[],
     dots: Dot[],
-    lines: Line[]
+    lines: Line[],
+    markers: L.Marker[],
+    mapLines: L.Polyline[]
 }
 
 interface StateRoutes {
@@ -50,7 +52,9 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                 map: undefined,
                 center: [51.0, 0],
                 dots: [],
-                lines: []
+                lines: [],
+                markers: [],
+                mapLines: []
             },
             criteries: {
                 theme: "none",
@@ -68,13 +72,12 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
 
     render() {
         const { mapInfo, criteries, routes } = this.state;
-        console.log(criteries);
-        const { enabled, center, dots, lines } = mapInfo;
+        const { enabled } = mapInfo;
         const { season} = criteries;
         const { clicked, isLoading, result, error } = routes
         return <div style={{textAlign: "left", display: "flex"}}>
         <div id="MySideNav" className="text-center" style={{zIndex: 100}}>
-            <div className="bg-dark text-light p-3 rounded-bottom">
+            <div className="bg-dark text-light p-3">
                 <div className="form-check-inline form-switch m-2">
                     <input id="season-radio1" className="form-check-input" 
                     type="radio" name="SEASON" value="summer" checked={season === "summer"}
@@ -98,11 +101,12 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                 <div className="duration-input-wrapper">
                     <div className="form-group">
                         <input type="number" id="time-input" min={5} value="5"
+                            style={{width: "35%"}}
                             onChange={e=>this.handleTimeChange(e)} />
                         <label>Длительность маршрута (в минутах)</label>
                     </div>
                 </div>
-                <button onClick={e=>this.handleSubmit(e)}className="btn btn-success">
+                <button onClick={e=>this.handleSubmit(e)} className="btn btn-success">
                     OK
                 </button>
             </div>
@@ -120,7 +124,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             </div>
         </div>
          <div id="main-container" style={{height:'100%', width: '100%'}}>
-            {!enabled && <button onClick={this.handleShowMap}>Показать карту</button>}
+            {!enabled 
+            && <button className="btn btn-success" onClick={e=>this.handleShowMap()}>Показать карту</button>}
                 <div id="MAP-ID" style={{height:'100%', width: '100%'}}></div>
             </div>
         </div>
@@ -130,7 +135,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         e.preventDefault();
 
         const { criteries } = this.state;
-        const { theme, season, time } = criteries;
+        const { theme, season } = criteries;
         if(theme === "none" || season === "none") {
             alert('Вы не выбрали все опции')
             return;
@@ -155,7 +160,6 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             const routeInformations: RouteInformation[] = []
             for(const id of ids) {
                 await getRouteById(id).then(response => {
-                    console.log(response);
                     routeInformations.push(response);
                 }).catch(err=>{
                     console.log(err)
@@ -166,41 +170,56 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                     ...this.state.routes,
                     result: routeInformations
                 }
-            })
+            });
+            const container = document.getElementById('main-container')!;   
+            const sideNav = document.getElementById('MySideNav')!;
+            sideNav.style.height = container.style.height;
         }).catch(err=>{
             alert('Произошла ошибка. Попробуйте позже.');
         })
     }
 
     handleRouteRendering = (routeId: number) => {
-        const { result } = this.state.routes;
-        const { enabled, map } = this.state.mapInfo;
-        if(!enabled) this.handleShowMap();
-        let route: RouteInformation = result[1]//.find(r => r.id === routeId)!;
         console.log(routeId);
-        console.log(route);
+        const { result } = this.state.routes;
+        let { map, markers, mapLines } = this.state.mapInfo;
+        //const center = map!.getCenter();
+        const zoom = map!.getZoom();
+        /*map!.remove();
+        this.handleShowMap(center as L.LatLng, zoom);*/
+        for(const marker of this.state.mapInfo.markers) {
+            marker.remove();
+        }
+
+        for(const line of mapLines) {
+            map!.removeLayer(line);
+        }
+        let route: RouteInformation = result.find(r => r.id === routeId)!;
         for (const dot of route.dots) {
             console.log(dot);
             let newMarker = L.marker([dot.PositionX, dot.PositionY]);
+            newMarker.bindPopup(L.popup().setContent(`<p>${dot.name}</p>`));
             newMarker.addTo(map!);
+            markers.push(newMarker);
         }
+        map!.setView([route.dots[0].PositionX, route.dots[0].PositionY], zoom > 13 ? zoom : 13)
         for (const line of route.lines) {
-            console.log(line);
-            let realLatLngs = [];
+            let realLatLngs: {lat: number, lng: number}[] = [];
             for(let latlng of line.latlngs) {
                 const unwrapped = latlng as number[];
                 realLatLngs.push({lat: unwrapped[0], lng: unwrapped[1]});
             }
-            L.polyline(realLatLngs as L.LatLngExpression[], { color: 'rgba(255, 157, 18, 1)', weight: 5 })
+            const l = L.polyline(realLatLngs, { color: 'rgba(255, 157, 18, 1)', weight: 5 })
                 .addTo(map!);
+            mapLines.push(l);
         }
+        this.setState({mapInfo: {...this.state.mapInfo, mapLines, markers}})
     }
 
     handleThemeChange = (theme: Theme) : void => {
-        const { criteries } = this.state;
         this.setState({
             criteries: {
-                ...criteries,
+                ...this.state.criteries,
                 theme
             }
         });
@@ -228,7 +247,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         });
     }
 
-    handleShowMap = () => {
+    handleShowMap = (center?: number[] | L.LatLng, zoom?: number) => {
         const height = window.innerHeight - document.getElementById('header')!.offsetHeight;
         const width = window.innerWidth - document.getElementById('MySideNav')!.offsetWidth;
 
@@ -247,13 +266,15 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             accessToken: 'pk.eyJ1IjoiYnl0ZWljIiwiYSI6ImNrdHh6bTRzNTFnbmUyb21ycnRyNjlwbHYifQ.6nc0vKKePD5XLytqJBcjAA'
         }).addTo(map);
 
-        getPointBySearch("Санкт-Петербург").then(response=>{
-            response.features.forEach((center: any, i: number, arr: any) => {
-                var latlng = [center.center[1], center.center[0]] as L.LatLngExpression;
-                if (i > 0) return;
+        !center 
+            ? getPointBySearch("Санкт-Петербург").then(response=>{
+                response.features.forEach((center: any, i: number, arr: any) => {
+                    var latlng = [center.center[1], center.center[0]] as L.LatLngExpression;
+                    if (i > 0) return;
 
-                map.setView(latlng, 13)
-            });
-        });
+                    map.setView(latlng, zoom || 13)
+                });
+            })
+            : map.setView(center as L.LatLngExpression, zoom || 13);
     }
 }

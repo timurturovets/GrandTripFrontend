@@ -1,5 +1,5 @@
 import React, { ReactNode, Component } from 'react'
-
+import { NavLink } from 'react-router-dom'
 interface LayoutProps {
     children: ReactNode | ReactNode[]
 }
@@ -15,12 +15,15 @@ export default class Layout extends Component<LayoutProps, any> {
                     <div id="header">
                     <header>
                         <nav className="navibar">
-                        <a href="/"><h1>GRANDTRIP</h1></a>
+                        <NavLink to="/" >
+                            <h1>GRANDTRIP</h1>
+                        </NavLink>
                             <div className="navibar-centered">
-                                <a href="routes"><h1>МАРШРУТЫ</h1></a>
+                                <NavLink to="routes"><h1>МАРШРУТЫ</h1></NavLink>
                             </div>
+
                             <div className="navibar-right">
-                                <a href="support"><h1>ПОДДЕРЖКА</h1></a>
+                                <NavLink to="support"><h1>ПОДДЕРЖКА</h1></NavLink>
                             </div>
                         </nav>
                     </header>
