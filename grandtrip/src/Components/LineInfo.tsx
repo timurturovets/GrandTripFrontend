@@ -12,8 +12,12 @@ export default class LineInfo extends Component<LineInfoProps, any> {
 
         return <div>
             <h3 className="text-light">Линия {id}</h3>
-            <button onClick={e => onHighlighted(e, id)}>Подсветить</button>
-            <button onClick={e => onDeleted(e, id)}>Удалить</button>
+            <button onClick={e => onHighlighted(e, id)} 
+            className="constructor-button" style={{width: '50%'}}>
+                Подсветить</button>
+            <button onClick={e => onDeleted(e, id)}
+            className="constructor-button" style={{width: '50%'}}>
+                Удалить</button>
         </div>
     }
 }

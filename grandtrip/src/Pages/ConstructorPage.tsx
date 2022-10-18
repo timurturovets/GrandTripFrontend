@@ -19,25 +19,41 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
     
     render() {
         const map = this.state.map;
-        return <AuthComponent role="Editor">            
+
+        const isEditMode: boolean = new URLSearchParams(window.location.search).has('edit');
+        /*return <AuthComponent role={isEditMode ? "Editor" : undefined}>*/
+        return <div>           
                 <div id="main-container" style={{height: "100%", width: "100%"}}>
-                <div id="mapInfoDiv">
+                <div id="mapInfoDiv" className="bg-dark">
                     {map && <ConstructorToolbar map={map} />}
                 </div>
                 <div id="mapDiv" style={{height: "100%", width: "100%"}}>
                     {!map && 
-                    <button onClick={this.handleShowMap} className="btn btn-outline-success">Показать карту</button>}
+                    <button onClick={this.handleShowMap} className="btn btn-outline-success">
+                        Показать карту</button>}
                 </div>
             </div>
-        </AuthComponent>
+            </div>
+       // </AuthComponent>
     }
 
     handleShowMap = async () => {
+
         const height = window.innerHeight - document.getElementById('header')!.offsetHeight;
+
+        const cont = document.getElementById("cont")!;
+        const div = cont.children[0] as HTMLElement;
+        div.style.width = `${cont.offsetWidth}px`;
+        const container = document.getElementById('main-container')!;
+        container.style.height = `${height}px`;
+        container.style.width = `${cont.offsetWidth}px`;
+
+        /*const height = window.innerHeight - document.getElementById('header')!.offsetHeight;
+        const width = window.innerWidth - document.getElementById('mapInfoDiv')!.offsetWidth;
 
         const container = document.getElementById('main-container')!;   
         container.style.height = `${height}px`;
-        container.style.width = `100%`;
+        container.style.width = `${width}px`;*/
 
         let sideNav = document.getElementById('mapInfoDiv')!;
         sideNav.style.height = container.style.height;
@@ -60,5 +76,11 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
                 map.setView(latlng, 13)
             });
         });
+
+        // удаляем украинский флаг
+
+        let aCollection = [...document.getElementsByTagName('a')];
+        let a = aCollection.find(x=>x.getAttribute('title') === "A JavaScript library for interactive maps")!;
+        a.removeChild(a.children[0]);
     }
 }

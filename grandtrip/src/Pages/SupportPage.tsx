@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 export default class SupportPage extends Component {
     render() {
         return <div>
-<div className="jumbotron text-light bg-dark bg-gradient rounded" style={{padding: "10px;"}}>
+<div className="jumbotron text-light bg-dark bg-gradient rounded" style={{padding: "10px"}}>
                 <h2 className="display-4">Поддержка</h2>
                 <hr className="my-2" />
                 <p className="lead">
@@ -18,7 +18,7 @@ export default class SupportPage extends Component {
                 </p>
             </div>
 
-            <div className="container-fluid" style={{margin: "15px;"}}>
+            <div className="container-fluid" style={{margin: "15px"}}>
                 <h3 className="text-center">Частозадаваемые вопросы (FAQ)</h3>
                 <p className="p-2">Наш сайт имеет достаточно большой функционал. И если в разделе Маршруты все легко и понятно, то с Конструктором могут возникнуть трудности, ведь его с первого раза освоить не так-то и просто. Поэтому невольно возникают вопросы. Чуть ниже представлены часто задаваемые вопросы, надеемся, что среди них вы сможете найти решение для вашей проблемы!</p>
             </div>

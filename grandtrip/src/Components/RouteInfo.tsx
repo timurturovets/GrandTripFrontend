@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import RouteInformation from '../Interfaces/RouteInformation'
+import { Link } from 'react-router-dom'
 
 interface RouteInfoProps {
     info: RouteInformation,
@@ -23,13 +24,17 @@ export default class RouteInfo extends Component<RouteInfoProps, RouteInfoState>
         const { isShown } = this.state;
         return <div>
             <button className="route-btn" onClick={e=>this.setState({isShown: !isShown})}>
-                {info.routeName || "Без названия"}
+                {info.name || "Без названия"}
                 </button>
                 {isShown 
                 && <div className="route-div">
-                        <p className="m-0">{info.routeDesc}</p>
+                        <p className="m-0">{info.description}</p>
+                        <div className="d-flex flex-row">
                         <button className="btn btn-sm btn-success"
                             onClick={e => this.props.onRouteRendering(info.id)}>Отрисовать маршрут</button>
+                        <Link to={`/constructor?edit=${info.id}`} className="btn btn-sm btn-primary">
+                            Редактировать маршрут</Link>
+                        </div>
                     </div>}
         </div>
     }

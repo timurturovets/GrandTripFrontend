@@ -154,17 +154,21 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             ]
         });
 
-        await fetch(`http://localhost:8081/get_routes_by_filter?filters=${filters}`).then(async res=>{
+        await fetch(`http://localhost:8081/get_routes_by_filters?filters=${filters}`).then(async res=>{
             const ids = JSON.parse(await res.text()).ids;
             console.log(ids);
             const routeInformations: RouteInformation[] = []
-            for(const id of ids) {
+            for(const id of ids.map((i:any)=>i.id)) {
                 await getRouteById(id).then(response => {
+                    response.dots = JSON.parse(response.dots);
+                    if(!response.dots[0].PositionX) response.dots = JSON.parse(response.dots);
+                    response.lines = JSON.parse(response.lines);
                     routeInformations.push(response);
                 }).catch(err=>{
                     console.log(err)
                 });
             }
+            console.log(routeInformations);
             this.setState({
                 routes: {
                     ...this.state.routes,
@@ -195,14 +199,18 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             map!.removeLayer(line);
         }
         let route: RouteInformation = result.find(r => r.id === routeId)!;
+        console.log(route);
         for (const dot of route.dots) {
             console.log(dot);
             let newMarker = L.marker([dot.PositionX, dot.PositionY]);
-            newMarker.bindPopup(L.popup().setContent(`<p>${dot.name}</p>`));
+            const content = `<h5>${dot.name}</h5><p>${dot.desc || "Нет описания"}</p>`;
+            newMarker.bindPopup(L.popup().setContent(content));
             newMarker.addTo(map!);
             markers.push(newMarker);
         }
-        map!.setView([route.dots[0].PositionX, route.dots[0].PositionY], zoom > 13 ? zoom : 13)
+        map!.setView([route.dots[0].PositionX, route.dots[0].PositionY], zoom > 13 ? zoom : 13);
+        console.log(route.lines);
+        if(!route.lines[0].id) route.lines = JSON.parse(route.lines as unknown as string);
         for (const line of route.lines) {
             let realLatLngs: {lat: number, lng: number}[] = [];
             for(let latlng of line.latlngs) {
@@ -249,11 +257,13 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
 
     handleShowMap = (center?: number[] | L.LatLng, zoom?: number) => {
         const height = window.innerHeight - document.getElementById('header')!.offsetHeight;
-        const width = window.innerWidth - document.getElementById('MySideNav')!.offsetWidth;
 
-        const container = document.getElementById('main-container')!;   
+        const cont = document.getElementById("cont")!;
+        const div = cont.children[0] as HTMLElement;
+        div.style.width = `${cont.offsetWidth}px`;
+        const container = document.getElementById('main-container')!;
         container.style.height = `${height}px`;
-        container.style.width = `${width}px`;
+        container.style.width = `${cont.offsetWidth}px`;
 
         const map = L.map('MAP-ID').setView([51.0, 0], 13);
         this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
@@ -276,5 +286,11 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                 });
             })
             : map.setView(center as L.LatLngExpression, zoom || 13);
+
+        // удаляем украинский флаг
+
+        let aCollection = [...document.getElementsByTagName('a')];
+        let a = aCollection.find(x=>x.getAttribute('title') === "A JavaScript library for interactive maps")!;
+        a.removeChild(a.children[0]);
     }
 }

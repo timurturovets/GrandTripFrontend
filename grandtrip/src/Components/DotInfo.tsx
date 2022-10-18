@@ -33,21 +33,21 @@ export default class DotInfo extends Component<DotInfoProps, DotInfoState> {
                 <h3 className="text-light">Точка {id}</h3>
                 <div className="form-group">
                     <input className="form-control" type="text" name="dotName" placeholder="Название точки"
-                        defaultValue={name} onBlur={e=>this.onChange(e, "name")} />
+                        defaultValue={name} onChange={e=>this.onChange(e, "name")} />
                 </div>
                 <div className="form-group">
                     <input className="form-control" type="text" name="dotDesc" placeholder="Описание точки"
-                        defaultValue={desc} onBlur={e=>this.onChange(e, "desc")} />
+                        defaultValue={desc} onChange={e=>this.onChange(e, "desc")} />
                 </div>
                 <div className="form-group">
                     <input className="form-control" type="text" name="dotLink" placeholder="Ссылка на страницу с описанием"
-                        defaultValue={link} onBlur={e=>this.onChange(e, "link")} />
+                        defaultValue={link} onChange={e=>this.onChange(e, "link")} />
                 </div>
                 <div className="form-group">
                     <p className="text-light">Долгота: {posX}</p>
                     <p className="text-light">Широта: {posY}</p>
                 </div>
-                <button onClick={e=>this.onDelete(e)}>Удалить точку</button>
+                <button onClick={e=>this.onDelete(e)} className="constructor-button">Удалить точку</button>
             </div>
     }
 

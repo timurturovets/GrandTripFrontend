@@ -3,8 +3,8 @@ import Dot from './Dot'
 
 export default interface RouteInformation {
     id: number,
-    routeName: string,
-    routeDesc: string,
+    name: string,
+    description: string,
     lines: Line[],
     dots: Dot[],
 }

@@ -15,13 +15,13 @@ export default class Layout extends Component<LayoutProps, any> {
                     <div id="header">
                     <header>
                         <nav className="navibar">
-                        <NavLink to="/" >
+                        <NavLink to="/" style={({isActive}) => 
+                        window.location.pathname ==="/" ? {color:'white'} : {color: 'black'}}>
                             <h1>GRANDTRIP</h1>
                         </NavLink>
                             <div className="navibar-centered">
                                 <NavLink to="routes"><h1>МАРШРУТЫ</h1></NavLink>
                             </div>
-
                             <div className="navibar-right">
                                 <NavLink to="support"><h1>ПОДДЕРЖКА</h1></NavLink>
                             </div>

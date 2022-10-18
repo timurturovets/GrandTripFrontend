@@ -8,19 +8,25 @@ import { RouteMode } from '../Interfaces/RouteMode'
 import { orsAccessToken } from '../Constants'
 import { get } from '../Functions/requests'
 import getPointBySearch from '../Functions/getPointBySearch'
+import { getRouteById } from '../Functions/getRouteById'
 
 interface ConstructorToolbarProps {
     map: L.Map
 }
+
 interface MapLine {
     id: number,
     line: L.Polyline
 }
 
+type Nullable<T> = T | null
+
 interface ConstructorToolbarState {
+    isEditMode: boolean,
+    editId: number,
     browsingLines: boolean,
-    routeName?: string,
-    routeDesc?: string,
+    name: Nullable<string>,
+    description: Nullable<string>,
     dots: Dot[],
     lines: Line[],
     mapLines: MapLine[],
@@ -49,9 +55,11 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         super(props);
 
         this.state = {
+            isEditMode: false,
+            editId: NaN,
             browsingLines: false,
-            routeName: undefined, 
-            routeDesc: undefined, 
+            name: null, 
+            description: null, 
             dots: [],
             lines: [],
             mapLines: [],
@@ -109,16 +117,61 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             }
         });
     }
+    
+    async componentDidMount() {
+        const query = new URLSearchParams(window.location.search);
+        if(!query.has("edit")) return;
+        const id = parseInt(query.get("edit")!);
+        
+        this.setState({isEditMode: true, editId: id});
+
+        const route = await getRouteById(id);
+        console.log(route);
+
+        const { map } = this.props;
+        const { dots, markers, lines, mapLines } = this.state;
+        let { lastId, lastLineId } = this.state;
+
+        let routeDots = JSON.parse(route.dots);
+        if(!routeDots[0].PositionX) routeDots = JSON.parse(routeDots);
+        console.log(routeDots);
+        for(const dot of routeDots) {
+            const marker = L
+            .marker([dot.PositionX, dot.PositionY])
+            .bindPopup(L
+                .popup()
+                .setContent(`<h1>${dot.name}</h1><p>${dot.desc || "Без описания"}</p>`))
+            .addTo(map);
+            markers.push(marker);
+            const stateDot = {...dot};
+            dots.push(stateDot);
+            
+            lastId++;
+        }
+        map.setView([routeDots[0].PositionX, routeDots[0].PositionY], map.getZoom());
+
+        let routeLines = JSON.parse(route.lines);
+        if(!routeLines[0].id) routeLines = JSON.parse(routeLines);
+        for(const line of routeLines) {
+            const polyline = L.polyline(line.latlngs, {color: "blue", weight: 5}).addTo(map);
+            const stateLine = {...line};
+            lines.push(stateLine);
+            mapLines.push({id: lastLineId, line: polyline});
+            lastLineId++;
+        }
+        const { name, description } = route;
+        this.setState({name, description, dots, markers, lines, mapLines, lastId, lastLineId});
+    }
 
     render() {
-        const { tracingInfo, buildingLineInfo, searchingInfo } = this.state;
-        return <div>
+        const { name, description, tracingInfo, buildingLineInfo, searchingInfo, isEditMode } = this.state;
+        return <div className="bg-dark text-light">
                 <input className="form-control" type="text" name="searchquery" placeholder="Текст поиска"
                     onChange={e => {
                         searchingInfo.searchQuery = e.target.value;
                         this.setState({searchingInfo});
                     }} value={searchingInfo.searchQuery}/>
-                <button onClick={e => this.handleSearch(e)}>Найти точку</button>
+                <button onClick={e => this.handleSearch(e)} className="constructor-button">Найти точку</button>
                 {buildingLineInfo.buildingNow 
                 ? <div>
                     <h2 className="text-light">
@@ -126,7 +179,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                             ? "поставить первую точку линии"
                             : "продолжить проводить линию"}
                     </h2>
-                    <button onClick={e=>this.endDrawingLine(e)}>Закончить проводить линию</button>
+                    <button onClick={e=>this.endDrawingLine(e)} className="constructor-button">Закончить проводить линию</button>
                 </div>
                 : tracingInfo.tracingNow
                     ? <div>
@@ -136,7 +189,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                             tracingInfo.startDotId = NaN;
                             tracingInfo.endDotId = NaN;
                             this.setState({tracingInfo: tracingInfo});
-                        }}>Отмена</button>
+                        }} className="constructor-button">Отмена</button>
                         <div className="form-check form-switch form-check-inline">
                             <input className="form-check-input" type="radio" name="mode" 
                                 onClick={()=>{
@@ -150,7 +203,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                                 onClick={()=>{
                                     tracingInfo.mode = "driving-car";
                                     this.setState({tracingInfo: tracingInfo});
-                                }}/>
+                                }} />
                             <label className="form-check-label text-light" htmlFor="mode">На машине</label>
                         </div>
                         <div className="form-group mx-sm-3">
@@ -169,16 +222,17 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                                     this.setState({tracingInfo: tracingInfo});
                                 }}/>
                         </div>
-                        <button onClick={e => this.handleTracing(e)}>Соединить точки</button>
+                        <button onClick={e => this.handleTracing(e)} className="constructor-button">
+                            Соединить точки</button>
                     </div>
                     : <div>
                         {this.state.dots.length > 1
-                            && <button onClick={e => {
+                            && <button className="constructor-button" onClick={e => {
                                 e.preventDefault();
                                 this.setState({tracingInfo: {...this.state.tracingInfo, tracingNow: true}});
                                 }}>Проложить маршрут между двумя точками</button>
                             }
-                        <button onClick={e=>{
+                        <button className="constructor-button" onClick={e=>{
                             e.preventDefault();
                             buildingLineInfo.buildingNow = true;
                             this.setState({buildingLineInfo: buildingLineInfo});
@@ -187,7 +241,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                 }
                 {this.state.browsingLines
                     ? <div>
-                        <button onClick={e=>{
+                        <button className="constructor-button" onClick={e=>{
                             e.preventDefault();
                             this.setState({browsingLines: false})
                         }}>
@@ -199,7 +253,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         onLineDeleted={this.handleLineDelete}
                          /></div>
                     : <div>
-                        <button onClick={e => {e.preventDefault();
+                        <button className="constructor-button" onClick={e => {e.preventDefault();
                         this.setState({browsingLines: true});}}>
                             Просмотреть поставленные линии
                             </button>
@@ -214,13 +268,16 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                     : <div>
                         <div className="form-group">
                         <h3 className="text-light">Информация о маршруте</h3>
-                        <input type="text" name="routeName" className="form-control"
+                        <input type="text" name="routeName"  className="form-control" value={name || ""}
                             placeholder="Название маршрута" onChange={e=>this.handleInfoChange(e, "routeName")} />
-                        <input type="text" name="routeDesc" className="form-control"
+                        <input type="text" name="routeDesc" className="form-control" value={description || ""} 
                             placeholder="Описание маршрута" onChange={e=>this.handleInfoChange(e, "routeDesc")} />
                         </div>
                         <div className="form-group">
-                            <button onClick={e=>this.onSubmit(e)}>Отправить маршрут на обработку</button>
+                            <button className="constructor-button" onClick={e=>this.onSubmit(e)}>
+                                Отправить маршрут на обработку</button>
+                            {isEditMode && <button className="btn btn-outline-danger" style={{width: '100%'}}
+                                onClick={e=>this.onDelete(e)}>Удалить маршрут</button>}
                         </div>
                     </div>}
             </div>
@@ -231,9 +288,9 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
 
         const { value } = e.target;
         if(type === "routeName"){
-            this.setState({routeName: value});
+            this.setState({name: value});
         } else if(type === "routeDesc") {
-            this.setState({routeDesc: value});
+            this.setState({description: value});
         } else console.log('err');
     }
 
@@ -298,39 +355,60 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         lastId--;
 
         this.setState({lastId: lastId, dots: dots, markers: markers, tracingInfo: tracingInfo});
-        
     }
 
     handleDotUpdate = (id: number, field: string, value: string) => {
         const dots = this.state.dots;
         for(const obj of dots){
             if(obj.id === id){
+                console.log(`changing ${field} to ${value}`);
                 if(field === "name") obj.name = value;
-                else if(field ===" desc") obj.desc = value;
+                else if(field === "desc") obj.desc = value;
                 else if(field === "link") obj.link = value;
                 else return;            
                 break;
             }
         }
+        
         this.setState({dots: dots});
     }
     //TODO fix
     onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        const { routeName, routeDesc, dots, lines } = this.state;
+        const { name, description, dots, lines, isEditMode, editId } = this.state;
         const object = {
-            routeName,
-            routeDesc,
+            name,
+            description,
             dots,
             lines
         };
+        console.log(dots);
         const json = JSON.stringify(object);
-        const request = get('/add_route', {route: json}).then(response => {
-            alert(response);
-        });
-        console.log(request);
-        await request;
+        //console.log(json);
+        if(isEditMode){
+            const request = get('http://localhost:8081/edit_route', {route: json, id: editId})
+            .then(response => {
+                alert('Маршрут успешно сохранён!');
+            }).catch(err => {
+                alert('Произошла ошибка при попытке сохранить маршрут. Попробуйте позже.');
+            });
+            await request;
+        } else {
+            const request = get('http://localhost:8081/add_route', {route: json})
+            .then(response => {
+                // eslint-disable-next-line no-restricted-globals
+                let answer = confirm("Маршрут успешно сохранён! Перейти на страницу со всеми маршрутами?");
+                if (answer) window.location.href = "/routes";
+                else {
+                    this.setState({isEditMode: true, editId: response});
+                }
+            }).catch(err => {
+                alert('Произошла ошибка при попытке сохранить маршрут. Попробуйте позже. При перезагрузке страницы изменения пропадут.');
+            });
+
+            await request;
+        }
     }
 
     handleSearch = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -429,5 +507,21 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             mapLines,
             buildingLineInfo,
             lines});
+    }
+
+    onDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+        
+        const { name, editId } = this.state;
+        // eslint-disable-next-line no-restricted-globals
+        if(!confirm(`Вы уверены, что хотите удалить маршрут "${name}"?`)) return;
+
+        const request = get('http://localhost:8081/delete_route', {id: editId})
+            .then(response => {
+                alert('Маршрут удалён.');
+            }).catch(err => {
+                alert('Произошла ошибка при попытке удалить маршрут. Попробуйте позже')
+            });
+        await request;
     }
 }

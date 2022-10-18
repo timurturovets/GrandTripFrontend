@@ -1,21 +1,31 @@
 import React, { ReactNode, Component } from 'react'
-import { Navigate } from 'react-router'
 import { AuthContextConsumer } from './AuthContext'
 
 interface AuthComponentProps {
-    role?: string
+    role?: string | string[]
     children: ReactNode | ReactNode[]
 }
 export default class AuthComponent extends Component<AuthComponentProps, any> {
     render() {
         return <AuthContextConsumer>
             {({isAuthenticated, role}) =>
-                isAuthenticated && (!role || role === this.props.role)
+                isAuthenticated 
+                && (
+                    !this.props.role 
+                    || this.props.role === role 
+                    || this.props.role.indexOf(role)!==-1
+                    )
                     ? this.props.children
-                    : function(){
-                        alert('У вас нет доступа к этой странице.');
-                        return <Navigate to="/" />
-                    }()
+                    : function(r){
+                        if(r) {
+                            alert('У вас нет доступа к этой странице.');
+                            window.location.href="/";
+                            return null;
+                        } else {
+                            window.location.href="/account";
+                            return null;
+                        }
+                    }(this.props.role)
             }
         </AuthContextConsumer>
     }
