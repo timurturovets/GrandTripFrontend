@@ -5,7 +5,10 @@ const request = async (url: string, method: string, params?: any) : Promise<any>
 
     if(method === "GET") {
         url += "?" + (new URLSearchParams(params)).toString()
-    } else options.body = JSON.stringify(params);
+    } else {
+        options.headers = { "Content-Type": "application/json" };
+        options.body = JSON.stringify(params);
+    }
 
     const response = await fetch(url, options);
     return await response.json()

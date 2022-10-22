@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import L from 'leaflet'
 import RouteInfo from '../Components/RouteInfo'
 import RouteInformation from '../Interfaces/RouteInformation'
@@ -7,7 +8,14 @@ import Line from '../Interfaces/Line'
 import getPointBySearch from '../Functions/getPointBySearch'
 import { getRouteById } from '../Functions/getRouteById'
 
-type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature'
+type Theme = 'none' 
+| 'modern-world' 
+| 'history' 
+| 'islands' 
+| 'films' 
+| 'literature' 
+| 'activities' 
+|  'gastronomy'
 type Season = 'none' | 'summer' | 'winter'
 type Time = "none" | number
 
@@ -81,29 +89,36 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                 <div className="form-check-inline form-switch m-2">
                     <input id="season-radio1" className="form-check-input" 
                     type="radio" name="SEASON" value="summer" checked={season === "summer"}
-                        onChange={e => this.handleSeasonChange(e, "summer")} />
+                        onChange={e => this.handleSeasonChange("summer")} />
                     <label className="form-check-label">Лето</label>
                 </div>
                 <div className="form-check-inline form-switch m-2">
                     <input id="season-radio2" className=" form-check-input" 
                     type="radio" name="SEASON" value="winter" checked={season === "winter"}
-                        onChange={e => this.handleSeasonChange(e, "winter")} />
+                        onChange={e => this.handleSeasonChange("winter")} />
                     <label className="form-check-label ">Зима</label>
                 </div>
+                {/*<select onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
+                    <option value="none" selected={season==="none"}>Сбросить</option>
+                    <option value="summer" selected={season==="summer"}>Лето</option>
+                    <option value="winter" selected={season==="winter"}>Зима</option>
+                </select>*/}
                 <select onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
-                    <option value="none">Сбросить</option>
+                    <option value="none">Выбрать все</option>
                     <option value="modern-world">Современный мир</option>
                     <option value="history">История</option>
-                    <option value="islands">Острова</option>
+                    <option value="islands">Острова и парки</option>
                     <option value="films">Фильмы</option>
                     <option value="literature">Литературный дворик</option>
+                    <option value="activities">Физические активности</option>
+                    <option value="gastronomy">Гастрономия</option>
                 </select>
                 <div className="duration-input-wrapper">
                     <div className="form-group">
-                        <input type="number" id="time-input" min={5} value="5"
-                            style={{width: "35%"}}
+                        <input type="number" id="time-input" min={1} max={24}
+                            style={{width: "20%"}}
                             onChange={e=>this.handleTimeChange(e)} />
-                        <label>Длительность маршрута (в минутах)</label>
+                        <label> Длительность маршрута</label>
                     </div>
                 </div>
                 <button onClick={e=>this.handleSubmit(e)} className="btn btn-success">
@@ -112,6 +127,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             </div>
 
             <div id="routes">
+                <Link to="/constructor" className="btn btn-outline-success" style={{width: "100%"}}>
+                    Создать новый маршрут</Link>
                 {clicked
                     ? <p>Нажмите на кнопку "ОК", чтобы отобразить маршруты</p>
                     : isLoading
@@ -136,10 +153,10 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
 
         const { criteries } = this.state;
         const { theme, season } = criteries;
-        if(theme === "none" || season === "none") {
+        /*if(theme === "none" || season === "none") {
             alert('Вы не выбрали все опции')
             return;
-        }
+        }*/
         
         const filters = JSON.stringify({
             start: 0,
@@ -153,8 +170,10 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                 season
             ]
         });
-
-        await fetch(`http://localhost:8081/get_routes_by_filters?filters=${filters}`).then(async res=>{
+        console.log(filters);
+        console.log(process.env.REACT_APP_API_URL);
+        this.setState({routes: {...this.state.routes, isLoading: true}});
+        await fetch(`${process.env.REACT_APP_API_URL}/get_routes_by_filters?filters=${filters}`).then(async res=>{
             const ids = JSON.parse(await res.text()).ids;
             console.log(ids);
             const routeInformations: RouteInformation[] = []
@@ -172,7 +191,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             this.setState({
                 routes: {
                     ...this.state.routes,
-                    result: routeInformations
+                    result: routeInformations,
+                    isLoading: false
                 }
             });
             const container = document.getElementById('main-container')!;   
@@ -200,6 +220,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         }
         let route: RouteInformation = result.find(r => r.id === routeId)!;
         console.log(route);
+        if(!route.dots[0]?.PositionX) route.dots = JSON.parse(route.dots as unknown as string);
+        if(!route.lines[0]?.latlngs) route.lines = JSON.parse(route.lines as unknown as string);
         for (const dot of route.dots) {
             console.log(dot);
             let newMarker = L.marker([dot.PositionX, dot.PositionY]);
@@ -210,7 +232,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         }
         map!.setView([route.dots[0].PositionX, route.dots[0].PositionY], zoom > 13 ? zoom : 13);
         console.log(route.lines);
-        if(!route.lines[0].id) route.lines = JSON.parse(route.lines as unknown as string);
+        if(!route.lines[0]?.id) route.lines = JSON.parse(route.lines as unknown as string);
         for (const line of route.lines) {
             let realLatLngs: {lat: number, lng: number}[] = [];
             for(let latlng of line.latlngs) {
@@ -233,7 +255,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         });
     }
 
-    handleSeasonChange = (e: React.ChangeEvent<HTMLInputElement>, season: Season) : void => {
+    handleSeasonChange = (season: Season) : void => {
         const { criteries } = this.state;
         this.setState({
             criteries: {

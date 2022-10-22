@@ -6,7 +6,7 @@ import DotsList from './DotsList'
 import LinesList from './LinesList'
 import { RouteMode } from '../Interfaces/RouteMode'
 import { orsAccessToken } from '../Constants'
-import { get } from '../Functions/requests'
+import { get, post } from '../Functions/requests'
 import getPointBySearch from '../Functions/getPointBySearch'
 import { getRouteById } from '../Functions/getRouteById'
 
@@ -20,6 +20,9 @@ interface MapLine {
 }
 
 type Nullable<T> = T | null
+type Theme = 'none' | 'modern-world' | 'history' | 'islands-parks' | 'films' | 'literature' | 'activities'
+type Season = 'none' | 'summer' | 'winter'
+//type Time = "none" | number
 
 interface ConstructorToolbarState {
     isEditMode: boolean,
@@ -27,6 +30,8 @@ interface ConstructorToolbarState {
     browsingLines: boolean,
     name: Nullable<string>,
     description: Nullable<string>,
+    theme: Nullable<Theme>,
+    season: Nullable<Season>,
     dots: Dot[],
     lines: Line[],
     mapLines: MapLine[],
@@ -60,6 +65,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             browsingLines: false,
             name: null, 
             description: null, 
+            theme: null,
+            season:null,
             dots: [],
             lines: [],
             mapLines: [],
@@ -133,7 +140,10 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         let { lastId, lastLineId } = this.state;
 
         let routeDots = JSON.parse(route.dots);
-        if(!routeDots[0].PositionX) routeDots = JSON.parse(routeDots);
+        while(!routeDots[0].PositionX) {
+            routeDots = JSON.parse(routeDots);
+        }
+        //if(!routeDots[0].PositionX) routeDots = JSON.parse(routeDots);
         console.log(routeDots);
         for(const dot of routeDots) {
             const marker = L
@@ -151,7 +161,9 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         map.setView([routeDots[0].PositionX, routeDots[0].PositionY], map.getZoom());
 
         let routeLines = JSON.parse(route.lines);
-        if(!routeLines[0].id) routeLines = JSON.parse(routeLines);
+        while(!routeLines[0].id) {
+            routeLines = JSON.parse(routeLines);
+        }
         for(const line of routeLines) {
             const polyline = L.polyline(line.latlngs, {color: "blue", weight: 5}).addTo(map);
             const stateLine = {...line};
@@ -160,11 +172,14 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             lastLineId++;
         }
         const { name, description } = route;
-        this.setState({name, description, dots, markers, lines, mapLines, lastId, lastLineId});
+        const theme = route.theme?.value;
+        const season = route.season?.value
+        this.setState({name, description, dots, theme, season, markers, lines, mapLines, lastId, lastLineId});
     }
 
     render() {
-        const { name, description, tracingInfo, buildingLineInfo, searchingInfo, isEditMode } = this.state;
+        const { name, description, theme, season,
+            tracingInfo, buildingLineInfo, searchingInfo, isEditMode } = this.state;
         return <div className="bg-dark text-light">
                 <input className="form-control" type="text" name="searchquery" placeholder="Текст поиска"
                     onChange={e => {
@@ -274,6 +289,29 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                             placeholder="Описание маршрута" onChange={e=>this.handleInfoChange(e, "routeDesc")} />
                         </div>
                         <div className="form-group">
+                        <h3 className="text-light">Добавить тематику</h3>
+                        <select onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
+                            <option value="none" selected={theme==="none"}>Сбросить</option>
+                            <option value="modern-world" selected={theme==="modern-world"}>
+                                Современный мир</option>
+                            <option value="history" selected={theme==="history"}>История</option>
+                            <option value="islands-parks" selected={theme==="islands-parks"}>Острова и парки</option>
+                            <option value="films" selected={theme==="films"}>Фильмы</option>
+                            <option value="literature" selected={theme==="literature"}>
+                                Литературный дворик</option>
+                            <option value="activities" selected={theme==="activities"}>
+                            Физические активности</option>
+                        </select>
+                        </div>
+                        <div className="form-group">
+                            <h3 className="text-light">Выбрать сезон</h3>
+                        <select onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
+                            <option value="none" selected={season==="none"}>Сбросить</option>
+                            <option value="summer" selected={season==="summer"}>Лето</option>
+                            <option value="winter" selected={season==="winter"}>Зима</option>
+                        </select>
+                        </div>
+                        <div className="form-group">
                             <button className="constructor-button" onClick={e=>this.onSubmit(e)}>
                                 Отправить маршрут на обработку</button>
                             {isEditMode && <button className="btn btn-outline-danger" style={{width: '100%'}}
@@ -281,6 +319,14 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         </div>
                     </div>}
             </div>
+    }
+
+    handleThemeChange = (theme: Theme) => {
+        this.setState({theme});
+    }
+
+    handleSeasonChange = (season: Season) => {
+        this.setState({season});
     }
 
     handleInfoChange = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
@@ -320,8 +366,9 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         console.log(mapLine);
         const what = mapLine.line.remove();
         console.log(what);
-        /*lines.splice(lines.indexOf(line), 1);
-        mapLines.splice(mapLines.indexOf(mapLine), 1);*/
+        lines.splice(lines.indexOf(line), 1);
+        mapLines.splice(mapLines.indexOf(mapLine), 1);
+        alert('Сохраните маршрут и перезагрузите страницу, чтобы линия пропала с карты');
         this.setState({lines, mapLines});    
     }
 
@@ -376,26 +423,35 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
     onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        const { name, description, dots, lines, isEditMode, editId } = this.state;
+        const { name, description, theme, season, dots, lines, isEditMode, editId } = this.state;
         const object = {
             name,
             description,
             dots,
-            lines
+            lines,
+            theme,
+            season
         };
         console.log(dots);
         const json = JSON.stringify(object);
-        //console.log(json);
-        if(isEditMode){
-            const request = get('http://localhost:8081/edit_route', {route: json, id: editId})
+        console.log(json);
+        if(isEditMode) {
+            /*const request = get(`${process.env.REACT_APP_API_URL}/edit_route`, {route: json, id: editId})
             .then(response => {
                 alert('Маршрут успешно сохранён!');
             }).catch(err => {
                 alert('Произошла ошибка при попытке сохранить маршрут. Попробуйте позже.');
             });
+            await request;*/
+            const request = post(`${process.env.REACT_APP_API_URL}/edit_route_post`, {route: object, id: editId})
+            .then(response =>{
+                alert('Маршрут успешно сохранён');
+            }).catch(err => {
+                alert('Произошла ошибка при попытке сохранить маршрут. Попробуйте позже.');
+            });
             await request;
         } else {
-            const request = get('http://localhost:8081/add_route', {route: json})
+            /*const request = get(`${process.env.REACT_APP_API_URL}/add_route`, {route: json})
             .then(response => {
                 // eslint-disable-next-line no-restricted-globals
                 let answer = confirm("Маршрут успешно сохранён! Перейти на страницу со всеми маршрутами?");
@@ -405,6 +461,19 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                 }
             }).catch(err => {
                 alert('Произошла ошибка при попытке сохранить маршрут. Попробуйте позже. При перезагрузке страницы изменения пропадут.');
+            });
+
+            await request;*/
+            const request = post(`${process.env.REACT_APP_API_URL}/add_route_post`, 
+            {route: object, id: editId}).then(async response => {
+                //eslint-disable-next-line no-restricted-globals
+                let answer = confirm("Маршрут успешно сохранён! Перейти на страницу со всеми маршрутами?");
+                if (answer) window.location.href = "/routes";
+                else {
+                    this.setState({isEditMode: true, editId: response});
+                }
+            }).catch(err => {
+                alert(`Произошла ошибка при попытке сохранить маршрут. Попробуйте позже. При перезагрузке страницы изменения пропадут.`);
             });
 
             await request;
@@ -516,7 +585,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         // eslint-disable-next-line no-restricted-globals
         if(!confirm(`Вы уверены, что хотите удалить маршрут "${name}"?`)) return;
 
-        const request = get('http://localhost:8081/delete_route', {id: editId})
+        const request = get(`${process.env.REACT_APP_API_URL}/delete_route`, {id: editId})
             .then(response => {
                 alert('Маршрут удалён.');
             }).catch(err => {

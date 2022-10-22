@@ -3,9 +3,11 @@ import React, { Component } from 'react'
 import Layout from './Layout'
 import HomePage from './Pages/HomePage'
 import RoutesPage from './Pages/RoutesPage'
+import NewRoutesPage from './Pages/NewRoutesPage'
 import SupportPage from './Pages/SupportPage'
 import ConstructorPage from './Pages/ConstructorPage'
 import AccountPage from './Pages/AccountPage'
+import BrowseRoutesPage from './Pages/BrowseRoutesPage'
 
 export default class App extends Component {
     render() {
@@ -14,6 +16,8 @@ export default class App extends Component {
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/routes" element={<RoutesPage />} />
+                    <Route path="/newroutes" element={<NewRoutesPage />} />
+                    <Route path="/browseroutes" element={<BrowseRoutesPage />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/constructor" element={<ConstructorPage />} />
                     <Route path="/account" element={<AccountPage />} />

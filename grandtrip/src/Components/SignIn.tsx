@@ -37,7 +37,7 @@ export default class SignIn extends Component<any, SignInState> {
         e.preventDefault();
 
         const { clickedLogin, userName, password } = this.state;
-        const url = `http://localhost:8081/${clickedLogin ? "sign_in" : "sign_up"}?`
+        const url = `${process.env.REACT_APP_API_URL}/${clickedLogin ? "sign_in" : "sign_up"}?`
         +`userName=${userName}&password=${password}`;
         
         console.log(`Url: ${url}`);

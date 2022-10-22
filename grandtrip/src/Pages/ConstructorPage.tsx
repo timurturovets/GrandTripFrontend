@@ -20,7 +20,6 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
     render() {
         const map = this.state.map;
 
-        const isEditMode: boolean = new URLSearchParams(window.location.search).has('edit');
         /*return <AuthComponent role={isEditMode ? "Editor" : undefined}>*/
         return <div>           
                 <div id="main-container" style={{height: "100%", width: "100%"}}>

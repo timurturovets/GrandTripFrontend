@@ -1,82 +1,72 @@
 import React, { Component } from 'react'
-
+import { Link } from 'react-router-dom'
 export default class HomePage extends Component {
     render() {
-        return <div className="d-flex flex-column">
-        <div className="card text-center m-lg-5">
-            <img src="wwwroot/sobor.png" className="card-img-top" alt="" />
-            {/*<h3 className="card-header">1. Что сюда написать?</h3>
+        return <div className="d-flex flex-row">
+        {/*<div className="card text-center m-lg-5">
+            <img src="wwwroot/bg-spb1.jpg" className="card-img-top" alt="" />
+            <h3 className="card-header">1. Что сюда написать?</h3>
             <p className="card-text">
                 2. А сюда?
-    </p>*/}
-        </div>
-        <div>
-            <div className="d-flex flex-row">
-                <div style={{borderRight: "3px solid black", flex: 1}}>
-                    <div className="card text-center m-lg-5">
-                        <img src="wwwroot/sobor.png" className="card-img-top" alt=""/>
-
-                        <h3 className="card-header">Для кого?</h3>
-                        <div className="card-body">
-                            <p className="card-text">
-                                Этот сайт для Вас, если Вы уже осмотрели все наиболее известные места в Санкт-Петербурге и не знаете, куда сходить, либо Вы только приехали в город и хотите с ним познакомиться.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div style={{flex: "1"}}></div>
-            </div>
-            <div className="d-flex flex-row">
-                <div style={{borderRight: "3px solid black", flex: 1}}></div>
+            </p>
+        </div>*/}
+        <div className="d-flex flex-row">
+            <div style={{flex: 1}} className="d-flex flex-column">
                 <div style={{flex: 1}}>
                     <div className="card text-center m-lg-5">
-                        <img src="wwwroot/sobor.png" className="card-img-top" alt=""/>
+                        <img src="wwwroot/bg-spb2.jpg" className="card-img-top" alt=""/>
 
-                        <h3 className="card-header">Удивительные возможности</h3>
+                        <h2 className="card-header display-2">Для кого?</h2>
                         <div className="card-body">
-                            <p className="card-text">
-                                Подберем маршрут в зависимости от того, где Вы, когда Вы и сколько времени Вы готовы уделить.
-                            </p>
-                            <a className="btn btn-primary" href="routes.html">Ознакомиться с маршрутами</a>
+                            <h4 className="card-text">
+                            Если вы уже обошли все достопримечательности города или только приехали, то  этот сайт именно для вас.
+                            </h4>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className="d-flex flex-row">
-                <div style={{borderRight: "3px solid black", flex: 1}}>
-                    <div className="card text-center m-lg-5">
-                        <img src="wwwroot/sobor.png" className="card-img-top" alt=""/>
-
-                        <h3 className="card-header">Чётко и ясно</h3>
-                        <div className="card-body">
-                            <p className="card-text">
-                                Узнайте больше о каждом пункте маршрута. Подробная информация о локации и интересные факты.
-                            </p>
-
-                            <a className="btn btn-primary" href="random.html">Открыть случайный маршрут</a>
-                        </div>
-                    </div>
-                </div>
-                <div style={{flex: 1}}></div>
-            </div>
-            <div className="d-flex flex-row">
-                <div style={{borderRight: "3px solid black", flex: 1}}></div>
                 <div style={{flex: 1}}>
                     <div className="card text-center m-lg-5">
-                        <img src="wwwroot/sobor.png" className="card-img-top" alt=""/>
+                        <img src="wwwroot/bg-kzn1.jpg" className="card-img-top" alt=""/>
 
-                        <h3 className="card-header">Не оставим в беде!</h3>
+                        <h3 className="card-header display-3">Удивительные возможности</h3>
                         <div className="card-body">
-                            <p className="card-text">
-                                У нашего сайта отличная страница поддержки, на которой вы можете прочитать некоторые инструкции, найти ответы на самые частозадаваемые вопросы, а так же задать их в нашем Telegram-боте, если вдруг вы не нашли ответ в разделе частозадаваемых вопросов.
-                            </p>
-
-                            <a href="support.html" className="btn btn-primary">Страница поддержки</a>
+                            <h4 className="card-text">
+                            С лёгкостью найдёте интересные (уникальные) маршруты по городу, учитывая ваши интересы и возможности
+                            </h4>
+                            <Link to="/routes" className="btn btn-primary">Ознакомиться с маршрутами</Link>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div style={{flex: 1}} className="d-flex flex-column">
+                    <div style={{flex: 1}} className="card text-center m-lg-5">
+                        <img src="wwwroot/bg-spb3.jpg" className="card-img-top" alt=""/>
+
+                        <h3 className="card-header display-3">Чётко и ясно</h3>
+                        <div className="card-body">
+                            <h4 className="card-text">
+                            Вы можете узнать больше о каждом маршруте благодаря подробным, уникальным описаниям и интересным фактам
+                            </h4>
+
+                            <Link className="btn btn-primary" to="/">Открыть случайный маршрут</Link>
+                        </div>
+                    </div>
+
+                <div style={{flex: 1}}>
+                    <div className="card text-center m-lg-5">
+                        <img src="wwwroot/bg-kzn2.jpg" className="card-img-top" alt=""/>
+
+                        <h3 className="card-header display-3">Не оставим в беде!</h3>
+                        <div className="card-body">
+                            <h4 className="card-text">
+                                Если у вас возникнут вопросы, перейдите на страницу с поддержкой. Вы сможете найти ответы на часто задаваемые вопросы или написать нам.
+                            </h4>
+                            <Link to="/support" className="btn btn-primary">Страница поддержки</Link>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
-    </div>
     }
 }
