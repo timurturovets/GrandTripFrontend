@@ -7,6 +7,7 @@ import Dot from '../Interfaces/Dot'
 import Line from '../Interfaces/Line'
 import getPointBySearch from '../Functions/getPointBySearch'
 import { getRouteById } from '../Functions/getRouteById'
+import createMap from '../Functions/createMap'
 
 type Theme = 'none' 
 | 'modern-world' 
@@ -279,7 +280,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
 
     handleShowMap = (center?: number[] | L.LatLng, zoom?: number) => {
         const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
-        // const height = window.innerHeight - document.getElementById('header')!.offsetHeight;
+
         const cont = document.getElementById("cont")!;
         const div = cont.children[0] as HTMLElement;
         div.style.width = `${cont.offsetWidth}px`;
@@ -287,32 +288,33 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         container.style.height = `${height}px`;
         container.style.width = `${cont.offsetWidth}px`;
 
-        const map = L.map('MAP-ID').setView([51.0, 0], 13);
+        const map = createMap("MAP-ID", "Санкт-Петербург")! 
         this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
-        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            maxZoom: 18,
-            id: 'mapbox/streets-v11',
-            tileSize: 512,
-            zoomOffset: -1,
-            accessToken: 'pk.eyJ1IjoiYnl0ZWljIiwiYSI6ImNrdHh6bTRzNTFnbmUyb21ycnRyNjlwbHYifQ.6nc0vKKePD5XLytqJBcjAA'
-        }).addTo(map);
 
-        !center 
-            ? getPointBySearch("Санкт-Петербург").then(response=>{
-                response.features.forEach((center: any, i: number, arr: any) => {
-                    var latlng = [center.center[1], center.center[0]] as L.LatLngExpression;
-                    if (i > 0) return;
+        center && map.setView(center as L.LatLngExpression, zoom || 13);
 
-                    map.setView(latlng, zoom || 13)
-                });
-            })
-            : map.setView(center as L.LatLngExpression, zoom || 13);
+        // заменяем украинский флаг флагом России
 
-        // удаляем украинский флаг
+        const си = document.createElement('img');
+        си.src = "wwwroot/Flag_of_Russia.svg";
+        си.width = 12;
+        си.height = 8;
 
-        let aCollection = [...document.getElementsByTagName('a')];
-        let a = aCollection.find(x=>x.getAttribute('title') === "A JavaScript library for interactive maps")!;
-        a.removeChild(a.children[0]);
+        let anchors = [...document.getElementsByTagName('a')];
+        let anchor = anchors.find(x=>x.getAttribute('title') === "A JavaScript library for interactive maps")!;
+        
+        const ю = anchor.children[0];
+
+        const Za = anchor as HTMLAnchorElement & {
+            Рос: <T extends Node>(node: T, child: Node | null) => T,    
+            дачаБудет: <T extends Node>(child: T) => T}
+
+        Za.Рос = anchor.insertBefore;
+        Za.дачаБудет = anchor.removeChild;
+
+        const выполнена = ю;
+
+        Za.Рос(си, ю);
+        Za.дачаБудет(выполнена);
     }
 }
