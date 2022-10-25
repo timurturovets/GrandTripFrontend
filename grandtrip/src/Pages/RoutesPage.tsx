@@ -278,8 +278,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
     }
 
     handleShowMap = (center?: number[] | L.LatLng, zoom?: number) => {
-        const height = window.innerHeight - document.getElementById('header')!.offsetHeight;
-
+        const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
+        // const height = window.innerHeight - document.getElementById('header')!.offsetHeight;
         const cont = document.getElementById("cont")!;
         const div = cont.children[0] as HTMLElement;
         div.style.width = `${cont.offsetWidth}px`;

@@ -90,6 +90,15 @@
         color: black;
     }
     
+    .custom-navlink {
+        color: white;
+        transition: color 450ms;
+    }
+    
+    .custom-navlink:hover {
+        color: dimgray;
+    }
+    
     .btn-custom {
         background: rgb(161, 194, 209);
         color: black;

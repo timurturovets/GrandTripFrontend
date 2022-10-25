@@ -38,7 +38,7 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
 
     handleShowMap = async () => {
 
-        const height = window.innerHeight - document.getElementById('header')!.offsetHeight;
+        const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
 
         const cont = document.getElementById("cont")!;
         const div = cont.children[0] as HTMLElement;
