@@ -5,7 +5,6 @@ import RouteInfo from '../Components/RouteInfo'
 import RouteInformation from '../Interfaces/RouteInformation'
 import Dot from '../Interfaces/Dot'
 import Line from '../Interfaces/Line'
-import getPointBySearch from '../Functions/getPointBySearch'
 import { getRouteById } from '../Functions/getRouteById'
 import createMap from '../Functions/createMap'
 
@@ -87,7 +86,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         return <div style={{textAlign: "left", display: "flex"}}>
         <div id="MySideNav" className="text-center" style={{zIndex: 100}}>
             <div className="bg-dark text-light p-3">
-                <div className="form-check-inline form-switch m-2">
+                {/*<div className="form-check-inline form-switch m-2">
                     <input id="season-radio1" className="form-check-input" 
                     type="radio" name="SEASON" value="summer" checked={season === "summer"}
                         onChange={e => this.handleSeasonChange("summer")} />
@@ -98,12 +97,12 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                     type="radio" name="SEASON" value="winter" checked={season === "winter"}
                         onChange={e => this.handleSeasonChange("winter")} />
                     <label className="form-check-label ">Зима</label>
-                </div>
-                {/*<select onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
+                </div>*/}
+                <select onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
                     <option value="none" selected={season==="none"}>Сбросить</option>
                     <option value="summer" selected={season==="summer"}>Лето</option>
                     <option value="winter" selected={season==="winter"}>Зима</option>
-                </select>*/}
+                </select>
                 <select onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
                     <option value="none">Выбрать все</option>
                     <option value="modern-world">Современный мир</option>

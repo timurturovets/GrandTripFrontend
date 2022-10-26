@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import React, { Component } from 'react'
 import Layout from './Layout'
 import HomePage from './Pages/HomePage'
+import NewHomePage from './Pages/NewHomePage'
 import RoutesPage from './Pages/RoutesPage'
 import NewRoutesPage from './Pages/NewRoutesPage'
 import SupportPage from './Pages/SupportPage'
@@ -15,6 +16,7 @@ export default class App extends Component {
             <Layout>
                 <Routes>
                     <Route path="/" element={<HomePage />} />
+                    <Route path="/newhome" element={<NewHomePage />} />
                     <Route path="/routes" element={<RoutesPage />} />
                     <Route path="/newroutes" element={<NewRoutesPage />} />
                     <Route path="/browseroutes" element={<BrowseRoutesPage />} />

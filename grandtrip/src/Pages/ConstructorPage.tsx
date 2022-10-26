@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
-import AuthComponent from '../AuthComponent'
+//import AuthComponent from '../AuthComponent'
 import L from 'leaflet'
 import ConstructorToolbar from '../Components/ConstructorToolbar'
-import getPointBySearch from '../Functions/getPointBySearch'
 import createMap from '../Functions/createMap'
 
 interface ConstructorPageState{

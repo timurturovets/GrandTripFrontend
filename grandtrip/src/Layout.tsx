@@ -50,7 +50,7 @@ export default class Layout extends Component<LayoutProps, any> {
                         </nav>
                     </header>
                 </div>
-                    <div id="cont" style={{display: 'flex'}}>
+                    <div id="cont" /*style={{display: 'flex'}}*/>
                         {children}    
                     </div>
         </div>

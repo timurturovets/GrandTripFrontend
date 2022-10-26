@@ -3,13 +3,6 @@ import { Link } from 'react-router-dom'
 export default class HomePage extends Component {
     render() {
         return <div className="d-flex flex-row">
-        {/*<div className="card text-center m-lg-5">
-            <img src="wwwroot/bg-spb1.jpg" className="card-img-top" alt="" />
-            <h3 className="card-header">1. Что сюда написать?</h3>
-            <p className="card-text">
-                2. А сюда?
-            </p>
-        </div>*/}
         <div className="d-flex flex-row">
             <div style={{flex: 1}} className="d-flex flex-column">
                 <div style={{flex: 1}}>

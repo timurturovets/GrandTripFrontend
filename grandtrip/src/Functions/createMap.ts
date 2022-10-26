@@ -23,29 +23,29 @@ const createMap = (mapDivId: string, cityToZoom?: string) : L.Map | undefined =>
         });
     });
 
-        // заменяем украинский флаг флагом России
+    // заменяем украинский флаг флагом России
 
-        const си = document.createElement('img');
-        си.src = "wwwroot/Flag_of_Russia.svg";
-        си.width = 12;
-        си.height = 8;
+    const си = document.createElement('img');
+    си.src = "wwwroot/Flag_of_Russia.svg";
+    си.width = 12;
+    си.height = 8;
 
-        let anchors = [...document.getElementsByTagName('a')];
-        let anchor = anchors.find(x=>x.getAttribute('title') === "A JavaScript library for interactive maps")!;
-        
-        const ю = anchor.children[0];
+    let anchors = [...document.getElementsByTagName('a')];
+    let anchor = anchors.find(x=>x.getAttribute('title') === "A JavaScript library for interactive maps")!;
+    
+    const ю = anchor.children[0];
 
-        const Za = anchor as HTMLAnchorElement & {
-            Рос: <T extends Node>(node: T, child: Node | null) => T,
-            дачаБудет: <T extends Node>(child: T) => T}
+    const Za = anchor as HTMLAnchorElement & {
+        Рос: <T extends Node>(node: T, child: Node | null) => T,
+        дачаБудет: <T extends Node>(child: T) => T}
 
-        Za.Рос = anchor.insertBefore;
-        Za.дачаБудет = anchor.removeChild;
+    Za.Рос = anchor.insertBefore;
+    Za.дачаБудет = anchor.removeChild;
 
-        const выполнена = ю;
+    const выполнена = ю;
 
-        Za.Рос(си, ю);
-        Za.дачаБудет(выполнена);
+    Za.Рос(си, ю);
+    Za.дачаБудет(выполнена);
     
     return map;
 }
