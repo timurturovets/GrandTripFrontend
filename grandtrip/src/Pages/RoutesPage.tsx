@@ -18,6 +18,7 @@ type Theme = 'none'
 |  'gastronomy'
 type Season = 'none' | 'summer' | 'winter'
 type Time = "none" | number
+type Nullable<T> = T | null
 
 interface RouteCriteries {
     theme: Theme,
@@ -35,6 +36,13 @@ interface MapInfo {
     mapLines: L.Polyline[]
 }
 
+interface ShareInfo {
+    isFromRef: boolean,
+    refId: Nullable<number>,
+    refRoute?: RouteInformation,
+    loading: boolean
+}
+
 interface StateRoutes {
     clicked: Boolean,
     isLoading: Boolean,
@@ -43,6 +51,7 @@ interface StateRoutes {
 }
 
 interface RoutesPageState {
+    shareInfo: ShareInfo,
     mapInfo: MapInfo,
     criteries: RouteCriteries
     routes: StateRoutes
@@ -54,7 +63,20 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
     constructor(props: any) {
         super(props);
         
+        const isFromRef = window.location.pathname === "/share" 
+            && new URLSearchParams(window.location.search).has('r');
+
+        let refId = isFromRef 
+            ? parseInt(new URLSearchParams(window.location.search).get('r')!) 
+            : null;
+
         this.state = {
+            shareInfo: {
+                isFromRef,
+                refId,
+                refRoute: undefined,
+                loading: true
+            },
             mapInfo: {
                 enabled: false,
                 map: undefined,
@@ -79,7 +101,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
     }
 
     render() {
-        const { mapInfo, criteries, routes } = this.state;
+        const { shareInfo, mapInfo, criteries, routes } = this.state;
+        const { isFromRef, refRoute, loading } = shareInfo;
         const { enabled } = mapInfo;
         const { season} = criteries;
         const { clicked, isLoading, result, error } = routes
@@ -129,14 +152,20 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             <div id="routes">
                 <Link to="/constructor" className="btn btn-outline-success" style={{width: "100%"}}>
                     Создать новый маршрут</Link>
-                {clicked
-                    ? <p>Нажмите на кнопку "ОК", чтобы отобразить маршруты</p>
-                    : isLoading
+                {isFromRef 
+                    ? loading || !refRoute
                         ? <p>Загрузка...</p>
                         : error
                             ? <p className="text-danger">{error}</p>
-                            : result.map(route => <div key={route.id}><RouteInfo info={route} 
-                            onRouteRendering={this.handleRouteRendering} /></div>)
+                            : <RouteInfo info={refRoute} onRouteRendering={this.handleRouteRendering} />
+                    : clicked
+                        ? <p>Нажмите на кнопку "ОК", чтобы отобразить маршруты</p>
+                        : isLoading
+                            ? <p>Загрузка...</p>
+                            : error
+                                ? <p className="text-danger">{error}</p>
+                                : result.map(route => <div key={route.id}><RouteInfo info={route} 
+                                onRouteRendering={this.handleRouteRendering} /></div>)
                 }
             </div>
         </div>
