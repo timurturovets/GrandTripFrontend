@@ -53,6 +53,5 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
         
         const map = createMap("mapDiv", "Санкт-Петербург");
         this.setState({map});
-
     }
 }
