@@ -14,7 +14,7 @@ export default class App extends Component {
     render() {
         navigator.geolocation.getCurrentPosition((p)=>{
             alert(`${p.coords.latitude} ${p.coords.longitude}`);
-        });
+        }, (e)=>console.log(e), {enableHighAccuracy: true});
         return <BrowserRouter>
             <Layout>
                 <Routes>
