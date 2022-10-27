@@ -12,6 +12,9 @@ import BrowseRoutesPage from './Pages/BrowseRoutesPage'
 
 export default class App extends Component {
     render() {
+        navigator.geolocation.watchPosition(p=>{
+            alert(`${p.coords.latitude} ${p.coords.longitude}`);
+        }, e => console.log(e), {enableHighAccuracy: true})
         return <BrowserRouter>
             <Layout>
                 <Routes>
