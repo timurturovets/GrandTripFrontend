@@ -12,6 +12,9 @@ import BrowseRoutesPage from './Pages/BrowseRoutesPage'
 
 export default class App extends Component {
     render() {
+        navigator.geolocation.getCurrentPosition((p)=>{
+            console.log(p);
+        });
         return <BrowserRouter>
             <Layout>
                 <Routes>
@@ -23,6 +26,7 @@ export default class App extends Component {
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/constructor" element={<ConstructorPage />} />
                     <Route path="/account" element={<AccountPage />} />
+                    <Route path="/share" element={<RoutesPage />} />
                 </Routes>
             </Layout>
         </BrowserRouter>
