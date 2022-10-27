@@ -13,7 +13,7 @@ import BrowseRoutesPage from './Pages/BrowseRoutesPage'
 export default class App extends Component {
     render() {
         navigator.geolocation.getCurrentPosition((p)=>{
-            console.log(p);
+            alert(`${p.coords.latitude} ${p.coords.longitude}`);
         });
         return <BrowserRouter>
             <Layout>
