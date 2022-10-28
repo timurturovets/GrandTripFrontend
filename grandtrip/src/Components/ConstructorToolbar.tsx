@@ -20,9 +20,9 @@ interface MapLine {
 }
 
 type Nullable<T> = T | null
-type Theme = 'none' | 'modern-world' | 'history' | 'islands-parks' | 'films' | 'literature' | 'activities'
+type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' 
+| 'activities' | 'gastronomy' | 'abiturients'
 type Season = 'none' | 'summer' | 'winter'
-//type Time = "none" | number
 
 interface ConstructorToolbarState {
     isEditMode: boolean,
@@ -278,9 +278,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         onDotUpdated={this.handleDotUpdate} />
                         </div>
                 }
-                {tracingInfo.tracingNow
-                    ? null
-                    : <div>
+                {!tracingInfo.tracingNow && <div>
                         <div className="form-group">
                         <h3 className="text-light">Информация о маршруте</h3>
                         <input type="text" name="routeName"  className="form-control" value={name || ""}
@@ -295,12 +293,16 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                             <option value="modern-world" selected={theme==="modern-world"}>
                                 Современный мир</option>
                             <option value="history" selected={theme==="history"}>История</option>
-                            <option value="islands-parks" selected={theme==="islands-parks"}>Острова и парки</option>
+                            <option value="islands-parks" selected={theme==="islands"}>Острова и парки</option>
                             <option value="films" selected={theme==="films"}>Фильмы</option>
                             <option value="literature" selected={theme==="literature"}>
                                 Литературный дворик</option>
                             <option value="activities" selected={theme==="activities"}>
                             Физические активности</option>
+                            <option value="gastronomy" selected={theme==="gastronomy"}>
+                            Гастрономия</option>
+                            <option value="abiturients" selected={theme==="abiturients"}>
+                            Абитуриентам</option>
                         </select>
                         </div>
                         <div className="form-group">

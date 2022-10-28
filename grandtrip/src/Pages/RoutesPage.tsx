@@ -8,14 +8,8 @@ import Line from '../Interfaces/Line'
 import { getRouteById } from '../Functions/getRouteById'
 import createMap from '../Functions/createMap'
 
-type Theme = 'none' 
-| 'modern-world' 
-| 'history' 
-| 'islands' 
-| 'films' 
-| 'literature' 
-| 'activities' 
-|  'gastronomy'
+type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' 
+| 'activities' | 'gastronomy' | 'abiturients'
 type Season = 'none' | 'summer' | 'winter'
 type Time = "none" | number
 type Nullable<T> = T | null
@@ -135,6 +129,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                     <option value="literature">Литературный дворик</option>
                     <option value="activities">Физические активности</option>
                     <option value="gastronomy">Гастрономия</option>
+                    <option value="abiturients">Абитуриентам</option>
                 </select>
                 <div className="duration-input-wrapper">
                     <div className="form-group">
@@ -320,29 +315,5 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
 
         center && map.setView(center as L.LatLngExpression, zoom || 13);
-
-        // заменяем украинский флаг флагом России
-
-        const си = document.createElement('img');
-        си.src = "wwwroot/Flag_of_Russia.svg";
-        си.width = 12;
-        си.height = 8;
-
-        let anchors = [...document.getElementsByTagName('a')];
-        let anchor = anchors.find(x=>x.getAttribute('title') === "A JavaScript library for interactive maps")!;
-        
-        const ю = anchor.children[0];
-
-        const Za = anchor as HTMLAnchorElement & {
-            Рос: <T extends Node>(node: T, child: Node | null) => T,    
-            дачаБудет: <T extends Node>(child: T) => T}
-
-        Za.Рос = anchor.insertBefore;
-        Za.дачаБудет = anchor.removeChild;
-
-        const выполнена = ю;
-
-        Za.Рос(си, ю);
-        Za.дачаБудет(выполнена);
     }
 }

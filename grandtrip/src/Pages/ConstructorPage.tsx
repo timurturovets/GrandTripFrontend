@@ -4,7 +4,7 @@ import L from 'leaflet'
 import ConstructorToolbar from '../Components/ConstructorToolbar'
 import createMap from '../Functions/createMap'
 
-interface ConstructorPageState{
+interface ConstructorPageState {
     map?: L.Map
 }
 
