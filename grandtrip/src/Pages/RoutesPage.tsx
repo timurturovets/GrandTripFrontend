@@ -95,10 +95,9 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
     }
 
     render() {
-        const { shareInfo, mapInfo, criteries, routes } = this.state;
+        const { shareInfo, mapInfo, routes } = this.state;
         const { isFromRef, refRoute, loading } = shareInfo;
         const { enabled } = mapInfo;
-        const { season} = criteries;
         const { clicked, isLoading, result, error } = routes
         return <div style={{textAlign: "left", display: "flex"}}>
         <div id="MySideNav" className="text-center" style={{zIndex: 100}}>
@@ -116,9 +115,9 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                     <label className="form-check-label ">Зима</label>
                 </div>*/}
                 <select onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
-                    <option value="none" selected={season==="none"}>Сбросить</option>
-                    <option value="summer" selected={season==="summer"}>Лето</option>
-                    <option value="winter" selected={season==="winter"}>Зима</option>
+                    <option value="none">Сбросить</option>
+                    <option value="summer">Лето</option>
+                    <option value="winter">Зима</option>
                 </select>
                 <select onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
                     <option value="none">Выбрать все</option>
@@ -244,8 +243,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         }
         let route: RouteInformation = result.find(r => r.id === routeId)!;
         console.log(route);
-        if(!route.dots[0]?.PositionX) route.dots = JSON.parse(route.dots as unknown as string);
-        if(!route.lines[0]?.latlngs) route.lines = JSON.parse(route.lines as unknown as string);
+        while(!(route.dots instanceof Array)) route.dots = JSON.parse(route.dots as unknown as string);
+        while(!(route.lines instanceof Array)) route.lines = JSON.parse(route.lines as unknown as string);
         for (const dot of route.dots) {
             console.log(dot);
             let newMarker = L.marker([dot.PositionX, dot.PositionY]);
@@ -256,13 +255,16 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         }
         map!.setView([route.dots[0].PositionX, route.dots[0].PositionY], zoom > 13 ? zoom : 13);
         console.log(route.lines);
-        if(!route.lines[0]?.id) route.lines = JSON.parse(route.lines as unknown as string);
         for (const line of route.lines) {
             let realLatLngs: {lat: number, lng: number}[] = [];
             for(let latlng of line.latlngs) {
                 const unwrapped = latlng as number[];
-                realLatLngs.push({lat: unwrapped[0], lng: unwrapped[1]});
+                realLatLngs.push({
+                    lat: unwrapped[0] || (latlng as any).lat, 
+                    lng: unwrapped[1] || (latlng as any).lng 
+                });
             }
+            console.log(realLatLngs);
             const l = L.polyline(realLatLngs, { color: 'rgba(255, 157, 18, 1)', weight: 5 })
                 .addTo(map!);
             mapLines.push(l);

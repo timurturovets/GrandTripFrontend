@@ -12,7 +12,7 @@ export default class Layout extends Component<LayoutProps, any> {
 
     render() {
         const { children } = this.props;
-        return <div>
+        return <div style={{height: '100%'}}>
                     <div> {/* id="header">*/}
                     <header>
                         {/*<nav className="navibar">
@@ -50,7 +50,7 @@ export default class Layout extends Component<LayoutProps, any> {
                         </nav>
                     </header>
                 </div>
-                    <div id="cont" /*style={{display: 'flex'}}*/>
+                    <div id="cont" style={{height: '100%'}}>
                         {children}    
                     </div>
         </div>

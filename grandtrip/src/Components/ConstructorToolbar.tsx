@@ -161,9 +161,10 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         map.setView([routeDots[0].PositionX, routeDots[0].PositionY], map.getZoom());
 
         let routeLines = JSON.parse(route.lines);
-        while(!routeLines[0].id) {
+        while(!(routeLines instanceof Array)) {
             routeLines = JSON.parse(routeLines);
-        }
+        } 
+        console.log(routeLines);
         for(const line of routeLines) {
             const polyline = L.polyline(line.latlngs, {color: "blue", weight: 5}).addTo(map);
             const stateLine = {...line};
@@ -439,6 +440,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         console.log(json);
         if(isEditMode) {
             /*const request = get(`${process.env.REACT_APP_API_URL}/edit_route`, {route: json, id: editId})
+            .then(async response => await response.json())
             .then(response => {
                 alert('Маршрут успешно сохранён!');
             }).catch(err => {
@@ -446,6 +448,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             });
             await request;*/
             const request = post(`${process.env.REACT_APP_API_URL}/edit_route_post`, {route: object, id: editId})
+            .then(async response => await response.json())
             .then(response =>{
                 alert('Маршрут успешно сохранён');
             }).catch(err => {
@@ -467,7 +470,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
 
             await request;*/
             const request = post(`${process.env.REACT_APP_API_URL}/add_route_post`, 
-            {route: object, id: editId}).then(async response => {
+            {route: object, id: editId}).then(async response => await response.json())
+            .then(async response => {
                 //eslint-disable-next-line no-restricted-globals
                 let answer = confirm("Маршрут успешно сохранён! Перейти на страницу со всеми маршрутами?");
                 if (answer) window.location.href = "/routes";

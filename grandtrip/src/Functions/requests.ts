@@ -10,8 +10,7 @@ const request = async (url: string, method: string, params?: any) : Promise<any>
         options.body = JSON.stringify(params);
     }
 
-    const response = await fetch(url, options);
-    return await response.json()
+    return await fetch(url, options);
 }
 
 export const get = (url: string, params?: any) : Promise<any> => request(url, "GET", params);
