@@ -5,7 +5,6 @@ import RouteInfo from '../Components/RouteInfo'
 import RouteInformation from '../Interfaces/RouteInformation'
 import Dot from '../Interfaces/Dot'
 import Line from '../Interfaces/Line'
-import { getRouteById } from '../Functions/getRouteById'
 import createMap from '../Functions/createMap'
 
 type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' 
@@ -197,10 +196,10 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         console.log(process.env.REACT_APP_API_URL);
         this.setState({routes: {...this.state.routes, isLoading: true}});
         await fetch(`${process.env.REACT_APP_API_URL}/get_routes_by_filters?filters=${filters}`).then(async res=>{
-            const ids = JSON.parse(await res.text()).ids;
-            console.log(ids);
-            const routeInformations: RouteInformation[] = []
-            for(const id of ids.map((i:any)=>i.id)) {
+            const routes = (await res.json()).routes;
+            const routeInformations: RouteInformation[] = routes as RouteInformation[];
+            
+            /*for(const id of ids.map((i:any)=>i.id)) {
                 await getRouteById(id).then(response => {
                     response.dots = JSON.parse(response.dots);
                     if(!response.dots[0].PositionX) response.dots = JSON.parse(response.dots);
@@ -209,7 +208,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                 }).catch(err=>{
                     console.log(err)
                 });
-            }
+            }*/
             console.log(routeInformations);
             this.setState({
                 routes: {
