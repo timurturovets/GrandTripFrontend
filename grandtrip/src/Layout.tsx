@@ -39,11 +39,14 @@ export default class Layout extends Component<LayoutProps, any> {
                                 <li className="nav-item active">
                                     <NavLink className="nav-link custom-navlink" to="/routes">Маршруты</NavLink>
                                 </li>
-                                <li className="nav-item">
+                                {/*<li className="nav-item">
                                     <NavLink className="nav-link" to="/support">Поддержка</NavLink>
-                                </li>
+                                </li>*/}
                                 <li className="nav-item">
                                     <NavLink className="nav-link custom-navlink" to="/account">Личный кабинет</NavLink>
+                                </li>
+                                <li className="nav-item">
+                                    <NavLink className="nav-link custom-navlink" to="/log">Логи</NavLink>
                                 </li>
                                 </ul>
                             </div>

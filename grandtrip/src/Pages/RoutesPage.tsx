@@ -197,7 +197,10 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         this.setState({routes: {...this.state.routes, isLoading: true}});
         await fetch(`${process.env.REACT_APP_API_URL}/get_routes_by_filters?filters=${filters}`).then(async res=>{
             const routes = (await res.json()).routes;
-            const routeInformations: RouteInformation[] = routes as RouteInformation[];
+            const routeInformations: RouteInformation[] = [];
+            for(const route of routes) {
+                if(route) routeInformations.push(route);
+            }
             
             /*for(const id of ids.map((i:any)=>i.id)) {
                 await getRouteById(id).then(response => {

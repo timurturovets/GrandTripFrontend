@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from 'react'
 import UserInformation from './Interfaces/UserInformation'
 import { statusSetter, userInfoSetter } from './Interfaces/authStatusSetter'
+import { getUserInfo } from './Functions/getUserInfo';
 
 const { Provider, Consumer }  = React.createContext<{
     isAuthenticated: boolean,
@@ -28,6 +29,7 @@ class AuthContextProvider extends Component<AuthContextProviderProps, AuthContex
     constructor(props: AuthContextProviderProps) {
         super(props);
 
+        const info = getUserInfo();
         this.state = {
             isAuthenticated: false,
             setStatus: (isAuthenticated, token) => {

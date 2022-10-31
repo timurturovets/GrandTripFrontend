@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from 'react'
 import { Navigate } from 'react-router'
 import { get, post } from '../Functions/requests'
+import { getUserInfo } from '../Functions/getUserInfo'
 import { AuthContextConsumer } from '../AuthContext'
 import { statusSetter, userInfoSetter } from '../Interfaces/authStatusSetter'
 import UserInformation from '../Interfaces/UserInformation'
@@ -101,6 +102,11 @@ export default class SignIn extends Component<any, SignInState> {
                 this.setState({successfullySigned: true})
             })
             .catch(err => console.log(err));
+            const info = await getUserInfo();
+            if(info) {
+                setInfo(info);
+                this.setState({successfullySigned: true});
+            } else this.setState({ errMessage: "Произошла неизвестная ошибка. Попробуйте снова." });
         }).catch(err=>console.log(err));
     }
 

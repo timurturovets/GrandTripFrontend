@@ -9,7 +9,7 @@ import SupportPage from './Pages/SupportPage'
 import ConstructorPage from './Pages/ConstructorPage'
 import AccountPage from './Pages/AccountPage'
 import BrowseRoutesPage from './Pages/BrowseRoutesPage'
-
+import LogPage from './Pages/LogPage'
 export default class App extends Component {
     render() {
         return <BrowserRouter>
@@ -24,6 +24,7 @@ export default class App extends Component {
                     <Route path="/constructor" element={<ConstructorPage />} />
                     <Route path="/account" element={<AccountPage />} />
                     <Route path="/share" element={<RoutesPage />} />
+                    <Route path="/log" element={<LogPage />} />
                 </Routes>
             </Layout>
         </BrowserRouter>
