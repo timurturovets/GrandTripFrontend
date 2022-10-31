@@ -179,8 +179,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
     }
 
     render() {
-        const { name, description, theme, season,
-            tracingInfo, buildingLineInfo, searchingInfo, isEditMode } = this.state;
+        const { name, description, tracingInfo, buildingLineInfo, searchingInfo, isEditMode } = this.state;
         return <div className="bg-dark text-light">
                 <input className="form-control" type="text" name="searchquery" placeholder="Текст поиска"
                     onChange={e => {
@@ -267,7 +266,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         lines={this.state.lines}
                         onLineHighlighted={this.handleLineHighlight}
                         onLineDeleted={this.handleLineDelete}
-                         /></div>
+                         />
+                        </div>
                     : <div>
                         <button className="constructor-button" onClick={e => {e.preventDefault();
                         this.setState({browsingLines: true});}}>
@@ -290,28 +290,28 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         <div className="form-group">
                         <h3 className="text-light">Добавить тематику</h3>
                         <select onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
-                            <option value="none" selected={theme==="none"}>Сбросить</option>
-                            <option value="modern-world" selected={theme==="modern-world"}>
+                            <option value="none">Сбросить</option>
+                            <option value="modern-world">
                                 Современный мир</option>
-                            <option value="history" selected={theme==="history"}>История</option>
-                            <option value="islands-parks" selected={theme==="islands"}>Острова и парки</option>
-                            <option value="films" selected={theme==="films"}>Фильмы</option>
-                            <option value="literature" selected={theme==="literature"}>
+                            <option value="history">История</option>
+                            <option value="islands">Острова и парки</option>
+                            <option value="films">Фильмы</option>
+                            <option value="literature">
                                 Литературный дворик</option>
-                            <option value="activities" selected={theme==="activities"}>
+                            <option value="activities">
                             Физические активности</option>
-                            <option value="gastronomy" selected={theme==="gastronomy"}>
+                            <option value="gastronomy">
                             Гастрономия</option>
-                            <option value="abiturients" selected={theme==="abiturients"}>
+                            <option value="abiturients">
                             Абитуриентам</option>
                         </select>
                         </div>
                         <div className="form-group">
                             <h3 className="text-light">Выбрать сезон</h3>
                         <select onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
-                            <option value="none" selected={season==="none"}>Сбросить</option>
-                            <option value="summer" selected={season==="summer"}>Лето</option>
-                            <option value="winter" selected={season==="winter"}>Зима</option>
+                            <option value="none">Сбросить</option>
+                            <option value="summer">Лето</option>
+                            <option value="winter">Зима</option>
                         </select>
                         </div>
                         <div className="form-group">

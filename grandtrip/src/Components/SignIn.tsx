@@ -1,13 +1,17 @@
 import React, { Component, ReactNode } from 'react'
-import { post } from '../Functions/requests'
+import { Navigate } from 'react-router'
+import { get, post } from '../Functions/requests'
 import { AuthContextConsumer } from '../AuthContext'
+import { statusSetter, userInfoSetter } from '../Interfaces/authStatusSetter'
+import UserInformation from '../Interfaces/UserInformation'
 
 interface SignInState {
     clickedLogin: boolean,
     username: string,
     password: string,
     pwVerification: string
-    errMessage?: string
+    errMessage?: string,
+    successfullySigned: boolean
 }
 
 const myStyle = { 
@@ -29,24 +33,30 @@ export default class SignIn extends Component<any, SignInState> {
             username: "",
             password: "",
             pwVerification: "",
-            errMessage: undefined
+            errMessage: undefined,
+            successfullySigned: false
         };
     }
     render() {
-        const { clickedLogin, errMessage } = this.state;
+        const { clickedLogin, errMessage, successfullySigned } = this.state;
+        /*let backUrl = "/";
+        let fromRef = new URLSearchParams(window.location.search).get('from');
+        if(fromRef) backUrl = `/${fromRef}`;*/
         return <AuthContextConsumer>
-                {({isAuthenticated}) => 
-                    <div>
+                {({isAuthenticated, setStatus, setInfo}) => 
+                    isAuthenticated ? (function(){window.location.reload(); return null;}()) :
+                    successfullySigned ? <Navigate to="/" />
+                    : <div>
                         <div style={myStyle}>
                             {errMessage && <p className="text-danger">{errMessage}</p>}
                             {clickedLogin 
                                 ? this.renderLoginForm()
                                 : this.renderRegisterForm()
                             }
-                            <button onClick={e=>this.onSubmit(e)} className="btn btn-success">
+                            <button onClick={e=>this.onSubmit(e, setStatus, setInfo)} className="btn btn-success">
                                 {clickedLogin ? "Войти" : "Зарегистрироваться"}
                             </button>
-                            <button onClick={e=>this.setState({clickedLogin: !this.state.clickedLogin})} 
+                            <button onClick={e=>this.setState({clickedLogin: !clickedLogin})} 
                                 className="btn btn-primary">
                                 {clickedLogin ? "Ещё нет аккаунта?" : "Уже есть аккаунт?"}
                             </button>
@@ -55,42 +65,75 @@ export default class SignIn extends Component<any, SignInState> {
         </AuthContextConsumer>
     }
 
-    onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, 
+        setStatus: typeof statusSetter, setInfo: typeof userInfoSetter) => {
         e.preventDefault();
 
-        const { clickedLogin, username, password } = this.state;
+        const { clickedLogin, username, password, pwVerification } = this.state;
+        if(!clickedLogin && password !== pwVerification) {
+            this.setState({errMessage: "Пароли не совпадают"});
+            return;
+        }
+
         const url = `${process.env.REACT_APP_API_URL}/${clickedLogin ? "sign_in" : "sign_up"}`
         
         await post(url, {username, password}).then(async response => await response.json())
         .then(async response => {
+            if(response.err) {
+                this.setState({errMessage: response.err});
+                return;
+            }
+
+            if(!response.token) {
+                this.setState({ errMessage: "Произошла ошибка. Попробуйте позже."});
+                return;
+            }
             console.log(response);
+            setStatus(true, response.token);
+            get(`${process.env.REACT_APP_API_URL}/user_info`).then(async response => await response.json())
+            .then(result => {
+                let info: UserInformation = {
+                    id: result.userId,
+                    username: result.username,
+                    role: result.role
+                };
+                setInfo(info);
+                this.setState({successfullySigned: true})
+            })
+            .catch(err => console.log(err));
         }).catch(err=>console.log(err));
     }
 
     renderLoginForm = () : ReactNode => {
         const { username, password } = this.state;
-        return <div>
+        return <form>
             <input type="text" className="form-control" 
             onChange={e=>this.setState({username: e.target.value})}
             value={username} placeholder="Логин" />
+
             <input type="password" className="form-control"
             onChange={e=>this.setState({password:e.target.value})} 
             value={password} placeholder="Пароль" />
-        </div>
+        </form>
     }
 
     renderRegisterForm = () : ReactNode => {
         const { username, password, pwVerification } = this.state;
-        return <div>
+        return <form>
             <input type="text" className="form-control"
                 onChange={e=>this.setState({username: e.target.value})}
                 value={username} placeholder="Придумайте оригинальный логин" />
+
             <input type="password" className="form-control"
                 onChange={e=>this.setState({password: e.target.value})} 
-                value={password} placeholder="Придумайте надёжный пароль" />
+                value={password} placeholder="Придумайте надёжный пароль" autoComplete="" />
+
+            {(pwVerification && pwVerification !== password) &&
+            <p className="text-danger text-sm m-0">Пароли не совпадают</p>}
+
             <input type="password" className="form-control"
                 onChange={e=>this.setState({pwVerification: e.target.value})}
-                value={pwVerification} placeholder="Подтвердите пароль" />
-        </div>
+                value={pwVerification} placeholder="Подтвердите пароль" autoComplete="" />
+        </form>
     }
 }

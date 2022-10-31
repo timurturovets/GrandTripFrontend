@@ -8,12 +8,12 @@ interface AuthComponentProps {
 export default class AuthComponent extends Component<AuthComponentProps, any> {
     render() {
         return <AuthContextConsumer>
-            {({isAuthenticated, role}) =>
+            {({isAuthenticated, info}) =>
                 isAuthenticated 
                 && (
                     !this.props.role 
-                    || this.props.role === role 
-                    || this.props.role.indexOf(role)!==-1
+                    || this.props.role === info?.role
+                    || this.props.role.indexOf(info?.role || "")!==-1
                     )
                     ? this.props.children
                     : function(r){
