@@ -30,6 +30,15 @@ export default class LogPage extends Component<any, LogPageState> {
         const arr = result.split('\n');
         return isLoading 
         ? <h1>Загрузка..</h1> 
-        : <p>{(result && arr.map(x=><div>{x}<br /></div>)) || "Логи пусты"}</p>
+        : <div>
+            <button className="btn btn-lg btn-danger" onClick={this.handleClear}>Очистить логи</button>
+            <p>{(result && arr.map(x=><div>{x}<br /></div>)) || "Логи пусты"}</p>
+        </div>
+    }
+
+    handleClear = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+
+        await get(`${process.env.REACT_APP_API_URL}/clear_log`).then(r=>this.setState({result: ""}));
     }
 }
