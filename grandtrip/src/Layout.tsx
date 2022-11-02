@@ -1,5 +1,6 @@
 import React, { ReactNode, Component } from 'react'
 import { NavLink } from 'react-router-dom'
+import { AuthContextConsumer } from './AuthContext'
 
 interface LayoutProps {
     children: ReactNode | ReactNode[]
@@ -12,21 +13,10 @@ export default class Layout extends Component<LayoutProps, any> {
 
     render() {
         const { children } = this.props;
-        return <div style={{height: '100%'}}>
-                    <div> {/* id="header">*/}
+        return <AuthContextConsumer>{({isAuthenticated, info})=>
+            <div style={{height: '100%'}}>
+                <div>
                     <header>
-                        {/*<nav className="navibar">
-                        <NavLink to="/" style={({isActive}) => 
-                        window.location.pathname ==="/" ? {color:'white'} : {color: 'black'}}>
-                            <h1>GRANDTRIP</h1>
-                        </NavLink>
-                            <div className="navibar-centered">
-                                <NavLink to="routes"><h1>МАРШРУТЫ</h1></NavLink>
-                            </div>
-                            <div className="navibar-right">
-                                <NavLink to="support"><h1>ПОДДЕРЖКА</h1></NavLink>
-                            </div>
-                        </nav>*/}
                         <nav className="navbar navbar-expand-lg navbar-light"
                         style={{backgroundColor: 'rgb(161, 194, 209)', paddingLeft: '1%'}}>
                             <NavLink className="navbar-brand text-light" to="/">GrandTrip</NavLink>
@@ -43,19 +33,26 @@ export default class Layout extends Component<LayoutProps, any> {
                                     <NavLink className="nav-link" to="/support">Поддержка</NavLink>
                                 </li>*/}
                                 <li className="nav-item">
-                                    <NavLink className="nav-link custom-navlink" to="/account">Личный кабинет</NavLink>
-                                </li>
-                                <li className="nav-item">
                                     <NavLink className="nav-link custom-navlink" to="/log">Логи</NavLink>
                                 </li>
+                                {isAuthenticated && info?.username && <li className="nav-item">
+                                    <p className="m-0 nav-link custom-navlink">Привет, {info.username}</p>
+                                </li>}
+                                <li className="nav-item">
+                                    <NavLink className="nav-link custom-navlink" to="/account">Личный кабинет</NavLink>
+                                </li>
+                                {isAuthenticated && <li className="nav-item">
+                                    <NavLink className="nav-link custom-navlink" to="/constructor">Конструктор</NavLink>    
+                                </li>}
                                 </ul>
                             </div>
                         </nav>
                     </header>
                 </div>
-                    <div id="cont" style={{height: '100%'}}>
+                <div id="cont" style={{height: '100%'}}>
                         {children}    
-                    </div>
-        </div>
+                </div>
+            </div>}
+        </AuthContextConsumer>
     }
 }

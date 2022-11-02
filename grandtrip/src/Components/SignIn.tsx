@@ -80,6 +80,7 @@ export default class SignIn extends Component<any, SignInState> {
         
         await post(url, {username, password}).then(async response => await response.json())
         .then(async response => {
+            console.log(response);
             if(response.err) {
                 this.setState({errMessage: response.err});
                 return;
@@ -89,6 +90,7 @@ export default class SignIn extends Component<any, SignInState> {
                 this.setState({ errMessage: "Произошла ошибка. Попробуйте позже."});
                 return;
             }
+
             console.log(response);
             setStatus(true, response.token);
             get(`${process.env.REACT_APP_API_URL}/user_info`).then(async response => await response.json())

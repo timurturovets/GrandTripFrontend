@@ -9,23 +9,21 @@ export default class AuthComponent extends Component<AuthComponentProps, any> {
     render() {
         return <AuthContextConsumer>
             {({isAuthenticated, info}) =>
-                isAuthenticated 
+                (isAuthenticated 
                 && (
-                    !this.props.role 
-                    || this.props.role === info?.role
-                    || this.props.role.indexOf(info?.role || "")!==-1
+                    !this.props.role // Наличие определённой роли необязательно в этом компоненте
+                    || this.props.role === info?.role // Роль соответствует единственной указанной роли
+                    || this.props.role.indexOf(info?.role || "")!==-1 // Роль присутствует в массиве возможных ролей
                     )
                     ? this.props.children
                     : function(r){
                         if(r) {
                             alert('У вас нет доступа к этой странице.');
                             window.location.href="/";
-                            return null;
-                        } else {
-                            window.location.href="/account";
-                            return null;
-                        }
+                        } else window.location.href="/account";
+                        return null;
                     }(this.props.role)
+                ) || function(){window.location.href="/account";return null}()
             }
         </AuthContextConsumer>
     }

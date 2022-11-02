@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-//import AuthComponent from '../AuthComponent'
+import AuthComponent from '../AuthComponent'
 import L from 'leaflet'
 import ConstructorToolbar from '../Components/ConstructorToolbar'
 import createMap from '../Functions/createMap'
@@ -20,8 +20,9 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
     render() {
         const map = this.state.map;
 
-        /*return <AuthComponent role={isEditMode ? "Editor" : undefined}>*/
-        return <div>           
+        
+        return <AuthComponent>
+         <div>           
                 <div id="main-container" style={{height: "100%", width: "100%"}}>
                 <div id="mapInfoDiv" className="bg-dark">
                     {map && <ConstructorToolbar map={map} />}
@@ -33,7 +34,7 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
                 </div>
             </div>
             </div>
-       // </AuthComponent>
+       </AuthComponent>
     }
 
     handleShowMap = async () => {

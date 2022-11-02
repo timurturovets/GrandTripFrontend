@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import { AuthContextConsumer } from '../AuthContext'
 import L from 'leaflet'
 import RouteInfo from '../Components/RouteInfo'
 import RouteInformation from '../Interfaces/RouteInformation'
@@ -94,30 +95,21 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
     }
 
     render() {
-        const { shareInfo, mapInfo, routes } = this.state;
+        const { shareInfo, mapInfo, routes, criteries } = this.state;
         const { isFromRef, refRoute, loading } = shareInfo;
         const { enabled } = mapInfo;
         const { clicked, isLoading, result, error } = routes
-        return <div style={{textAlign: "left", display: "flex"}}>
+        return <AuthContextConsumer>{({isAuthenticated, info})=>
+        <div style={{textAlign: "left", display: "flex"}}>
         <div id="MySideNav" className="text-center" style={{zIndex: 100}}>
             <div className="bg-dark text-light p-3">
-                {/*<div className="form-check-inline form-switch m-2">
-                    <input id="season-radio1" className="form-check-input" 
-                    type="radio" name="SEASON" value="summer" checked={season === "summer"}
-                        onChange={e => this.handleSeasonChange("summer")} />
-                    <label className="form-check-label">Лето</label>
-                </div>
-                <div className="form-check-inline form-switch m-2">
-                    <input id="season-radio2" className=" form-check-input" 
-                    type="radio" name="SEASON" value="winter" checked={season === "winter"}
-                        onChange={e => this.handleSeasonChange("winter")} />
-                    <label className="form-check-label ">Зима</label>
-                </div>*/}
+                <label>Время года: </label>
                 <select onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
-                    <option value="none">Сбросить</option>
+                    <option value="none">Любое</option>
                     <option value="summer">Лето</option>
                     <option value="winter">Зима</option>
                 </select>
+                <label>Тематика: </label>
                 <select onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
                     <option value="none">Выбрать все</option>
                     <option value="modern-world">Современный мир</option>
@@ -129,12 +121,16 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                     <option value="gastronomy">Гастрономия</option>
                     <option value="abiturients">Абитуриентам</option>
                 </select>
+                <label> Длительность: </label>
                 <div className="duration-input-wrapper">
                     <div className="form-group">
-                        <input type="number" id="time-input" min={1} max={24}
-                            style={{width: "20%"}}
-                            onChange={e=>this.handleTimeChange(e)} />
-                        <label> Длительность маршрута</label>
+                        <select onChange={e=>this.setState({criteries:
+                         {...criteries, time: parseInt(e.target.value)}})}>
+                            <option value={1}>1 час</option>
+                            <option value={2}>2 часа</option>
+                            <option value={3}>3 часа</option>
+                            <option value={24}>1 день</option>
+                         </select>
                     </div>
                 </div>
                 <button onClick={e=>this.handleSubmit(e)} className="btn btn-success">
@@ -143,8 +139,10 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             </div>
 
             <div id="routes">
+                {isAuthenticated && 
                 <Link to="/constructor" className="btn btn-outline-success" style={{width: "100%"}}>
-                    Создать новый маршрут</Link>
+                    Создать новый маршрут</Link>}
+                    
                 {isFromRef 
                     ? loading || !refRoute
                         ? <p>Загрузка...</p>
@@ -167,7 +165,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             && <button className="btn btn-success" onClick={e=>this.handleShowMap()}>Показать карту</button>}
                 <div id="MAP-ID" style={{height:'100%', width: '100%'}}></div>
             </div>
-        </div>
+        </div>}
+        </AuthContextConsumer>
     }
 
     handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -175,10 +174,6 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
 
         const { criteries } = this.state;
         const { theme, season } = criteries;
-        /*if(theme === "none" || season === "none") {
-            alert('Вы не выбрали все опции')
-            return;
-        }*/
         
         const filters = JSON.stringify({
             start: 0,
@@ -201,17 +196,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             for(const route of routes) {
                 if(route) routeInformations.push(route);
             }
-            
-            /*for(const id of ids.map((i:any)=>i.id)) {
-                await getRouteById(id).then(response => {
-                    response.dots = JSON.parse(response.dots);
-                    if(!response.dots[0].PositionX) response.dots = JSON.parse(response.dots);
-                    response.lines = JSON.parse(response.lines);
-                    routeInformations.push(response);
-                }).catch(err=>{
-                    console.log(err)
-                });
-            }*/
+        
             console.log(routeInformations);
             this.setState({
                 routes: {

@@ -28,8 +28,7 @@ interface AuthContextProviderState {
 class AuthContextProvider extends Component<AuthContextProviderProps, AuthContextProviderState> {
     constructor(props: AuthContextProviderProps) {
         super(props);
-
-        const info = getUserInfo();
+        
         this.state = {
             isAuthenticated: false,
             setStatus: (isAuthenticated, token) => {
@@ -42,6 +41,12 @@ class AuthContextProvider extends Component<AuthContextProviderProps, AuthContex
                 this.setState({info})
             }
         };
+    }
+
+    async componentDidMount() {
+        const info = await getUserInfo();
+        if(info?.id) this.setState({isAuthenticated: true, info});
+        
     }
 
     render() {
