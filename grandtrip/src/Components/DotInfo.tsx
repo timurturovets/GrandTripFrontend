@@ -43,10 +43,10 @@ export default class DotInfo extends Component<DotInfoProps, DotInfoState> {
                     <input className="form-control" type="text" name="dotLink" placeholder="Ссылка на страницу с описанием"
                         defaultValue={link} onChange={e=>this.onChange(e, "link")} />
                 </div>
-                <div className="form-group">
+                {/*<div className="form-group">
                     <p className="text-light">Долгота: {posX}</p>
                     <p className="text-light">Широта: {posY}</p>
-                </div>
+                </div>*/}
                 <button onClick={e=>this.onDelete(e)} className="constructor-button">Удалить точку</button>
             </div>
     }

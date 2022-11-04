@@ -1,6 +1,7 @@
 import React, { ReactNode, Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { AuthContextConsumer } from './AuthContext'
+import Header from './Components/Header'
 
 interface LayoutProps {
     children: ReactNode | ReactNode[]
@@ -11,12 +12,16 @@ export default class Layout extends Component<LayoutProps, any> {
         super(props);
     }
 
+    componentDidMount() {
+        this.configureContentMargin();
+    }
+
     render() {
         const { children } = this.props;
         return <AuthContextConsumer>{({isAuthenticated, info})=>
             <div style={{height: '100%'}}>
-                <div>
-                    <header>
+                    {''===""?<Header isAuthenticated={isAuthenticated} info={info} />
+                    :<header>
                         <nav className="navbar navbar-expand-lg navbar-light"
                         style={{backgroundColor: 'rgb(161, 194, 209)', paddingLeft: '1%'}}>
                             <NavLink className="navbar-brand text-light" to="/">GrandTrip</NavLink>
@@ -29,9 +34,9 @@ export default class Layout extends Component<LayoutProps, any> {
                                 <li className="nav-item active">
                                     <NavLink className="nav-link custom-navlink" to="/routes">Маршруты</NavLink>
                                 </li>
-                                {/*<li className="nav-item">
+                                {<li className="nav-item">
                                     <NavLink className="nav-link" to="/support">Поддержка</NavLink>
-                                </li>*/}
+                                </li>}
                                 <li className="nav-item">
                                     <NavLink className="nav-link custom-navlink" to="/log">Логи</NavLink>
                                 </li>
@@ -47,12 +52,34 @@ export default class Layout extends Component<LayoutProps, any> {
                                 </ul>
                             </div>
                         </nav>
-                    </header>
-                </div>
-                <div id="cont" style={{height: '100%'}}>
-                        {children}    
-                </div>
-            </div>}
+    </header>}
+            <div id="layout-content">
+                {children}    
+            </div>
+            </div>
+    }
         </AuthContextConsumer>
+    }
+
+    configureContentMargin = () => {
+        const callback = () => {
+            const div = document.getElementById('layout-content');
+            if (!div) {
+                console.log('no content? :(');
+                window.requestAnimationFrame(callback);
+                return;
+            }
+
+            const header = document.getElementsByTagName('header')[0];
+            if (!header) {
+                console.log('no header? :(');
+                window.requestAnimationFrame(callback);
+                return;
+            }
+
+            div.style.paddingTop = `${header.offsetHeight}px`;
+        }
+
+        window.requestAnimationFrame(callback);
     }
 }

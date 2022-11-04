@@ -1,10 +1,9 @@
 import React, { Component, ReactNode } from 'react'
 import { Navigate } from 'react-router'
-import { get, post } from '../Functions/requests'
+import { post } from '../Functions/requests'
 import { getUserInfo } from '../Functions/getUserInfo'
 import { AuthContextConsumer } from '../AuthContext'
 import { statusSetter, userInfoSetter } from '../Interfaces/authStatusSetter'
-import UserInformation from '../Interfaces/UserInformation'
 
 interface SignInState {
     clickedLogin: boolean,
@@ -45,7 +44,7 @@ export default class SignIn extends Component<any, SignInState> {
         if(fromRef) backUrl = `/${fromRef}`;*/
         return <AuthContextConsumer>
                 {({isAuthenticated, setStatus, setInfo}) => 
-                    isAuthenticated ? (function(){window.location.reload(); return null;}()) :
+                    isAuthenticated ? function(){window.location.reload(); return null;}() :
                     successfullySigned ? <Navigate to="/" />
                     : <div>
                         <div style={myStyle}>
@@ -57,7 +56,7 @@ export default class SignIn extends Component<any, SignInState> {
                             <button onClick={e=>this.onSubmit(e, setStatus, setInfo)} className="btn btn-success">
                                 {clickedLogin ? "Войти" : "Зарегистрироваться"}
                             </button>
-                            <button onClick={e=>this.setState({clickedLogin: !clickedLogin})} 
+                            <button onClick={e=>this.setState({clickedLogin: !clickedLogin, errMessage: ""})} 
                                 className="btn btn-primary">
                                 {clickedLogin ? "Ещё нет аккаунта?" : "Уже есть аккаунт?"}
                             </button>
@@ -93,17 +92,6 @@ export default class SignIn extends Component<any, SignInState> {
 
             console.log(response);
             setStatus(true, response.token);
-            get(`${process.env.REACT_APP_API_URL}/user_info`).then(async response => await response.json())
-            .then(result => {
-                let info: UserInformation = {
-                    id: result.userId,
-                    username: result.username,
-                    role: result.role
-                };
-                setInfo(info);
-                this.setState({successfullySigned: true})
-            })
-            .catch(err => console.log(err));
             const info = await getUserInfo();
             if(info) {
                 setInfo(info);

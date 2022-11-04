@@ -46,7 +46,7 @@ class AuthContextProvider extends Component<AuthContextProviderProps, AuthContex
     async componentDidMount() {
         const info = await getUserInfo();
         if(info?.id) this.setState({isAuthenticated: true, info});
-        
+        console.log(info);
     }
 
     render() {

@@ -94,23 +94,27 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         }
     }
 
+    componentDidMount() {
+        this.showMap();
+    }
     render() {
         const { shareInfo, mapInfo, routes, criteries } = this.state;
         const { isFromRef, refRoute, loading } = shareInfo;
         const { enabled } = mapInfo;
-        const { clicked, isLoading, result, error } = routes
+        const { clicked, isLoading, result, error } = routes;
+
         return <AuthContextConsumer>{({isAuthenticated, info})=>
         <div style={{textAlign: "left", display: "flex"}}>
-        <div id="MySideNav" className="text-center" style={{zIndex: 100}}>
+        <div id="MySideNav" className="text-center">
             <div className="bg-dark text-light p-3">
                 <label>Время года: </label>
-                <select onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
+                <select className="form-select" onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
                     <option value="none">Любое</option>
                     <option value="summer">Лето</option>
                     <option value="winter">Зима</option>
                 </select>
                 <label>Тематика: </label>
-                <select onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
+                <select className="form-select" onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
                     <option value="none">Выбрать все</option>
                     <option value="modern-world">Современный мир</option>
                     <option value="history">История</option>
@@ -124,7 +128,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                 <label> Длительность: </label>
                 <div className="duration-input-wrapper">
                     <div className="form-group">
-                        <select onChange={e=>this.setState({criteries:
+                        <select className="form-select"
+                        onChange={e=>this.setState({criteries:
                          {...criteries, time: parseInt(e.target.value)}})}>
                             <option value={1}>1 час</option>
                             <option value={2}>2 часа</option>
@@ -161,8 +166,6 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             </div>
         </div>
          <div id="main-container" style={{height:'100%', width: '100%'}}>
-            {!enabled 
-            && <button className="btn btn-success" onClick={e=>this.handleShowMap()}>Показать карту</button>}
                 <div id="MAP-ID" style={{height:'100%', width: '100%'}}></div>
             </div>
         </div>}
@@ -290,19 +293,34 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         });
     }
 
-    handleShowMap = (center?: number[] | L.LatLng, zoom?: number) => {
+    /*handleShowMap = (center?: number[] | L.LatLng, zoom?: number) => {
         const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
-
-        const cont = document.getElementById("cont")!;
-        const div = cont.children[0] as HTMLElement;
-        div.style.width = `${cont.offsetWidth}px`;
         const container = document.getElementById('main-container')!;
         container.style.height = `${height}px`;
-        container.style.width = `${cont.offsetWidth}px`;
+        container.style.width = `${document.body.offsetWidth}px`;
 
         const map = createMap("MAP-ID", "Санкт-Петербург")! 
         this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
 
         center && map.setView(center as L.LatLngExpression, zoom || 13);
+    }*/
+
+    showMap = () => {
+        const callback = () : void => {
+            console.log('anim frame');
+            const mapDiv = document.getElementById("MAP-ID");
+            if(!mapDiv) {
+                console.log("no div? :(");
+                window.requestAnimationFrame(callback);
+            };
+
+            const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
+            const container = document.getElementById('main-container')!;
+            container.style.height = `${height}px`;
+
+            const map = createMap("MAP-ID", "Эрмитаж Санкт-Петербург")!
+            this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
+        };
+        window.requestAnimationFrame(callback);
     }
 }

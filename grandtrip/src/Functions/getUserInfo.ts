@@ -6,9 +6,11 @@ export const getUserInfo = async () : Promise<UserInformation | undefined> => {
     await get(`${process.env.REACT_APP_API_URL}/user_info`).then(async response => await response.json())
         .then(result => {
             info = {
-                id: result.userId,
+                id: result.id,
                 username: result.username,
-                role: result.role
+                role: result.role,
+                createdRoutesIds: result.createdRoutesIds,
+                favouriteRoutesIds: result.favouriteRoutesIds
             };
         }).catch(err=>console.log(err));
     return info;

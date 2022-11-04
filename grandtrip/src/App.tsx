@@ -10,6 +10,7 @@ import ConstructorPage from './Pages/ConstructorPage'
 import AccountPage from './Pages/AccountPage'
 import BrowseRoutesPage from './Pages/BrowseRoutesPage'
 import LogPage from './Pages/LogPage'
+
 export default class App extends Component {
     render() {
         return <BrowserRouter>

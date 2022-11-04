@@ -281,7 +281,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                 }
                 {!tracingInfo.tracingNow && <div>
                         <div className="form-group">
-                        <h3 className="text-light">Информация о маршруте</h3>
+                        <h2 className="text-light">Информация о маршруте</h2>
                         <input type="text" name="routeName"  className="form-control" value={name || ""}
                             placeholder="Название маршрута" onChange={e=>this.handleInfoChange(e, "routeName")} />
                         <input type="text" name="routeDesc" className="form-control" value={description || ""} 
@@ -289,7 +289,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         </div>
                         <div className="form-group">
                         <h3 className="text-light">Добавить тематику</h3>
-                        <select onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
+                        <select className="form-select"
+                        onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
                             <option value="none">Сбросить</option>
                             <option value="modern-world">
                                 Современный мир</option>
@@ -308,7 +309,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         </div>
                         <div className="form-group">
                             <h3 className="text-light">Выбрать сезон</h3>
-                        <select onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
+                        <select className="form-select"
+                            onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
                             <option value="none">Сбросить</option>
                             <option value="summer">Лето</option>
                             <option value="winter">Зима</option>

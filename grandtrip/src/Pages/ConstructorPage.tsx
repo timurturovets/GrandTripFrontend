@@ -17,20 +17,23 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
         };
     }
     
+    componentDidMount() {
+        this.showMap();
+    }
+
     render() {
         const map = this.state.map;
-
-        
+        console.log(map);
         return <AuthComponent>
-         <div>           
+         <div style={{height: "100%"}}>           
                 <div id="main-container" style={{height: "100%", width: "100%"}}>
                 <div id="mapInfoDiv" className="bg-dark">
                     {map && <ConstructorToolbar map={map} />}
                 </div>
                 <div id="mapDiv" style={{height: "100%", width: "100%"}}>
-                    {!map && 
+                    {/*!map && 
                     <button onClick={this.handleShowMap} className="btn btn-outline-success">
-                        Показать карту</button>}
+    Показать карту</button>*/}
                 </div>
             </div>
             </div>
@@ -54,5 +57,24 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
         
         const map = createMap("mapDiv", "Санкт-Петербург");
         this.setState({map});
+    }
+
+    showMap = () => {
+        const callback = () : void => {
+            console.log('anim frame');
+            const mapDiv = document.getElementById("mapDiv");
+            if(!mapDiv) {
+                console.log("no div? :(");
+                window.requestAnimationFrame(callback);
+            };
+
+            const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
+            const container = document.getElementById('main-container')!;
+            container.style.height = `${height}px`;
+
+            const map = createMap("mapDiv", "Эрмитаж Санкт-Петербург")!
+            this.setState({ map });
+        };
+        window.requestAnimationFrame(callback);
     }
 }
