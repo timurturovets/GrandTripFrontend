@@ -8,6 +8,7 @@ import NewRoutesPage from './Pages/NewRoutesPage'
 import SupportPage from './Pages/SupportPage'
 import ConstructorPage from './Pages/ConstructorPage'
 import AccountPage from './Pages/AccountPage'
+import SignInPage from './Pages/SignInPage'
 import BrowseRoutesPage from './Pages/BrowseRoutesPage'
 import LogPage from './Pages/LogPage'
 
