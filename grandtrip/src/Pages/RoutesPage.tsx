@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthContextConsumer } from '../AuthContext'
+import { get, post } from '../Functions/requests'
 import L from 'leaflet'
 import RouteInfo from '../Components/RouteInfo'
 import RouteInformation from '../Interfaces/RouteInformation'
@@ -33,14 +34,14 @@ interface MapInfo {
 interface ShareInfo {
     isFromRef: boolean,
     refId: Nullable<number>,
-    refRoute?: RouteInformation,
+    refRoute?: RouteInformation & { isFavourite: boolean },
     loading: boolean
 }
 
 interface StateRoutes {
     clicked: Boolean,
     isLoading: Boolean,
-    result: RouteInformation[],
+    result: (RouteInformation & { isFavourite: boolean })[],
     error?: string
 }
 
@@ -98,9 +99,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         this.showMap();
     }
     render() {
-        const { shareInfo, mapInfo, routes, criteries } = this.state;
+        const { shareInfo, routes, criteries } = this.state;
         const { isFromRef, refRoute, loading } = shareInfo;
-        const { enabled } = mapInfo;
         const { clicked, isLoading, result, error } = routes;
 
         return <AuthContextConsumer>{({isAuthenticated, info})=>
@@ -153,7 +153,9 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                         ? <p>Загрузка...</p>
                         : error
                             ? <p className="text-danger">{error}</p>
-                            : <RouteInfo info={refRoute} onRouteRendering={this.handleRouteRendering} />
+                            : <RouteInfo info={refRoute} 
+                            onRouteRendering={this.handleRouteRendering} 
+                            onAddingToFavourites={this.handleAddToFavourites} />
                     : clicked
                         ? <p>Нажмите на кнопку "ОК", чтобы отобразить маршруты</p>
                         : isLoading
@@ -161,7 +163,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                             : error
                                 ? <p className="text-danger">{error}</p>
                                 : result.map(route => <div key={route.id}><RouteInfo info={route} 
-                                onRouteRendering={this.handleRouteRendering} /></div>)
+                                onRouteRendering={this.handleRouteRendering} 
+                                onAddingToFavourites={this.handleAddToFavourites} /></div>)
                 }
             </div>
         </div>
@@ -193,9 +196,9 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         console.log(filters);
         console.log(process.env.REACT_APP_API_URL);
         this.setState({routes: {...this.state.routes, isLoading: true}});
-        await fetch(`${process.env.REACT_APP_API_URL}/get_routes_by_filters?filters=${filters}`).then(async res=>{
+        await get(`${process.env.REACT_APP_API_URL}/get_routes_by_filters`, {filters}).then(async res=>{
             const routes = (await res.json()).routes;
-            const routeInformations: RouteInformation[] = [];
+            const routeInformations: (RouteInformation & {isFavourite: boolean})[] = [];
             for(const route of routes) {
                 if(route) routeInformations.push(route);
             }
@@ -268,6 +271,22 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                 ...this.state.criteries,
                 theme
             }
+        });
+    }
+
+    handleAddToFavourites = async (id: number, remove: boolean) => {
+        const url = `${process.env.REACT_APP_API_URL}/${remove ? "remove" : "add"}_favourite_route`;
+        await post(url, { routeId: id}).then(async response => {
+            const { routes } = this.state;
+            const { result } = routes;
+
+            const route = result.find(r => r.id === id);
+            if(!route) return;
+
+            route.isFavourite = !remove;
+            this.setState({routes: {...routes, result}});
+        }).catch(err=>{
+            alert('Произошла ошибка. Попробуйте позже.')
         });
     }
 

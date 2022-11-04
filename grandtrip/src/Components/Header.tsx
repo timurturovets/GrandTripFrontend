@@ -14,7 +14,7 @@ export default class Header extends Component<HeaderProps, any> {
             <div className="header__list">
                 <NavLink to="/routes">Маршруты</NavLink>
                 <NavLink to="/support">Поддержка</NavLink>
-                <NavLink to="/lk">Личный кабинет</NavLink>
+                <NavLink to="/account">Личный кабинет</NavLink>
                 <NavLink className="button header__button button--small" to="/sign-in">войти</NavLink>
             </div>
           </div>

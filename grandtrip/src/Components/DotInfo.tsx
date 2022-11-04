@@ -26,7 +26,7 @@ export default class DotInfo extends Component<DotInfoProps, DotInfoState> {
         };
     }
     render() {
-        const { id, posX, posY } = this.props;
+        const { id, /*posX, posY */} = this.props;
         
         const { name, desc, link } = this.state;
         return <div id={`${id}`}>
