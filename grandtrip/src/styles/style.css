@@ -449,7 +449,7 @@ p {
 }
 
 .steps-section {
-    background: url(../img/steps-section-bg.png), #F1F1F1;
+    background: url("../img/steps-section-bg.png"), #F1F1F1;
     background-repeat: no-repeat;
     background-position: calc(50% - 20px) 0;
     background-size: auto;
