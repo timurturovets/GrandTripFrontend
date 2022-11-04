@@ -44,24 +44,24 @@ export default class SignInPage extends Component<any, SignInPageState> {
         if(fromRef) backUrl = `/${fromRef}`;*/
         return <AuthContextConsumer>
                 {({isAuthenticated, setStatus, setInfo}) => 
-                    isAuthenticated ? function(){window.location.reload(); return null;}() :
-                    successfullySigned ? <Navigate to="/" />
-                    : <div>
-                        <div style={myStyle}>
-                            {errMessage && <p className="text-danger">{errMessage}</p>}
-                            {clickedLogin 
-                                ? this.renderLoginForm()
-                                : this.renderRegisterForm()
-                            }
-                            <button onClick={e=>this.onSubmit(e, setStatus, setInfo)} className="btn btn-success">
-                                {clickedLogin ? "Войти" : "Зарегистрироваться"}
-                            </button>
-                            <button onClick={e=>this.setState({clickedLogin: !clickedLogin, errMessage: ""})} 
-                                className="btn btn-primary">
-                                {clickedLogin ? "Ещё нет аккаунта?" : "Уже есть аккаунт?"}
-                            </button>
-                        </div>
-                    </div>}
+                    isAuthenticated  || successfullySigned 
+                        ? <Navigate to="/" />
+                        : <div>
+                            <div style={myStyle}>
+                                {errMessage && <p className="text-danger">{errMessage}</p>}
+                                {clickedLogin 
+                                    ? this.renderLoginForm()
+                                    : this.renderRegisterForm()
+                                }
+                                <button onClick={e=>this.onSubmit(e, setStatus, setInfo)} className="btn btn-success">
+                                    {clickedLogin ? "Войти" : "Зарегистрироваться"}
+                                </button>
+                                <button onClick={e=>this.setState({clickedLogin: !clickedLogin, errMessage: ""})} 
+                                    className="btn btn-primary">
+                                    {clickedLogin ? "Ещё нет аккаунта?" : "Уже есть аккаунт?"}
+                                </button>
+                            </div>
+                        </div>}
         </AuthContextConsumer>
     }
 
