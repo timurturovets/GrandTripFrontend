@@ -5,7 +5,7 @@ export default class Account extends Component {
     render() {
         return <AuthContextConsumer>{({info})=><div>
             <h1 className="text-center">Личный кабинет</h1>
-            <h5>Вы вошли как {info?.username}</h5>
+            <p>Вы вошли как {info?.username}</p>
             <button className="btn btn-danger" onClick={this.handleLogOff}>Выйти из аккаунта</button>
         </div>}</AuthContextConsumer>
     }

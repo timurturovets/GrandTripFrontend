@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 
 export default class HomePage extends Component {
     componentDidMount() {
@@ -13,7 +14,12 @@ export default class HomePage extends Component {
                     <div className="top-section__content">
                       <h1>Добро пожаловать в <span className="logo">GRANDTRIP</span></h1>
                       <p>Готовые идеи для Вашей прогулки</p>
-                      <div className="top-section__buttons"><a className="button" href="roads.html">найти маршрут!</a><a className="button top-section__watch-compilation" href="roads.html"> <img src="img/icons/youtube.svg" /><span>Смотреть подборку</span></a></div>
+                      <div className="top-section__buttons">
+                        <Link to="/routes" className="button">найти маршрут!</Link>
+                        <Link to="/routes" className="button top-section__watch-compilation"> 
+                          <img src="img/icons/youtube.svg" /><span>Смотреть подборку</span>
+                        </Link>
+                      </div>
                     </div>
                     <div className="top-section__background">
                       <div className="top-section__images">

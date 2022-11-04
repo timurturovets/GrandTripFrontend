@@ -45,7 +45,7 @@ export default class SignInPage extends Component<any, SignInPageState> {
         return <AuthContextConsumer>
                 {({isAuthenticated, setStatus, setInfo}) => 
                     isAuthenticated  || successfullySigned 
-                        ? <Navigate to="/" />
+                        ? <Navigate to="/account" />
                         : <div>
                             <div style={myStyle}>
                                 {errMessage && <p className="text-danger">{errMessage}</p>}
