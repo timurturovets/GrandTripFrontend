@@ -5,11 +5,12 @@ interface AuthComponentProps {
     role?: string | string[]
     children: ReactNode | ReactNode[]
 }
+
 export default class AuthComponent extends Component<AuthComponentProps, any> {
     render() {
         return <AuthContextConsumer>
-            {({isAuthenticated, info}) =>{
-                return isAuthenticated 
+            {({isLoading, isAuthenticated, info}) =>{
+                return isLoading ? null : isAuthenticated 
                 ? (
                     !this.props.role // Наличие определённой роли необязательно в этом компоненте
                     || this.props.role === info?.role // Роль соответствует единственной указанной роли

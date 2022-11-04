@@ -11,7 +11,6 @@ interface SignInPageState {
     password: string,
     pwVerification: string
     errMessage?: string,
-    successfullySigned: boolean
 }
 
 const myStyle = { 
@@ -34,17 +33,16 @@ export default class SignInPage extends Component<any, SignInPageState> {
             password: "",
             pwVerification: "",
             errMessage: undefined,
-            successfullySigned: false
         };
     }
     render() {
-        const { clickedLogin, errMessage, successfullySigned } = this.state;
+        const { clickedLogin, errMessage } = this.state;
         /*let backUrl = "/";
         let fromRef = new URLSearchParams(window.location.search).get('from');
         if(fromRef) backUrl = `/${fromRef}`;*/
         return <AuthContextConsumer>
                 {({isAuthenticated, setStatus, setInfo}) => 
-                    isAuthenticated  || successfullySigned 
+                    isAuthenticated 
                         ? <Navigate to="/account" />
                         : <div>
                             <div style={myStyle}>
@@ -93,10 +91,7 @@ export default class SignInPage extends Component<any, SignInPageState> {
             console.log(response);
             setStatus(true, response.token);
             const info = await getUserInfo();
-            if(info) {
-                setInfo(info);
-                this.setState({successfullySigned: true});
-            } else this.setState({ errMessage: "Произошла неизвестная ошибка. Попробуйте снова." });
+            if(info) setInfo(info);
         }).catch(err=>console.log(err));
     }
 
