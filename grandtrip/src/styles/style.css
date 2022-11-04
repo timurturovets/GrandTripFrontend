@@ -437,7 +437,7 @@ p {
 .features-section__image {
     min-height: 280px;
     min-width: 280px;
-    background: url(img/city.png);
+    background: url(../img/city.png);
     background-size: cover;
     margin-right: 60px;
 }
@@ -449,7 +449,7 @@ p {
 }
 
 .steps-section {
-    background: url("img/steps-section-bg.png"), #F1F1F1;
+    background: url(../img/steps-section-bg.png), #F1F1F1;
     background-repeat: no-repeat;
     background-position: calc(50% - 20px) 0;
     background-size: auto;
