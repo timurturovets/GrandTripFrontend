@@ -5,7 +5,7 @@ import { getUserInfo } from '../Functions/getUserInfo'
 import { AuthContextConsumer } from '../AuthContext'
 import { statusSetter, userInfoSetter } from '../Interfaces/authStatusSetter'
 
-interface SignInState {
+interface SignInPageState {
     clickedLogin: boolean,
     username: string,
     password: string,
@@ -24,7 +24,7 @@ const myStyle = {
     borderRadius: '6px'
 };
 
-export default class SignIn extends Component<any, SignInState> {
+export default class SignInPage extends Component<any, SignInPageState> {
     constructor(props: any) {
         super(props);
 

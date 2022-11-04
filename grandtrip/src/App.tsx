@@ -24,6 +24,7 @@ export default class App extends Component {
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/constructor" element={<ConstructorPage />} />
                     <Route path="/account" element={<AccountPage />} />
+                    <Route path="/sign-in" element={<SignInPage />} />
                     <Route path="/share" element={<RoutesPage />} />
                     <Route path="/log" element={<LogPage />} />
                 </Routes>
