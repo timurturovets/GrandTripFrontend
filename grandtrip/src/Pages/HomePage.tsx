@@ -51,7 +51,39 @@ export default class HomePage extends Component {
                     <div className="circle cricle--animated circle--color2 features-section__circle"></div>
                   </div>
                 </section>
-        </div>
+                <section className="steps-section">
+                  <div className="container">
+                    <div className="steps-section__steps">
+                      <div className="steps-section__element">
+                        <div className="steps-section__step step">
+                          <div className="step__title">
+                            <h3>Зарегистрируйтесь</h3><span className="step__num">1</span>
+                          </div>
+                          <p>Так Вы сможете сохранять понравившиеся локации и отмечать их на карте, а также создавать свои собственные маршруты: для себя или общественного пользования </p>
+                        </div>
+                      </div>
+                      <div className="steps-section__element">
+                        <div className="steps-section__step step">
+                          <div className="step__title">
+                            <h3>Оценка Ваших предпочтений</h3><span className="step__num">2</span>
+                          </div>
+                          <p>Пройдите короткий тест на оценку Ваших интересов. Так мы сможем посоветовать Вам наиболее подходящие маршруты.</p>
+                        </div>
+                      </div>
+                      <div className="steps-section__element">
+                        <div className="steps-section__step step">
+                          <div className="step__title">
+                            <h3>Выберите лучший из предложенных</h3><span className="step__num">3</span>
+                          </div>
+                          <p>Составим подборку маршрутов по Вашим предпочтениям. Вы можете ознакомиться со всеми и сохранить</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="circle cricle--animated circle--color1"></div>
+                    <div className="circle cricle--animated circle--color2"></div>
+                  </div>
+                </section>
+                </div>
   }
 
   configureAnimations = () => {

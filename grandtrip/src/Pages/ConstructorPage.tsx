@@ -30,11 +30,7 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
                 <div id="mapInfoDiv" className="bg-dark">
                     {map && <ConstructorToolbar map={map} />}
                 </div>
-                <div id="mapDiv" style={{height: "100%", width: "100%"}}>
-                    {/*!map && 
-                    <button onClick={this.handleShowMap} className="btn btn-outline-success">
-    Показать карту</button>*/}
-                </div>
+                <div id="mapDiv" style={{height: "100%", width: "100%"}}></div>
             </div>
             </div>
        </AuthComponent>

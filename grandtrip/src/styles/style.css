@@ -13,8 +13,8 @@
     box-sizing: border-box;
 }
 
-:focus,
-:active {
+ :focus,
+ :active {
     outline: none;
 }
 
@@ -96,6 +96,7 @@ button,
 input,
 option {
     border-radius: unset;
+    appearance: none !important;
     -webkit-appearance: none !important;
     background: unset;
     background-color: unset;
@@ -107,7 +108,6 @@ body {
     font-family: "Bitter", "serif";
     font-size: 16px;
     font-weight: normal;
-    /*height: 10000px;*/
 }
 
 .container {
@@ -132,6 +132,10 @@ h1 {
 
 h2 {
     font-size: 35px;
+}
+
+h3 {
+    font-size: 30px;
 }
 
 p {
@@ -197,6 +201,14 @@ p {
 .circle--color2 {
     background: -o-radial-gradient(50% 50%, 50% 50%, rgba(255, 198, 88, 0.6) var(--a), rgba(255, 198, 88, 0) 100%);
     background: radial-gradient(50% 50% at 50% 50%, rgba(255, 198, 88, 0.6) var(--a), rgba(255, 198, 88, 0) 100%);
+}
+
+.textblock h2 {
+    margin-bottom: 20px;
+}
+
+.textblock p {
+    margin-bottom: 30px;
 }
 
 .header {
@@ -395,6 +407,7 @@ p {
 
 .features-section {
     overflow: visible;
+    padding: 20px 0 120px 0;
 }
 
 .features-section h2 {
@@ -424,7 +437,7 @@ p {
 .features-section__image {
     min-height: 280px;
     min-width: 280px;
-    background: url(../img/city.png);
+    background: url(img/city.png);
     background-size: cover;
     margin-right: 60px;
 }
@@ -435,10 +448,98 @@ p {
     position: absolute;
 }
 
-.textblock h2 {
+.steps-section {
+    background: url("img/steps-section-bg.png"), #F1F1F1;
+    background-repeat: no-repeat;
+    background-position: calc(50% - 20px) 0;
+    background-size: auto;
+    padding: 56px 0 180px 0;
+    min-width: 1010px;
+}
+
+.steps-section .container {
+    width: 1010px;
+    position: relative;
+}
+
+.steps-section .step {
+    z-index: 1;
+    max-width: 450px;
+    min-height: 167px;
+    padding: 20px;
+    border-radius: 30px 30px 30px 0;
+    background: white;
+    -webkit-box-shadow: 30px 30px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 30px 30px 40px rgba(0, 0, 0, 0.2);
+}
+
+.steps-section .step__title {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
     margin-bottom: 20px;
 }
 
-.textblock p {
-    margin-bottom: 30px;
+.steps-section .step__num {
+    border-radius: 50%;
+    background: black;
+    color: white;
+    line-height: 50px;
+    width: 50px;
+    min-width: 50px;
+    display: inline-block;
+    text-align: center;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.steps-section__element {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.steps-section__element:nth-child(odd) {
+    -webkit-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+}
+
+.steps-section__element:nth-child(even) div {
+    border-radius: 30px 30px 0 30px;
+    text-align: right;
+}
+
+.steps-section__element:nth-child(even) .step__title {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: reverse;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+}
+
+.steps-section__element+.steps-section__element {
+    margin-top: 31px;
+}
+
+.steps-section .circle {
+    width: 300px;
+    height: 300px;
+    z-index: 0;
+    position: absolute;
+}
+
+.steps-section .circle--color1 {
+    right: -70px;
+    bottom: -130px;
+}
+
+.steps-section .circle--color2 {
+    top: 50px;
+    left: -100px;
 }

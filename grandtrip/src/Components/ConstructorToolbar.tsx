@@ -222,7 +222,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                             <label className="form-check-label text-light" htmlFor="mode">На машине</label>
                         </div>
                         <div className="form-group mx-sm-3">
-                            <input type="number" min="1" placeholder="Номер первой точки" 
+                            <input className="form-control" 
+                            type="number" min="1" placeholder="Номер первой точки" 
                                 onChange={e=>{
                                     e.preventDefault();
                                     tracingInfo.startDotId = parseInt(e.target.value);
@@ -230,7 +231,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                                 }}/>
                         </div>
                         <div className="form-group mx-sm-3">
-                            <input type="number" min="2" placeholder="Номер второй точки" 
+                            <input className="form-control"
+                            type="number" min="2" placeholder="Номер второй точки" 
                                 onChange={e => {
                                     e.preventDefault();
                                     tracingInfo.endDotId = parseInt(e.target.value);

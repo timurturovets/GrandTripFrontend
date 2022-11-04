@@ -4,7 +4,6 @@ import RouteInformation from '../Interfaces/RouteInformation'
 
 type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' | 'activities'
 type Season = 'none' | 'summer' | 'winter'
-type Time = "none" | number
 
 interface RoutesPageState {
     theme: Theme,
