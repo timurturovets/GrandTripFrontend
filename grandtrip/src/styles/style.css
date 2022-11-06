@@ -96,7 +96,6 @@ button,
 input,
 option {
     border-radius: unset;
-    appearance: none !important;
     -webkit-appearance: none !important;
     background: unset;
     background-color: unset;
@@ -146,7 +145,6 @@ p {
     font-family: "Fira Sans Condensed";
     color: #4356FF;
     font-weight: 800;
-    /*font-style: italic;*/
 }
 
 .button {
@@ -437,7 +435,7 @@ p {
 .features-section__image {
     min-height: 280px;
     min-width: 280px;
-    background: url(../img/city.png);
+    background: url(img/city.png);
     background-size: cover;
     margin-right: 60px;
 }
@@ -449,7 +447,7 @@ p {
 }
 
 .steps-section {
-    background: url(../img/steps-section-bg.png), #F1F1F1;
+    background: url("img/steps-section-bg.png"), #F1F1F1;
     background-repeat: no-repeat;
     background-position: calc(50% - 20px) 0;
     background-size: auto;
@@ -542,4 +540,78 @@ p {
 .steps-section .circle--color2 {
     top: 50px;
     left: -100px;
+}
+
+.about-us-section {
+    padding: 100px 0 60px 0;
+}
+
+.about-us-section .circle {
+    width: 160px;
+    height: 160px;
+}
+
+.about-us-section .container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.about-us-section__text {
+    margin-left: 80px;
+}
+
+.about-us-section__image {
+    min-width: 260px;
+    min-height: 230px;
+    position: relative;
+}
+
+.about-us-section__kai-logo {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.ideas-section {
+    padding: 60px 0;
+}
+
+.ideas-section .container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.ideas-section .container div+div {
+    margin-left: 60px;
+}
+
+.ideas-section__image img {
+    -o-object-fit: cover;
+    object-fit: cover;
+    height: 259px;
+    width: 203px;
+}
+
+.link {
+    color: #4356FF;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link:hover {
+    text-decoration: underline;
 }

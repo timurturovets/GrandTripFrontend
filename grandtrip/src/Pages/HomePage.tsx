@@ -83,6 +83,34 @@ export default class HomePage extends Component {
                     <div className="circle cricle--animated circle--color2"></div>
                   </div>
                 </section>
+                <section className="about-us-section">
+                  <div className="container">
+                    <div className="about-us-section__image">
+                      <div className="circle circle--color2 cricle--animated"></div><img className="about-us-section__kai-logo" src="img/icons/kai-logo.svg" />
+                    </div>
+                    <div className="about-us-section__text textblock">
+                      <h2>О Нас</h2>
+                      <p>Привет) Мы команда ребят из СУНЦ Инженерного лицея-интерната КНИТУ-КАИ. Сайт был создан нами в сентябре 2021 на конференции «Университетская гимназия», организатор СПБГУ. Сейчас проекту чуть больше года, и он процветает (как и мы)! В него вложено много сил талантливых ребят, поэтому мы надеемся, что Вы найдете здесь что-то полезное для себя)  </p><a className="button" href="">поддержать проект</a>
+                    </div>
+                  </div>
+                </section>
+                <section className="ideas-section">
+                  <div className="container">
+                    <div className="ideas-section__text textblock">
+                      <h2>Ваши идеи смотрятся классно</h2>
+                      <p>Создайте свой собственный маршрут, отправьте его нам на обработку и дальнейшее выкладывание (как по другому сказать?) или сохраните его для себя и близких! Мы открыты к новым идеям. Пишите нам <a className="link" href="mail@grandtrip.com">на почту</a> или <a className="link" href="https://t.me/grandtripbot">в наш телеграм бот</a>.</p><a className="button" href="roads.html/create">создать маршрут</a>
+                    </div>
+                    <div className="ideas-section__image"><img src="img/road.png" /></div>
+                  </div>
+                </section>
+                    <section className="log-in-section">
+                      <div className="container">
+                        <h2> 
+                          <p>Регистрация </p>
+                        </h2><span className="log-in-section__subtitle">
+                          <p>Уже есть аккаунт? <a className="link" href="login.html">Войти</a></p></span>
+                      </div>
+                    </section>
                 </div>
   }
 
