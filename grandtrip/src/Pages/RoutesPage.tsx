@@ -11,7 +11,7 @@ import createMap from '../Functions/createMap'
 
 type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' 
 | 'activities' | 'gastronomy' | 'abiturients'
-type Season = 'none' | 'summer' | 'winter'
+type Season = 'none' | 'summer' | 'winter' | 'autumn' | 'spring'
 type Time = "none" | number
 type Nullable<T> = T | null
 
@@ -111,7 +111,9 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                 <select className="form-select" onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
                     <option value="none">Любое</option>
                     <option value="summer">Лето</option>
+                    <option value="autumn">Осень</option>
                     <option value="winter">Зима</option>
+                    <option value="spring">Весна</option>
                 </select>
                 <label>Тематика: </label>
                 <select className="form-select" onChange={e=>this.handleThemeChange(e.target.value as Theme)}>

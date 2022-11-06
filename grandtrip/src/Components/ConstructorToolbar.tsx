@@ -22,7 +22,7 @@ interface MapLine {
 type Nullable<T> = T | null
 type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' 
 | 'activities' | 'gastronomy' | 'abiturients'
-type Season = 'none' | 'summer' | 'winter'
+type Season = 'none' | 'summer' | 'winter' | 'spring' | 'autumn'
 
 interface ConstructorToolbarState {
     isEditMode: boolean,
@@ -115,12 +115,11 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                 const marker = L.marker(latlng);
                 markers.push(marker);
                 marker.addTo(map);
-                //const dot = new Dot(lastId, "", latlng.lat, latlng.lng, "", "");
                 dots.push({id: lastId, name: "", desc: "", link: "", PositionX: latlng.lat, PositionY: latlng.lng});
+                
+                lastId++;                
 
-                lastId++;
-
-                this.setState({lastId: lastId, dots: dots, markers: markers,});
+                this.setState({ lastId, dots, markers });
             }
         });
     }
@@ -137,29 +136,30 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
 
         const { map } = this.props;
         const { dots, markers, lines, mapLines } = this.state;
-        let { lastId, lastLineId } = this.state;
-
-        let routeDots = JSON.parse(route.dots);
-        while(!routeDots[0].PositionX) {
-            routeDots = JSON.parse(routeDots);
+        let { lastId, lastLineId } = this.state;    
+        if(!route.dots || route.dots.length < 1) {
+            alert('У этого маршрута нет точек')
+        } else {
+            let routeDots = JSON.parse(route.dots);
+            while(!routeDots[0].PositionX) {
+                routeDots = JSON.parse(routeDots);
+            }
+            console.log(routeDots);
+            for(const dot of routeDots) {
+                const marker = L
+                .marker([dot.PositionX, dot.PositionY])
+                .bindPopup(L
+                    .popup()
+                    .setContent(`<h1>${dot.name}</h1><p>${dot.desc || "Без описания"}</p>`))
+                .addTo(map);
+                markers.push(marker);
+                const stateDot = {...dot};
+                dots.push(stateDot);
+                
+                lastId++;
+            }
+            map.setView([routeDots[0].PositionX, routeDots[0].PositionY], map.getZoom());
         }
-        //if(!routeDots[0].PositionX) routeDots = JSON.parse(routeDots);
-        console.log(routeDots);
-        for(const dot of routeDots) {
-            const marker = L
-            .marker([dot.PositionX, dot.PositionY])
-            .bindPopup(L
-                .popup()
-                .setContent(`<h1>${dot.name}</h1><p>${dot.desc || "Без описания"}</p>`))
-            .addTo(map);
-            markers.push(marker);
-            const stateDot = {...dot};
-            dots.push(stateDot);
-            
-            lastId++;
-        }
-        map.setView([routeDots[0].PositionX, routeDots[0].PositionY], map.getZoom());
-
         let routeLines = JSON.parse(route.lines);
         while(!(routeLines instanceof Array)) {
             routeLines = JSON.parse(routeLines);
@@ -172,14 +172,14 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             mapLines.push({id: lastLineId, line: polyline});
             lastLineId++;
         }
-        const { name, description } = route;
-        const theme = route.theme?.value;
-        const season = route.season?.value
+        const { name, description, theme, season } = route;
         this.setState({name, description, dots, theme, season, markers, lines, mapLines, lastId, lastLineId});
     }
 
     render() {
-        const { name, description, tracingInfo, buildingLineInfo, searchingInfo, isEditMode } = this.state;
+        const { name, description, tracingInfo, buildingLineInfo, 
+            searchingInfo, isEditMode, theme, season } = this.state;
+            console.log(theme);
         return <div className="bg-dark text-light">
                 <input className="form-control" type="text" name="searchquery" placeholder="Текст поиска"
                     onChange={e => {
@@ -293,19 +293,19 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         <h3 className="text-light">Добавить тематику</h3>
                         <select className="form-select"
                         onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
-                            <option value="none">Сбросить</option>
-                            <option value="modern-world">
+                            <option value="none" selected={theme==="none"}>Сбросить</option>
+                            <option value="modern-world" selected={theme==="modern-world"}>
                                 Современный мир</option>
-                            <option value="history">История</option>
-                            <option value="islands">Острова и парки</option>
-                            <option value="films">Фильмы</option>
-                            <option value="literature">
+                            <option value="history" selected={theme==="history"}>История</option>
+                            <option value="islands" selected={theme==="islands"}>Острова и парки</option>
+                            <option value="films" selected={theme==="films"}>Фильмы</option>
+                            <option value="literature" selected={theme==="literature"}>
                                 Литературный дворик</option>
-                            <option value="activities">
+                            <option value="activities" selected={theme==="activities"}>
                             Физические активности</option>
-                            <option value="gastronomy">
+                            <option value="gastronomy" selected={theme==="gastronomy"}>
                             Гастрономия</option>
-                            <option value="abiturients">
+                            <option value="abiturients" selected={theme==="abiturients"}>
                             Абитуриентам</option>
                         </select>
                         </div>
@@ -313,9 +313,11 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                             <h3 className="text-light">Выбрать сезон</h3>
                         <select className="form-select"
                             onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
-                            <option value="none">Сбросить</option>
-                            <option value="summer">Лето</option>
-                            <option value="winter">Зима</option>
+                            <option value="none" selected={season==="none"}>Все сезоны</option>
+                            <option value="summer" selected={season==="summer"}>Лето</option>
+                            <option value="autumn" selected={season==="autumn"}>Осень</option>
+                            <option value="winter" selected={season==="winter"}>Зима</option>
+                            <option value="spring" selected={season==="spring"}>Весна</option>
                         </select>
                         </div>
                         <div className="form-group">
@@ -408,7 +410,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
 
         lastId--;
 
-        this.setState({lastId: lastId, dots: dots, markers: markers, tracingInfo: tracingInfo});
+        this.setState({lastId, dots, markers, tracingInfo});
     }
 
     handleDotUpdate = (id: number, field: string, value: string) => {
@@ -452,7 +454,6 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             });
             await request;*/
             const request = post(`${process.env.REACT_APP_API_URL}/edit_route_post`, {route: object, id: editId})
-            .then(async response => await response.json())
             .then(response =>{
                 alert('Маршрут успешно сохранён');
             }).catch(err => {
@@ -598,6 +599,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         const request = get(`${process.env.REACT_APP_API_URL}/delete_route`, {id: editId})
             .then(response => {
                 alert('Маршрут удалён.');
+                window.location.href = "/routes";
             }).catch(err => {
                 alert('Произошла ошибка при попытке удалить маршрут. Попробуйте позже')
             });

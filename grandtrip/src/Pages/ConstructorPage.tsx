@@ -62,10 +62,16 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
             if(!mapDiv) {
                 console.log("no div? :(");
                 window.requestAnimationFrame(callback);
+                return;
             };
 
             const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
             const container = document.getElementById('main-container')!;
+            if(!container) {
+                console.log("no container? :(");
+                window.requestAnimationFrame(callback);
+                return;
+            }
             container.style.height = `${height}px`;
 
             const map = createMap("mapDiv", "Эрмитаж Санкт-Петербург")!

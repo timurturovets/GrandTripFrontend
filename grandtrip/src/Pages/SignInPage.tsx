@@ -1,5 +1,4 @@
 import React, { Component, ReactNode } from 'react'
-import { Navigate } from 'react-router'
 import { post } from '../Functions/requests'
 import { getUserInfo } from '../Functions/getUserInfo'
 import { AuthContextConsumer } from '../AuthContext'
@@ -35,6 +34,7 @@ export default class SignInPage extends Component<any, SignInPageState> {
             errMessage: undefined,
         };
     }
+
     render() {
         const { clickedLogin, errMessage } = this.state;
         /*let backUrl = "/";
@@ -43,7 +43,7 @@ export default class SignInPage extends Component<any, SignInPageState> {
         return <AuthContextConsumer>
                 {({isAuthenticated, setStatus, setInfo}) => 
                     isAuthenticated 
-                        ? <Navigate to="/account" />
+                        ? function(){window.location.href="/";return null;}()
                         : <div>
                             <div style={myStyle}>
                                 {errMessage && <p className="text-danger">{errMessage}</p>}
