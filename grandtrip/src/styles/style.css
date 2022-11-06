@@ -435,7 +435,7 @@ p {
 .features-section__image {
     min-height: 280px;
     min-width: 280px;
-    background: url(.,/img/city.png);
+    background: url(../img/city.png);
     background-size: cover;
     margin-right: 60px;
 }
