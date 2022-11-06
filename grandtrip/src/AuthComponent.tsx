@@ -9,8 +9,8 @@ interface AuthComponentProps {
 export default class AuthComponent extends Component<AuthComponentProps, any> {
     render() {
         return <AuthContextConsumer>
-            {({isLoading, isAuthenticated, info}) =>{
-                return isLoading ? null : isAuthenticated 
+            {({isAuthenticated, info}) =>{
+                return isAuthenticated 
                 ? (
                     !this.props.role // Наличие определённой роли необязательно в этом компоненте
                     || this.props.role === info?.role // Роль соответствует единственной указанной роли
@@ -24,7 +24,7 @@ export default class AuthComponent extends Component<AuthComponentProps, any> {
                         } else window.location.href="/account";
                         return null;
                     }(this.props.role)
-                : function(){window.location.href="/account";return null}()
+                : function(){console.log('not authenticated');window.location.href="/account";return null}()
             }}
         </AuthContextConsumer>
     }

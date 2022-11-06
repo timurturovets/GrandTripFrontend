@@ -333,6 +333,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             if(!mapDiv) {
                 console.log("no div? :(");
                 window.requestAnimationFrame(callback);
+                return;
             };
 
             const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;

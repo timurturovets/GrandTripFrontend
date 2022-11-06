@@ -311,13 +311,13 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         </div>
                         <div className="form-group">
                             <h3 className="text-light">Выбрать сезон</h3>
-                        <select className="form-select"
+                        <select className="form-select" value={season ?? "none"}
                             onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
-                            <option value="none" selected={season==="none"}>Все сезоны</option>
-                            <option value="summer" selected={season==="summer"}>Лето</option>
-                            <option value="autumn" selected={season==="autumn"}>Осень</option>
-                            <option value="winter" selected={season==="winter"}>Зима</option>
-                            <option value="spring" selected={season==="spring"}>Весна</option>
+                            <option value="none">Все сезоны</option>
+                            <option value="summer">Лето</option>
+                            <option value="autumn">Осень</option>
+                            <option value="winter">Зима</option>
+                            <option value="spring">Весна</option>
                         </select>
                         </div>
                         <div className="form-group">

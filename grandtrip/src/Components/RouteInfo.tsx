@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import RouteInformation from '../Interfaces/RouteInformation'
 import { Link } from 'react-router-dom'
-import { post } from '../Functions/requests'
+import { AuthContextConsumer } from '../AuthContext'
 
 interface RouteInfoProps {
     info: RouteInformation & { isFavourite: boolean },
@@ -24,7 +24,8 @@ export default class RouteInfo extends Component<RouteInfoProps, RouteInfoState>
     render() {
         const { info } = this.props;
         const { isShown } = this.state;
-        return <div>
+        return <AuthContextConsumer>
+            {({isAuthenticated})=><div>
             <button className="route-btn" onClick={e=>this.setState({isShown: !isShown})}>
                 {info.name || "Без названия"}
                 </button>
@@ -34,14 +35,15 @@ export default class RouteInfo extends Component<RouteInfoProps, RouteInfoState>
                         <div className="d-flex flex-row">
                             <button className="btn btn-sm btn-success"
                                 onClick={e => this.props.onRouteRendering(info.id)}>Отрисовать маршрут</button>
-                            <Link to={`/constructor?edit=${info.id}`} className="btn btn-sm btn-primary">
-                                Редактировать маршрут</Link>
+                            {isAuthenticated && <Link to={`/constructor?edit=${info.id}`} className="btn btn-sm btn-primary">
+                                Редактировать маршрут</Link>}
                             <button className="btn btn-sm btn-danger" 
                             onClick={e=>this.props.onAddingToFavourites(info.id, info.isFavourite)}>
                                 {info.isFavourite ? "Убрать из любимых" : "Добавить в любимые"}
                             </button>
                         </div>
                     </div>}
-        </div>
+        </div>}
+        </AuthContextConsumer>
     }
 }

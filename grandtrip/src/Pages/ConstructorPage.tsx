@@ -16,11 +16,10 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
             map: undefined
         };
     }
-    
+
     componentDidMount() {
         this.showMap();
     }
-
     render() {
         const map = this.state.map;
         console.log(map);
@@ -30,7 +29,7 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
                 <div id="mapInfoDiv" className="bg-dark">
                     {map && <ConstructorToolbar map={map} />}
                 </div>
-                <div id="mapDiv" style={{height: "100%", width: "100%"}}></div>
+                    <div id="mapDiv" style={{height: "100%", width: "100%"}}></div>
             </div>
             </div>
        </AuthComponent>
@@ -57,13 +56,6 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
 
     showMap = () => {
         const callback = () : void => {
-            console.log('anim frame');
-            const mapDiv = document.getElementById("mapDiv");
-            if(!mapDiv) {
-                console.log("no div? :(");
-                window.requestAnimationFrame(callback);
-                return;
-            };
 
             const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
             const container = document.getElementById('main-container')!;
@@ -73,6 +65,13 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
                 return;
             }
             container.style.height = `${height}px`;
+
+            const mapDiv = document.getElementById("mapDiv");
+            if(!mapDiv) {
+                console.log("no div? :(");
+                window.requestAnimationFrame(callback);
+                return;
+            };
 
             const map = createMap("mapDiv", "Эрмитаж Санкт-Петербург")!
             this.setState({ map });
