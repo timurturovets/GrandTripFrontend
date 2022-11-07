@@ -1,5 +1,6 @@
 import React, { ReactNode, Component } from 'react'
 import { AuthContextConsumer } from './AuthContext'
+import Footer from './Components/Footer';
 import Header from './Components/Header'
 
 interface LayoutProps {
@@ -23,6 +24,7 @@ export default class Layout extends Component<LayoutProps, any> {
                 <div id="layout-content">
                     {children}    
                 </div>
+                <Footer />
             </div>
         }</AuthContextConsumer>
     }

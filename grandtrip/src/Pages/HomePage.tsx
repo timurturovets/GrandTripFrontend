@@ -108,7 +108,8 @@ export default class HomePage extends Component {
                         <h2> 
                           <p>Регистрация </p>
                         </h2><span className="log-in-section__subtitle">
-                          <p>Уже есть аккаунт? <a className="link" href="login.html">Войти</a></p></span>
+                          <p>Уже есть аккаунт? 
+                            <Link className="link" to="sign-in">Войти</Link></p></span>
                       </div>
                     </section>
                 </div>
