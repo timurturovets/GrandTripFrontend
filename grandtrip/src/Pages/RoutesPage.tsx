@@ -53,8 +53,6 @@ interface RoutesPageState {
 }
 
 export default class RoutesPage extends Component<any, RoutesPageState> {
-    static mapDivId: string = "map-div"
-
     constructor(props: any) {
         super(props);
         
