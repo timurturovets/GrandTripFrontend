@@ -39,7 +39,7 @@ export default class RouteInfo extends Component<RouteInfoProps, RouteInfoState>
                                 Редактировать маршрут</Link>}
                             <button className="btn btn-sm btn-danger" 
                             onClick={e=>this.props.onAddingToFavourites(info.id, info.isFavourite)}>
-                                {info.isFavourite ? "Убрать из любимых" : "Добавить в любимые"}
+                                {info.isFavourite ? "Убрать из избранных" : "Добавить в избранные"}
                             </button>
                         </div>
                     </div>}

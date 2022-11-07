@@ -24,7 +24,7 @@ export default class Layout extends Component<LayoutProps, any> {
                 <div id="layout-content">
                     {children}    
                 </div>
-                <Footer />
+                {/*<Footer />*/}
             </div>
         }</AuthContextConsumer>
     }
