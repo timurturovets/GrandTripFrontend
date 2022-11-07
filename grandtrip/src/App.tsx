@@ -20,9 +20,9 @@ export default class App extends Component {
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/oldhome" element={<OldHomePage />} />
-                    <Route path="/routes" element={<RoutesPage />} />
+                    <Route path="/newroutes" element={<RoutesPage />} />
                     <Route path="/betaroutes" element={<BetaRoutesPage />} />
-                    <Route path="/newroutes" element={<NewRoutesPage />} />
+                    <Route path="/routes" element={<NewRoutesPage />} />
                     <Route path="/browseroutes" element={<BrowseRoutesPage />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/constructor" element={<ConstructorPage />} />
