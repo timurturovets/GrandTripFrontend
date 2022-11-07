@@ -241,7 +241,7 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         for (const dot of route.dots) {
             console.log(dot);
             let newMarker = L.marker([dot.PositionX, dot.PositionY]);
-            const content = `<h5>${dot.name}</h5><p>${dot.desc || "Нет описания"}</p>`;
+            const content = `<h5 class="display-5">${dot.name}</h5><p>${dot.desc || "Нет описания"}</p>`;
             newMarker.bindPopup(L.popup().setContent(content));
             newMarker.addTo(map!);
             markers.push(newMarker);

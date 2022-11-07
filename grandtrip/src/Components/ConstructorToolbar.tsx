@@ -150,7 +150,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                 .marker([dot.PositionX, dot.PositionY])
                 .bindPopup(L
                     .popup()
-                    .setContent(`<h1>${dot.name}</h1><p>${dot.desc || "Без описания"}</p>`))
+                    .setContent(`<h5 class="display-5">${dot.name}</h1><p>${dot.desc || "Без описания"}</p>`))
                 .addTo(map);
                 markers.push(marker);
                 const stateDot = {...dot};

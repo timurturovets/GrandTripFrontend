@@ -114,7 +114,9 @@ body {
     margin: 0 auto;
 }
 
-section {
+section,
+header,
+footer {
     position: relative;
     overflow: hidden;
 }
@@ -139,6 +141,10 @@ h3 {
 
 p {
     opacity: 80%;
+}
+
+form {
+    display: block;
 }
 
 .logo {
@@ -614,4 +620,250 @@ p {
 
 .link:hover {
     text-decoration: underline;
+}
+
+.log-in-section {
+    padding: 60px 0;
+}
+
+.log-in-section h2 {
+    margin-bottom: 20px;
+}
+
+.log-in-section__subtitle {
+    margin-bottom: 20px;
+    position: inline-block;
+}
+
+.log-in-section__fields {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.log-in-section .field {
+    background-color: #F1F1F1;
+    margin-bottom: 10px;
+    margin-right: 15px;
+}
+
+.field {
+    display: inline-block;
+    width: 300px;
+    font-size: 20px;
+    line-height: 44px;
+    padding-left: 10px;
+    border-radius: 10px;
+    font-family: "Bitter", sans-serif;
+    -webkit-transition: 0.5s;
+    -o-transition: 0.5s;
+    transition: 0.5s;
+}
+
+.field .default {
+    background: green !important;
+    color: red !important;
+}
+
+.field:placeholder {
+    font-size: 20px;
+    line-height: 44px;
+}
+
+.field:focus {
+    border: 3px solid black;
+}
+
+.field:hover::-webkit-input-placeholder {
+    color: #000;
+}
+
+.field:hover::-moz-placeholder {
+    color: #000;
+}
+
+.field:hover:-ms-input-placeholder {
+    color: #000;
+}
+
+.field:hover::-ms-input-placeholder {
+    color: #000;
+}
+
+.field:hover::placeholder {
+    color: #000;
+}
+
+select.field {
+    background: url(../img/icons/small-arrow.svg) no-repeat center right 10px;
+}
+
+.footer {
+    padding: 60px 0 30px 0;
+    background-color: #F1F1F1;
+}
+
+.footer .link {
+    font-size: 16px;
+    line-height: 25px;
+    color: rgba(0, 0, 0, 0.6);
+    font-weight: normal;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.footer .link img {
+    margin-right: 10px;
+    max-height: 20px;
+    max-width: 20px;
+}
+
+.footer .logo {
+    font-size: 30px;
+    color: black;
+}
+
+.footer__column {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+}
+
+.footer__column div {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.footer__column+.footer__column {
+    margin-left: 60px;
+}
+
+.footer__group1 {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.footer__links {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.footer__last-column .logo {
+    margin-bottom: 10px;
+}
+
+.footer__last-column .link {
+    margin-bottom: 5px;
+}
+
+.footer__note {
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+.footer__note:hover {
+    text-decoration: none;
+}
+
+.roads-page-map {
+    width: 100vw;
+    height: 100vh;
+    background: url(../img/map.jpg);
+    background-size: cover;
+}
+
+.sidebar {
+    -webkit-transition: 1s;
+    -o-transition: 1s;
+    transition: 1s;
+    padding: 15px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    position: absolute;
+    left: 0;
+    top: 70px;
+    height: calc(100% - 70px);
+    background: rgba(216, 216, 216, 0.7);
+    -webkit-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    width: 310px;
+    font-size: 16px;
+}
+
+.sidebar .field {
+    background-color: white;
+    width: 100%;
+}
+
+.sidebar__title {
+    font-weight: 800;
+    font-size: 35px;
+}
+
+.sidebar--closed {
+    left: -310px;
+}
+
+.sidebar__list {
+    margin-top: 16px;
+    overflow: hidden;
+}
+
+.sidebar__list *+* {
+    margin-top: 10px;
+}
+
+.sidebar__close-button {
+    font-size: 16px;
+    font-weight: 600;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin-bottom: 10px;
+    opacity: 0.6;
+}
+
+.sidebar__close-button img {
+    -webkit-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+    margin-right: 10px;
+}
+
+.sidebar select {
+    color: rgba(0, 0, 0, 0.6);
 }

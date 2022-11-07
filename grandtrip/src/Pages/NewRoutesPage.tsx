@@ -92,7 +92,252 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
             }
         }
     }
+    componentDidMount() {
+        this.showMap();
+    }
     render() {
-        return <div></div>
+        const { shareInfo, routes, criteries } = this.state;
+        const { isFromRef, refRoute, loading } = shareInfo;
+        const { clicked, isLoading, result, error } = routes;
+
+        return <AuthContextConsumer>
+            {({isAuthenticated})=><div>
+                <aside className="sidebar">
+                    <div className="sidebar__content">
+                        <button className="sidebar__close-button"> <img src="img/icons/small-arrow.svg" alt=""/><span>Скрыть меню</span></button>
+                        <div className="sidebar__title">Поиск по параметрам</div>
+                        <div className="sidebar__list">
+                        <form className="sidebar__fields">
+                            <select className="field field--small"
+                            onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
+                            <option value="none">Любое время года</option>
+                            <option value="spring">Весна</option>
+                            <option value="winter">Зима</option>
+                            <option value="autumn">Осень</option>
+                            <option value="summer">Лето</option>
+                            </select>
+                            <select className="field field--small"
+                                onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
+                                <option value="none">Все тематики</option>
+                                <option value="modern-world">Современный мир</option>
+                                <option value="history">История</option>
+                                <option value="islands">Острова и парки</option>
+                                <option value="films">Фильмы</option>
+                                <option value="literature">Литературный дворик</option>
+                                <option value="activities">Физические активности</option>
+                                <option value="gastronomy">Гастрономия</option>
+                                <option value="abiturients">Абитуриентам</option>
+                            </select>
+                            <select className="field field--small"
+                            onChange={e=>this.setState({criteries:
+                                {...criteries, time: parseInt(e.target.value)}})}>
+                            <option selected disabled value="default">Длительность прогулки</option>
+                            <option value="1">30 минут</option>
+                            <option value="2">1 час</option>
+                            <option value="3">1.5 часа</option>
+                            <option value="4">2 часа и больше</option>
+                            </select>
+                            <button className="button button--small" onClick={this.handleSubmit}>искать</button>
+                        </form>
+                        </div>
+                    </div>
+                    {isAuthenticated && 
+                        <Link to="/constructor" className="button">создайте свой маршрут</Link>}
+                    <div id="routes">
+                    
+                {isFromRef 
+                    ? loading || !refRoute
+                        ? <p>Загрузка...</p>
+                        : error
+                            ? <p className="text-danger">{error}</p>
+                            : <RouteInfo info={refRoute} 
+                            onRouteRendering={this.handleRouteRendering} 
+                            onAddingToFavourites={this.handleAddToFavourites} />
+                    : clicked
+                        ? <p>Нажмите на кнопку "ОК", чтобы отобразить маршруты</p>
+                        : isLoading
+                            ? <p>Загрузка...</p>
+                            : error
+                                ? <p className="text-danger">{error}</p>
+                                : result.map(route => <div key={route.id}><RouteInfo info={route} 
+                                onRouteRendering={this.handleRouteRendering} 
+                                onAddingToFavourites={this.handleAddToFavourites} /></div>)
+                }
+            </div>
+            </aside>
+                    <div id="MAP-ID"></div>
+        </div>}</AuthContextConsumer>
+    }
+    handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+
+        const { criteries } = this.state;
+        const { theme, season } = criteries;
+        
+        const filters = JSON.stringify({
+            start: 0,
+            end: 10000,
+            criteries: [
+                "theme",
+                "season"
+            ],
+            values: [
+                theme,
+                season
+            ]
+        });
+        console.log(filters);
+        console.log(process.env.REACT_APP_API_URL);
+        this.setState({routes: {...this.state.routes, isLoading: true}});
+        await get(`${process.env.REACT_APP_API_URL}/get_routes_by_filters`, {filters}).then(async res=>{
+            const routes = (await res.json()).routes;
+            const routeInformations: (RouteInformation & {isFavourite: boolean})[] = [];
+            for(const route of routes) {
+                if(route) routeInformations.push(route);
+            }
+        
+            console.log(routeInformations);
+            this.setState({
+                routes: {
+                    ...this.state.routes,
+                    result: routeInformations,
+                    isLoading: false
+                }
+            });
+            const container = document.getElementById('main-container')!;   
+            const sideNav = document.getElementById('MySideNav')!;
+            sideNav.style.height = container.style.height;
+        }).catch(err=>{
+            console.log(err);
+            //alert('Произошла ошибка. Попробуйте позже.');
+        })
+    }
+
+    handleRouteRendering = (routeId: number) => {
+        console.log(routeId);
+        const { result } = this.state.routes;
+        let { map, markers, mapLines } = this.state.mapInfo;
+        //const center = map!.getCenter();
+        const zoom = map!.getZoom();
+        /*map!.remove();
+        this.handleShowMap(center as L.LatLng, zoom);*/
+        for(const marker of this.state.mapInfo.markers) {
+            marker.remove();
+        }
+
+        for(const line of mapLines) {
+            map!.removeLayer(line);
+        }
+        let route: RouteInformation = result.find(r => r.id === routeId)!;
+        console.log(route);
+        while(!(route.dots instanceof Array)) route.dots = JSON.parse(route.dots as unknown as string);
+        while(!(route.lines instanceof Array)) route.lines = JSON.parse(route.lines as unknown as string);
+        for (const dot of route.dots) {
+            console.log(dot);
+            let newMarker = L.marker([dot.PositionX, dot.PositionY]);
+            const content = `<h5 class="display-5">${dot.name}</h5><p>${dot.desc || "Нет описания"}</p>`;
+            newMarker.bindPopup(L.popup().setContent(content));
+            newMarker.addTo(map!);
+            markers.push(newMarker);
+        }
+        map!.setView([route.dots[0].PositionX, route.dots[0].PositionY], zoom > 13 ? zoom : 13);
+        console.log(route.lines);
+        for (const line of route.lines) {
+            let realLatLngs: {lat: number, lng: number}[] = [];
+            for(let latlng of line.latlngs) {
+                const unwrapped = latlng as number[];
+                realLatLngs.push({
+                    lat: unwrapped[0] || (latlng as any).lat, 
+                    lng: unwrapped[1] || (latlng as any).lng 
+                });
+            }
+            console.log(realLatLngs);
+            const l = L.polyline(realLatLngs, { color: 'rgba(255, 157, 18, 1)', weight: 5 })
+                .addTo(map!);
+            mapLines.push(l);
+        }
+        this.setState({mapInfo: {...this.state.mapInfo, mapLines, markers}})
+    }
+
+    handleThemeChange = (theme: Theme) : void => {
+        this.setState({
+            criteries: {
+                ...this.state.criteries,
+                theme
+            }
+        });
+    }
+
+    handleAddToFavourites = async (id: number, remove: boolean) => {
+        const url = `${process.env.REACT_APP_API_URL}/${remove ? "remove" : "add"}_favourite_route`;
+        await post(url, { routeId: id}).then(async response => {
+            const { routes } = this.state;
+            const { result } = routes;
+
+            const route = result.find(r => r.id === id);
+            if(!route) return;
+
+            route.isFavourite = !remove;
+            this.setState({routes: {...routes, result}});
+        }).catch(err=>{
+            console.log(err);
+            //alert('284. Произошла ошибка. Попробуйте позже.')
+        });
+    }
+
+    handleSeasonChange = (season: Season) : void => {
+        const { criteries } = this.state;
+        this.setState({
+            criteries: {
+                ...criteries,
+                season
+            }
+        });
+    }
+
+    handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) : void => {
+        const time = e.target.value as Time;
+
+        const { criteries } = this.state;
+        this.setState({
+            criteries:{
+                ...criteries,
+                time
+            }
+        });
+    }
+
+    /*handleShowMap = (center?: number[] | L.LatLng, zoom?: number) => {
+        const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
+        const container = document.getElementById('main-container')!;
+        container.style.height = `${height}px`;
+        container.style.width = `${document.body.offsetWidth}px`;
+
+        const map = createMap("MAP-ID", "Санкт-Петербург")! 
+        this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
+
+        center && map.setView(center as L.LatLngExpression, zoom || 13);
+    }*/
+
+    showMap = () => {
+        const callback = () : void => {
+            console.log('anim frame');
+            const mapDiv = document.getElementById("MAP-ID");
+            if(!mapDiv) {
+                console.log("no div? :(");
+                window.requestAnimationFrame(callback);
+                return;
+            };
+            mapDiv.style.height="1000px";
+            mapDiv.style.width="100%";
+            const aside = document.getElementsByTagName('aside')[0]!;
+            mapDiv.style.marginLeft = `${aside.offsetWidth}px`
+            //mapDiv.style.width=`${mapDiv.offsetWidth - aside.offsetWidth}`;
+            mapDiv.style.width="100vw;"
+
+            const map = createMap("MAP-ID", "Эрмитаж Санкт-Петербург")!
+            this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
+        };
+        window.requestAnimationFrame(callback);
     }
 }
