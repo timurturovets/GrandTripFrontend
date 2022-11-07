@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import RouteInformation from '../Interfaces/RouteInformation';
-import RouteCard from '../Components/RouteCard'
+//import RouteCard from '../Components/RouteCard'
 import DisplayRoute from '../Components/DisplayRoute'
 
 type Nullable<T> = T | null;
@@ -45,7 +45,7 @@ export default class BrowseRoutesPage extends Component<any, BrowseRoutesPageSta
                 <div className="d-flex flex-column">
                 {subArray.map(arr=>
                     <div className="d-flex flex-row">
-                    {arr.map(route => <RouteCard key={route.id} info={route} onRender={this.onRouteRender} />)}
+                    {/*arr.map(route => <RouteCard key={route.id} info={route} onRender={this.onRouteRender} />)*/}
                     </div>
                 )}
                 </div>
