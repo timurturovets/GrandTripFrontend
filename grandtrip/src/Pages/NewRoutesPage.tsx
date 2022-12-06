@@ -101,14 +101,14 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
         const { clicked, isLoading, result, error } = routes;
 
         return <AuthContextConsumer>
-            {({isAuthenticated})=><div>
+            {({isAuthenticated})=><div style={{display: 'flex'}}>
                 <aside className="sidebar">
                     <div className="sidebar__content">
                         <button className="sidebar__close-button"> <img src="img/icons/small-arrow.svg" alt=""/><span>Скрыть меню</span></button>
                         <div className="sidebar__title">Поиск по параметрам</div>
                         <div className="sidebar__list">
-                        <form className="sidebar__fields">
-                            <select className="field field--small"
+                        <form className="sidebar__field">
+                            <select className="field field--small sidebar__element"
                             onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
                             <option value="none">Любое время года</option>
                             <option value="spring">Весна</option>
@@ -116,7 +116,7 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
                             <option value="autumn">Осень</option>
                             <option value="summer">Лето</option>
                             </select>
-                            <select className="field field--small"
+                            <select className="field field--small sidebar__element"
                                 onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
                                 <option value="none">Все тематики</option>
                                 <option value="modern-world">Современный мир</option>
@@ -128,7 +128,7 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
                                 <option value="gastronomy">Гастрономия</option>
                                 <option value="abiturients">Абитуриентам</option>
                             </select>
-                            <select className="field field--small"
+                            <select className="field field--small sidebar__element"
                             onChange={e=>this.setState({criteries:
                                 {...criteries, time: parseInt(e.target.value)}})}>
                             <option selected disabled value="default">Длительность прогулки</option>
@@ -137,12 +137,14 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
                             <option value="3">1.5 часа</option>
                             <option value="4">2 часа и больше</option>
                             </select>
-                            <button className="button button--small" onClick={this.handleSubmit}>искать</button>
+                            <button className="button button--small sidebar__element" onClick={this.handleSubmit}>искать</button>
                         </form>
                         </div>
-                    </div>
+                    {//</div>
+    }
                     {isAuthenticated && 
-                        <Link to="/constructor" className="button">создайте свой маршрут</Link>}
+                        <Link to="/constructor" className="button button--bordered sidebar__bottom-button">
+                            создайте свой маршрут</Link>}
                     <div id="routes">
                     
                 {isFromRef 
@@ -163,6 +165,7 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
                                 onRouteRendering={this.handleRouteRendering} 
                                 onAddingToFavourites={this.handleAddToFavourites} /></div>)
                 }
+            </div>
             </div>
             </aside>
                     <div id="MAP-ID"></div>
@@ -210,7 +213,7 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
         }).catch(err=>{
             console.log(err);
             //alert('Произошла ошибка. Попробуйте позже.');
-        })
+        });
     }
 
     handleRouteRendering = (routeId: number) => {

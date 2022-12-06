@@ -323,11 +323,46 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         <div className="form-group">
                             <button className="constructor-button" onClick={e=>this.onSubmit(e)}>
                                 Отправить маршрут на обработку</button>
+                            <button className="constructor-button" onClick={e=>this.onSendToNew(e)}>
+                                Отравить маршрут на новый бэкенд
+                            </button>
                             {isEditMode && <button className="btn btn-outline-danger" style={{width: '100%'}}
                                 onClick={e=>this.onDelete(e)}>Удалить маршрут</button>}
                         </div>
                     </div>}
             </div>
+    }
+
+    onSendToNew = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+
+        const { name, description, theme, season, dots, lines } = this.state;
+        const fd = new FormData();
+
+        fd.append('data.RouteName', name!);
+        fd.append('data.Description', description!);
+        fd.append('data.Theme', theme!);
+        fd.append('data.Season', season!);
+
+        const realDots = JSON.stringify([...dots.map(d=>{
+            return { Id: d.id, Name: d.name, Description: d.desc }
+                //PositionX: d.PositionX, PositionY: d.PositionY };
+        })]);
+
+        const realLines = JSON.stringify([...lines.map(l=>{
+            return { Id: l.id, LatLngs: l.latlngs };
+        })]);
+
+        fd.append('data.Dots', realDots);
+        fd.append('data.Lines', realLines);
+        
+        await fetch(`${process.env.REACT_APP_NEW_API_URL}/api/route/add`,{
+            method: 'POST',
+            body: fd
+        }).then(async response => {
+            if(response.ok) alert('Маршрут сохранён');
+            console.log(await response.json());
+        });
     }
 
     handleThemeChange = (theme: Theme) => {

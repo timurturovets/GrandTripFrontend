@@ -23,8 +23,8 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
     render() {
         const map = this.state.map;
         console.log(map);
-        return <AuthComponent>
-         <div style={{height: "100%"}}>           
+        //return <AuthComponent>
+        return <div style={{height: "100%"}}>           
                 <div id="main-container" style={{height: "100%", width: "100%"}}>
                 <div id="mapInfoDiv" className="bg-dark">
                     {map && <ConstructorToolbar map={map} />}
@@ -32,7 +32,7 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
                     <div id="mapDiv" style={{height: "100%", width: "100%"}}></div>
             </div>
             </div>
-       </AuthComponent>
+       //</AuthComponent>
     }
 
     handleShowMap = async () => {

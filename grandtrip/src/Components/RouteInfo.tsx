@@ -35,7 +35,8 @@ export default class RouteInfo extends Component<RouteInfoProps, RouteInfoState>
                         <div className="d-flex flex-row">
                             <button className="btn btn-sm btn-success"
                                 onClick={e => this.props.onRouteRendering(info.id)}>Отрисовать маршрут</button>
-                            {isAuthenticated && <Link to={`/constructor?edit=${info.id}`} className="btn btn-sm btn-primary">
+                            {//isAuthenticated && 
+                            <Link to={`/constructor?edit=${info.id}`} className="btn btn-sm btn-primary">
                                 Редактировать маршрут</Link>}
                             <button className="btn btn-sm btn-danger" 
                             onClick={e=>this.props.onAddingToFavourites(info.id, info.isFavourite)}>

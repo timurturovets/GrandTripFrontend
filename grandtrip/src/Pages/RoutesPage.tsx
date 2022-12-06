@@ -182,21 +182,13 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         const { theme, season } = criteries;
         
         const filters = JSON.stringify({
-            start: 0,
-            end: 10000,
-            criteries: [
-                "theme",
-                "season"
-            ],
-            values: [
-                theme,
-                season
-            ]
+            theme, season
         });
         console.log(filters);
         console.log(process.env.REACT_APP_API_URL);
         this.setState({routes: {...this.state.routes, isLoading: true}});
-        await get(`${process.env.REACT_APP_API_URL}/get_routes_by_filters`, {filters}).then(async res=>{
+
+        await get(`${process.env.REACT_APP_API_URL}/routes/getroutes`, { filters }).then(async res=>{
             const routes = (await res.json()).routes;
             const routeInformations: (RouteInformation & {isFavourite: boolean})[] = [];
             for(const route of routes) {
