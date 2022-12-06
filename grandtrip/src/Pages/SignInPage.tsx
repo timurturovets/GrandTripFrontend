@@ -123,7 +123,7 @@ export default class SignInPage extends Component<any, SignInPageState> {
                   onChange={e=>this.setState({username: e.target.value})}
                   value={username} />
                   <input className="field" type="text" placeholder="Пароль" 
-                  onChange={e=>this.setState({username: e.target.value})}
+                  onChange={e=>this.setState({password: e.target.value})}
                   value={password} />
                 </div>
               </form>
