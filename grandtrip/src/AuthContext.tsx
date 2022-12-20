@@ -5,11 +5,13 @@ import { getUserInfo } from './Functions/getUserInfo';
 
 const { Provider, Consumer }  = React.createContext<{
     isAuthenticated: boolean,
+    isLoading: boolean,
     setStatus: typeof statusSetter,
     setInfo: typeof userInfoSetter,
     info?: UserInformation
 }>({
     isAuthenticated: false,
+    isLoading: true,
     setStatus: (isAuthenticated: boolean, token: string) => {},
     setInfo: (info: UserInformation) => {}
 });
@@ -20,6 +22,7 @@ interface AuthContextProviderProps {
 
 interface AuthContextProviderState {
     isAuthenticated: boolean,
+    isLoading: boolean,
     info?: UserInformation,
     setStatus: typeof statusSetter,
     setInfo: typeof userInfoSetter
@@ -31,6 +34,7 @@ class AuthContextProvider extends Component<AuthContextProviderProps, AuthContex
         
         this.state = {
             isAuthenticated: false,
+            isLoading: true,
             setStatus: (isAuthenticated, token) => {
                 this.setState({isAuthenticated});
 
@@ -44,15 +48,17 @@ class AuthContextProvider extends Component<AuthContextProviderProps, AuthContex
     }
 
     async componentDidMount() {
-        const info = await getUserInfo();
-        if(info?.id) this.setState({isAuthenticated: true, info});
-        console.log(info);
+        await getUserInfo().then(info => {
+            if(info?.id) this.setState({isLoading: false, isAuthenticated: true, info});
+            else this.setState({isLoading: false, isAuthenticated: false});
+            console.log(info);
+        }).catch(err=>this.setState({isLoading: false, isAuthenticated: false}));
     }
 
     render() {
-        const {isAuthenticated, info, setStatus, setInfo } = this.state;
-        return <Provider value={{isAuthenticated, info, setStatus, setInfo}}>
-                {this.props.children}
+        const {isAuthenticated, isLoading, info, setStatus, setInfo } = this.state;
+        return <Provider value={{isAuthenticated, isLoading, info, setStatus, setInfo}}>
+                {isLoading ? <h1 style={{margin: "auto"}}>Загрузка..</h1> : this.props.children}
             </Provider>
     }
 }

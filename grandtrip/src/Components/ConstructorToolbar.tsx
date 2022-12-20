@@ -6,7 +6,7 @@ import DotsList from './DotsList'
 import LinesList from './LinesList'
 import { RouteMode } from '../Interfaces/RouteMode'
 import { orsAccessToken } from '../Constants'
-import { get, post } from '../Functions/requests'
+import { post } from '../Functions/requests'
 import getPointBySearch from '../Functions/getPointBySearch'
 import { getRouteById } from '../Functions/getRouteById'
 
@@ -22,7 +22,28 @@ interface MapLine {
 type Nullable<T> = T | null
 type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' 
 | 'activities' | 'gastronomy' | 'abiturients'
+const themes = {
+    'Без тематики': 'none',
+    'Современный мир': 'modern-world',
+    'История': 'history',
+    'Острова и парки': 'islands',
+    'Фильмы': 'films',
+    'Литературный дворик': 'literature',
+    'Физические активности': 'activities',
+    'Гастрономия': 'gastronomy',
+    'Абитуриентам': 'abiturients'
+}
+type ThemesKey = keyof typeof themes;
+
 type Season = 'none' | 'summer' | 'winter' | 'spring' | 'autumn'
+const seasons = {
+    'Все сезоны': 'none',
+    'Лето': 'summer',
+    'Весна' : 'spring',
+    'Зима': 'winter',
+    'Осень': 'autumn'
+}
+type SeasonsKey = keyof typeof seasons;
 
 interface ConstructorToolbarState {
     isEditMode: boolean,
@@ -30,8 +51,8 @@ interface ConstructorToolbarState {
     browsingLines: boolean,
     name: Nullable<string>,
     description: Nullable<string>,
-    theme: Nullable<Theme>,
-    season: Nullable<Season>,
+    theme: Theme,
+    season: Season,
     dots: Dot[],
     lines: Line[],
     mapLines: MapLine[],
@@ -65,8 +86,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             browsingLines: false,
             name: null, 
             description: null, 
-            theme: null,
-            season:null,
+            theme: "none",
+            season: "none",
             dots: [],
             lines: [],
             mapLines: [],
@@ -109,13 +130,13 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                     lastLineId: lastLineId});
             } else {
                 for(const obj of this.state.dots){
-                    if(obj.PositionX === latlng.lat && obj.PositionY === latlng.lng) return;
+                    if(obj.positionX === latlng.lat && obj.positionY === latlng.lng) return;
                 }
 
                 const marker = L.marker(latlng);
                 markers.push(marker);
                 marker.addTo(map);
-                dots.push({id: lastId, name: "", desc: "", link: "", PositionX: latlng.lat, PositionY: latlng.lng});
+                dots.push({id: lastId, name: "", description: "", link: "", positionX: latlng.lat, positionY: latlng.lng});
                 
                 lastId++;                
 
@@ -140,46 +161,45 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         if(!route.dots || route.dots.length < 1) {
             alert('У этого маршрута нет точек')
         } else {
-            let routeDots = JSON.parse(route.dots);
-            while(!routeDots[0].PositionX) {
-                routeDots = JSON.parse(routeDots);
-            }
+            let routeDots = route.dots;
             console.log(routeDots);
             for(const dot of routeDots) {
+                if(dots.find(d=>d.id === parseInt(dot.id))) continue;
                 const marker = L
-                .marker([dot.PositionX, dot.PositionY])
+                .marker([dot.positionX, dot.positionY])
                 .bindPopup(L
                     .popup()
-                    .setContent(`<h5 class="display-5">${dot.name}</h1><p>${dot.desc || "Без описания"}</p>`))
+                    .setContent(`<h5 class="display-5">${dot.name}</h1><p>${dot.description || "Без описания"}</p>`))
                 .addTo(map);
                 markers.push(marker);
-                const stateDot = {...dot};
+                const stateDot = {...dot, id: parseInt(dot.id)};
                 dots.push(stateDot);
                 
                 lastId++;
             }
-            map.setView([routeDots[0].PositionX, routeDots[0].PositionY], map.getZoom());
+            map.setView([routeDots[0].positionX, routeDots[0].positionY], map.getZoom());
         }
-        let routeLines = JSON.parse(route.lines);
-        while(!(routeLines instanceof Array)) {
-            routeLines = JSON.parse(routeLines);
-        } 
+        let routeLines = route.lines;
         console.log(routeLines);
         for(const line of routeLines) {
-            const polyline = L.polyline(line.latlngs, {color: "blue", weight: 5}).addTo(map);
+            const polyline = L.polyline(line.latLngs, {color: "blue", weight: 5}).addTo(map);
             const stateLine = {...line};
             lines.push(stateLine);
             mapLines.push({id: lastLineId, line: polyline});
             lastLineId++;
         }
-        const { name, description, theme, season } = route;
+        const { name, description } = route;
+        let { theme, season } = route;
+
+        theme = themes[theme as ThemesKey] ? themes[theme as ThemesKey] : "none";
+        season = seasons[season as SeasonsKey] ? seasons[season as SeasonsKey] : "none";
+
         this.setState({name, description, dots, theme, season, markers, lines, mapLines, lastId, lastLineId});
     }
 
     render() {
         const { name, description, tracingInfo, buildingLineInfo, 
             searchingInfo, isEditMode, theme, season } = this.state;
-            console.log(theme);
         return <div className="bg-dark text-light">
                 <input className="form-control" type="text" name="searchquery" placeholder="Текст поиска"
                     onChange={e => {
@@ -223,7 +243,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         </div>
                         <div className="form-group mx-sm-3">
                             <input className="form-control" 
-                            type="number" min="1" placeholder="Номер первой точки" 
+                            type="number" placeholder="Номер первой точки" 
                                 onChange={e=>{
                                     e.preventDefault();
                                     tracingInfo.startDotId = parseInt(e.target.value);
@@ -323,9 +343,9 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         <div className="form-group">
                             <button className="constructor-button" onClick={e=>this.onSubmit(e)}>
                                 Отправить маршрут на обработку</button>
-                            <button className="constructor-button" onClick={e=>this.onSendToNew(e)}>
+                            {/*<button className="constructor-button" onClick={e=>this.onSendToNew(e)}>
                                 Отравить маршрут на новый бэкенд
-                            </button>
+                            </button>*/}
                             {isEditMode && <button className="btn btn-outline-danger" style={{width: '100%'}}
                                 onClick={e=>this.onDelete(e)}>Удалить маршрут</button>}
                         </div>
@@ -333,37 +353,44 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             </div>
     }
 
-    onSendToNew = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    /*onSendToNew = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        const { name, description, theme, season, dots, lines } = this.state;
-        const fd = new FormData();
+        const { isEditMode, editId, name, description, theme, season, dots, lines } = this.state;
 
-        fd.append('data.RouteName', name!);
-        fd.append('data.Description', description!);
-        fd.append('data.Theme', theme!);
-        fd.append('data.Season', season!);
+        const realDots = [...[...dots.map(d=>{
+            return { Id: d.id, Name: d.name, Description: d.description,
+                PositionX: d.positionX || (d as Dot & {PositionX: number}).PositionX, 
+                PositionY: d.positionY || (d as Dot & {PositionY: number}).PositionY }
+        })].map(d=>JSON.stringify(d))];
 
-        const realDots = JSON.stringify([...dots.map(d=>{
-            return { Id: d.id, Name: d.name, Description: d.desc }
-                //PositionX: d.PositionX, PositionY: d.PositionY };
-        })]);
+        const realLines = [...[...lines.map(l=>{
+            return { Id: l.id, LatLngs: l.latLngs };
+        })].map(l=>JSON.stringify(l))];
 
-        const realLines = JSON.stringify([...lines.map(l=>{
-            return { Id: l.id, LatLngs: l.latlngs };
-        })]);
+        if(isEditMode) {
+            const fd = new FormData();
 
-        fd.append('data.Dots', realDots);
-        fd.append('data.Lines', realLines);
-        
-        await fetch(`${process.env.REACT_APP_NEW_API_URL}/api/route/add`,{
-            method: 'POST',
-            body: fd
-        }).then(async response => {
-            if(response.ok) alert('Маршрут сохранён');
-            console.log(await response.json());
-        });
-    }
+            fd.append('request.Id', `${editId}`);
+            fd.append('request.Name', name!);
+            fd.append('request.Description', description!);
+            fd.append('request.Theme', theme!);
+            fd.append('request.Season', season!);
+
+            console.log(realDots);
+            console.log(realLines);
+
+            for (const dot of realDots) fd.append(`Dots`, dot);
+            for (const line of realLines) fd.append(`Lines`, line);
+
+            await post(`${process.env.REACT_APP_NEW_API_URL}/api/route/update`, fd)
+                .then(response => {
+                    alert(response.status);
+                });
+        } else {
+            
+        }
+    }*/
 
     handleThemeChange = (theme: Theme) => {
         this.setState({theme});
@@ -377,7 +404,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         e.preventDefault();
 
         const { value } = e.target;
-        if(type === "routeName"){
+        if(type === "routeName") {
             this.setState({name: value});
         } else if(type === "routeDesc") {
             this.setState({description: value});
@@ -424,7 +451,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                 dots.splice(dots.indexOf(obj), 1);
                 for(const m of markers){
                     const latlng = m.getLatLng();
-                    if(latlng.lat === obj.PositionX && latlng.lng === obj.PositionY){
+                    if(latlng.lat === obj.positionX && latlng.lng === obj.positionY){
                         m.remove();
                         markers.splice(markers.indexOf(m), 1);
                         break;
@@ -452,77 +479,76 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         const dots = this.state.dots;
         for(const obj of dots){
             if(obj.id === id){
-                console.log(`changing ${field} to ${value}`);
                 if(field === "name") obj.name = value;
-                else if(field === "desc") obj.desc = value;
+                else if(field === "desc") obj.description = value;
                 else if(field === "link") obj.link = value;
                 else return;            
                 break;
             }
         }
         
-        this.setState({dots: dots});
+        this.setState({ dots });
     }
-    //TODO fix
+
     onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
         const { name, description, theme, season, dots, lines, isEditMode, editId } = this.state;
-        const object = {
-            name,
-            description,
-            dots,
-            lines,
-            theme,
-            season
-        };
         console.log(dots);
-        const json = JSON.stringify(object);
-        console.log(json);
+
+        const realDots = [...[...dots.map(d=>{
+            return { Id: d.id, Name: d.name, Description: d.description,
+                PositionX: d.positionX 
+                || (d as Dot & {PositionX: number}).PositionX, PositionY: d.positionY 
+                || (d as Dot & {PositionY: number}).PositionY }
+        })].map(d=>JSON.stringify(d))];
+
+        const realLines = [...[...lines.map(l=>{
+            return { Id: l.id, LatLngs: l.latLngs };
+        })].map(l=>JSON.stringify(l))];
+
+        const fd = new FormData();
+
         if(isEditMode) {
-            /*const request = get(`${process.env.REACT_APP_API_URL}/edit_route`, {route: json, id: editId})
-            .then(async response => await response.json())
-            .then(response => {
-                alert('Маршрут успешно сохранён!');
-            }).catch(err => {
-                alert('Произошла ошибка при попытке сохранить маршрут. Попробуйте позже.');
-            });
-            await request;*/
-            const request = post(`${process.env.REACT_APP_API_URL}/edit_route_post`, {route: object, id: editId})
-            .then(response =>{
-                alert('Маршрут успешно сохранён');
-            }).catch(err => {
-                alert('Произошла ошибка при попытке сохранить маршрут. Попробуйте позже.');
-            });
-            await request;
+            fd.append('Id', `${editId}`);   
+            fd.append('Name', name!);
+            fd.append('Description', description!);
+            fd.append('Theme', theme!);
+            fd.append('Season', season!);
+
+            console.log(realDots);
+            console.log(realLines);
+
+            for (const dot of realDots) fd.append(`Dots`, dot);
+            for (const line of realLines) fd.append(`Lines`, line);
+
+            await post(`${process.env.REACT_APP_NEW_API_URL}/api/route/update`, fd)
+                .then(response => {
+                    alert(`Маршрут успешно обновлён. ${response.status}`);
+                });
         } else {
-            /*const request = get(`${process.env.REACT_APP_API_URL}/add_route`, {route: json})
-            .then(response => {
-                // eslint-disable-next-line no-restricted-globals
-                let answer = confirm("Маршрут успешно сохранён! Перейти на страницу со всеми маршрутами?");
-                if (answer) window.location.href = "/routes";
-                else {
-                    this.setState({isEditMode: true, editId: response});
-                }
-            }).catch(err => {
-                alert('Произошла ошибка при попытке сохранить маршрут. Попробуйте позже. При перезагрузке страницы изменения пропадут.');
-            });
+            fd.append('RouteName', name!);
+            fd.append('Description', description!);
+            fd.append('Theme', theme!);
+            fd.append('Season', season!);
 
-            await request;*/
-            const request = post(`${process.env.REACT_APP_API_URL}/add_route_post`, 
-            {route: object, id: editId}).then(async response => await response.json())
+            console.log(realDots);
+            console.log(realLines);
+
+            for (const dot of realDots) fd.append(`Dots`, dot);
+            for (const line of realLines) fd.append(`Lines`, line);
+            
+            await post(`${process.env.REACT_APP_NEW_API_URL}/api/route/add`, fd)
             .then(async response => {
-                //eslint-disable-next-line no-restricted-globals
-                let answer = confirm("Маршрут успешно сохранён! Перейти на страницу со всеми маршрутами?");
-                if (answer) window.location.href = "/routes";
-                else {
-                    this.setState({isEditMode: true, editId: response});
-                }
-            }).catch(err => {
-                alert(`Произошла ошибка при попытке сохранить маршрут. Попробуйте позже. При перезагрузке страницы изменения пропадут.`);
+                if(response.ok) console.log('Маршрут сохранён');
+                const id = await response.json();
+                alert(id);
+                await fetch(`${process.env.REACT_APP_NEW_API_URL}/api/route/get?id=${id}`)
+                    .then(async response => {
+                        console.log(await response.json())
+                    });
+                this.setState({isEditMode: true, editId: id});
             });
-
-            await request;
         }
     }
 
@@ -544,7 +570,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         marker.addTo(this.props.map);
         markers.push(marker);
 
-        dots.push({id: lastId, desc: "", name: searchQuery, link: "", PositionX: latlng[0], PositionY: latlng[1]});
+        dots.push({id: lastId, description: "", name: searchQuery, link: "", positionX: latlng[0], positionY: latlng[1]});
         lastId++;
         searchingInfo.searchQuery = undefined;
         this.setState({searchingInfo, lastId, dots, markers});
@@ -553,21 +579,38 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
     handleTracing = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        const tracingInfo = this.state.tracingInfo;
-        const startDotId = tracingInfo.startDotId, endDotId = tracingInfo.endDotId;
-        if(startDotId === endDotId || startDotId === null || endDotId === null) return;
+        const { tracingInfo, dots } = this.state;
+        const { startDotId, endDotId } = tracingInfo;
 
-        let startDot: Dot, endDot: Dot, mode = tracingInfo.mode;
-        for(const obj of this.state.dots){
+        console.log(dots);
+        if(startDotId === endDotId || startDotId === null|| endDotId === null){
+            console.log(`${startDotId} ${endDotId} err`);
+            return;
+        }
+
+        const mode = tracingInfo.mode;
+        
+        const startDot = dots.find(d => d.id === startDotId);
+        const endDot = dots.find(d => d.id === endDotId);
+        if(!startDot) {
+            alert('Неверный номер первой точки');
+            return;
+        }
+
+        if(!endDot) {
+            alert('Неверный номер второй точки');
+            return;
+        }
+        /*for(const obj of this.state.dots){
             if(obj.id === startDotId) startDot = obj;
             if(obj.id === endDotId) endDot = obj;
-        }
+        }*/
         let url = 'https://api.openrouteservice.org/v2/directions/';
         url += `${mode}?`
         url += `api_key=${orsAccessToken}`;
         //Конвертация в забугорный формат
-        url += `&start=${startDot!.PositionY},${startDot!.PositionX}`; 
-        url += `&end=${endDot!.PositionY},${endDot!.PositionX}`;
+        url += `&start=${startDot!.positionY},${startDot!.positionX}`; 
+        url += `&end=${endDot!.positionY},${endDot!.positionX}`;
         const result = await fetch(url).then(response=>response.json());
         const coordinates = result.features[0].geometry.coordinates;
 
@@ -580,7 +623,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
 
         let lastLineId = this.state.lastLineId;
         const { lines } = this.state;
-        lines.push({id: lastLineId, latlngs: coordinates as L.LatLngExpression[]});
+        lines.push({id: lastLineId, latLngs: coordinates as L.LatLngExpression[]});
 
         const mapLines = this.state.mapLines;
         const mapLine = L.polyline(coordinates, {color:'blue', weight:5});
@@ -607,7 +650,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         let lastLineId = this.state.lastLineId;
         if(latlngs.length > 0){
             const mapLine = L.polyline(latlngs, {color: 'blue', weight: 5}).addTo(this.props.map);
-            lines.push({id: lastLineId, latlngs});
+            lines.push({id: lastLineId, latLngs: latlngs});
             mapLines.push({id: lastLineId, line: mapLine});
             lastLineId++;
         }
@@ -631,13 +674,14 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         // eslint-disable-next-line no-restricted-globals
         if(!confirm(`Вы уверены, что хотите удалить маршрут "${name}"?`)) return;
 
-        const request = get(`${process.env.REACT_APP_API_URL}/delete_route`, {id: editId})
+        const fd = new FormData();
+        fd.append('id', `${editId}`);
+        await post(`${process.env.REACT_APP_NEW_API_URL}/api/route/delete`, fd)
             .then(response => {
                 alert('Маршрут удалён.');
                 window.location.href = "/routes";
             }).catch(err => {
                 alert('Произошла ошибка при попытке удалить маршрут. Попробуйте позже')
             });
-        await request;
     }
 }

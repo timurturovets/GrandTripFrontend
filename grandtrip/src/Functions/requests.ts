@@ -3,7 +3,8 @@ interface Headers {
     "Content-Type"?: string
 }
 
-const request = async (url: string, method: string, params?: any) : Promise<any> => {
+const request = async(url: string, method: 'get' | 'post', 
+    params?: any) : Promise<any> => {
     let options: RequestInit = {
         method
     };
@@ -12,16 +13,12 @@ const request = async (url: string, method: string, params?: any) : Promise<any>
     const token = localStorage.getItem('token');
     if(token) headers["Authorization"] = `Bearer ${token}`;
 
-    if(method === "GET") {
-        url += "?" + (new URLSearchParams(params)).toString()
-    } else {
-        headers["Content-Type"] = "application/json"
-        options.body = JSON.stringify(params);
-    }
+    if(method === "get") url += "?" + (new URLSearchParams(params as string)).toString()
+    else options.body = params as FormData;    
 
     options.headers = headers as HeadersInit;
     return await fetch(url, options);
 }
 
-export const get = (url: string, params?: any) : Promise<any> => request(url, "GET", params);
-export const post = (url: string, params?: any) : Promise<any> => request(url, "POST", params);
+export const get = (url: string, params?: any) : Promise<any> => request(url, "get", params);
+export const post = (url: string, params?: FormData) : Promise<any> => request(url, "post", params);

@@ -13,14 +13,14 @@ export default class DotsList extends Component<DotsListProps, any> {
         return <div>
         <h2 className="text-light">Список точек</h2>
         {dots.map(dot=>
-            <div key={dot.PositionX+dot.PositionY}>
+            <div key={dot.positionX+dot.positionY}>
                 <DotInfo 
                     id={dot.id}
                     name={dot.name}
-                    desc={dot.desc}
+                    desc={dot.description}
                     link={dot.link}
-                    posX={dot.PositionX}
-                    posY={dot.PositionY}
+                    posX={dot.positionX}
+                    posY={dot.positionY}
                     onDeleted={this.handleDotDeleted}
                     onFieldChanged={this.handleDotFieldChanged}
                 />

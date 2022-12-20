@@ -145,6 +145,8 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
                     {isAuthenticated && 
                         <Link to="/constructor" className="button button--bordered sidebar__bottom-button">
                             создайте свой маршрут</Link>}
+                    {/*<button className="button button--bordered sidebar__bottom-button"
+                            onClick={e=>this.handleSendAll(e)}>Отправить всё на новый бэкенд</button>*/}
                     <div id="routes">
                     
                 {isFromRef 
@@ -171,29 +173,72 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
                     <div id="MAP-ID"></div>
         </div>}</AuthContextConsumer>
     }
+
+    handleSendAll = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+
+        const { routes } = this.state;
+        const { result } = routes;
+
+        for(const route of result) {
+            while(!(route.dots instanceof Array)) route.dots = JSON.parse(route.dots as unknown as string);
+            while(!(route.lines instanceof Array)) route.lines = JSON.parse(route.lines as unknown as string);
+
+            const { name, description, dots, lines } = route;
+            const fd = new FormData();
+    
+            fd.append('data.RouteName', name!);
+            fd.append('data.Description', description!);
+    
+            const realDots = [...[...dots.map(d=>{
+                return { Id: d.id, Name: d.name, Description: d.description,
+                    PositionX: d.positionX 
+                    || (d as Dot & {PositionX: number}).PositionX, PositionY: d.positionY 
+                    || (d as Dot & {PositionY: number}).PositionY }
+            })].map(d=>JSON.stringify(d))];
+    
+            const realLines = [...[...lines.map(l=>{
+                return { Id: l.id, LatLngs: l.latLngs || (l as Line & {latlngs: L.LatLngExpression}).latlngs };
+            })].map(l=>JSON.stringify(l))];
+    
+            console.log(realDots);
+            console.log(realLines);
+    
+            for (const dot of realDots) fd.append(`data.Dots`, dot);
+            for (const line of realLines) fd.append(`data.Lines`, line);
+            
+            await fetch(`${process.env.REACT_APP_NEW_API_URL}/api/route/add`, {
+                method: 'POST',
+                body: fd
+            }).then(async response => {
+                if(response.ok) console.log('Маршрут сохранён');
+                const id = await response.json().catch(err=>alert(err));
+                alert(id);
+                await fetch(`${process.env.REACT_APP_NEW_API_URL}/api/route/get?id=${id}`)
+                    .then(async response => {
+                        console.log(await response.json())
+                    }).catch(err=>alert(err));
+            });
+        }
+
+        console.log(result);
+    }
     handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        const { criteries } = this.state;
+        const { routes, criteries } = this.state;
         const { theme, season } = criteries;
         
-        const filters = JSON.stringify({
-            start: 0,
-            end: 10000,
-            criteries: [
-                "theme",
-                "season"
-            ],
-            values: [
-                theme,
-                season
-            ]
-        });
-        console.log(filters);
-        console.log(process.env.REACT_APP_API_URL);
-        this.setState({routes: {...this.state.routes, isLoading: true}});
-        await get(`${process.env.REACT_APP_API_URL}/get_routes_by_filters`, {filters}).then(async res=>{
+        const filters = {
+            theme: theme === 'none' ? "" : theme, 
+            season: season === 'none' ? "" : season
+        };
+
+        this.setState({routes: {...routes, isLoading: true}});
+
+        await get(`${process.env.REACT_APP_NEW_API_URL}/api/route/getall`, filters).then(async res=>{
             const routes = (await res.json()).routes;
+            console.log(routes);
             const routeInformations: (RouteInformation & {isFavourite: boolean})[] = [];
             for(const route of routes) {
                 if(route) routeInformations.push(route);
@@ -207,6 +252,7 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
                     isLoading: false
                 }
             });
+
             const container = document.getElementById('main-container')!;   
             const sideNav = document.getElementById('MySideNav')!;
             sideNav.style.height = container.style.height;
@@ -237,24 +283,23 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
         while(!(route.lines instanceof Array)) route.lines = JSON.parse(route.lines as unknown as string);
         for (const dot of route.dots) {
             console.log(dot);
-            let newMarker = L.marker([dot.PositionX, dot.PositionY]);
-            const content = `<h5 class="display-5">${dot.name}</h5><p>${dot.desc || "Нет описания"}</p>`;
+            let newMarker = L.marker([dot.positionX, dot.positionY]);
+            const content = `<h5 class="display-5">${dot.name}</h5><p>${dot.description || "Нет описания"}</p>`;
             newMarker.bindPopup(L.popup().setContent(content));
             newMarker.addTo(map!);
             markers.push(newMarker);
         }
-        map!.setView([route.dots[0].PositionX, route.dots[0].PositionY], zoom > 13 ? zoom : 13);
+        map!.setView([route.dots[0].positionX, route.dots[0].positionY], zoom > 13 ? zoom : 13);
         console.log(route.lines);
         for (const line of route.lines) {
             let realLatLngs: {lat: number, lng: number}[] = [];
-            for(let latlng of line.latlngs) {
+            for(let latlng of line.latLngs) {
                 const unwrapped = latlng as number[];
                 realLatLngs.push({
                     lat: unwrapped[0] || (latlng as any).lat, 
                     lng: unwrapped[1] || (latlng as any).lng 
                 });
             }
-            console.log(realLatLngs);
             const l = L.polyline(realLatLngs, { color: 'rgba(255, 157, 18, 1)', weight: 5 })
                 .addTo(map!);
             mapLines.push(l);
@@ -273,7 +318,10 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
 
     handleAddToFavourites = async (id: number, remove: boolean) => {
         const url = `${process.env.REACT_APP_API_URL}/${remove ? "remove" : "add"}_favourite_route`;
-        await post(url, { routeId: id}).then(async response => {
+        const fd = new FormData();
+        fd.append('routeId', `${id}`);
+
+        await post(url, fd).then(async response => {
             const { routes } = this.state;
             const { result } = routes;
 

@@ -123,7 +123,6 @@ export default class HomePage extends Component {
             window.addEventListener('scroll', function() {
                 if (checkvisible(circles[i])) {
                     var blur = 140 - (-1 * (scrollY() - posY(circles[i])) / 5) + '%';
-                    console.log(blur);
                     circles[i].style.setProperty('--a', blur);
                 }
             });

@@ -1,7 +1,7 @@
 export default interface Dot {
-    PositionX: number,
-    PositionY: number,
-    desc: string,
+    positionX: number,
+    positionY: number,
+    description: string,
     link: string,
     name: string,
     id: number

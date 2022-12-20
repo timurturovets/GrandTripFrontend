@@ -12,16 +12,6 @@ interface SignInPageState {
     errMessage?: string,
 }
 
-const myStyle = { 
-    padding: '5%',
-    margin: '0 auto',
-    marginTop: '10%',
-    width: 'fit-content',
-    height: 'fit-content',
-    border: '2px solid gray',
-    borderRadius: '6px'
-};
-
 export default class SignInPage extends Component<any, SignInPageState> {
     constructor(props: any) {
         super(props);
@@ -43,10 +33,9 @@ export default class SignInPage extends Component<any, SignInPageState> {
         return <AuthContextConsumer>
                 {({isAuthenticated, setStatus, setInfo}) => 
                     isAuthenticated 
-                        ? function(){window.location.href="/";return null;}()
+                        ? function(){window.location.href="/"; return null;}()
                         : <div>
                             <div /*style={myStyle}*/>
-                                {errMessage && <p className="text-danger">{errMessage}</p>}
                                 <section className="log-in-section">
                                 {clickedLogin 
                                     ? this.renderLoginForm()
@@ -56,6 +45,7 @@ export default class SignInPage extends Component<any, SignInPageState> {
                                 className="text-center log-in-section__button button">
                                     {clickedLogin ? "Войти" : "Зарегистрироваться"}
                                 </button>
+                                {errMessage && <p className="text-danger">{errMessage}</p>}
                                 </section>
                             </div>
                         </div>}
@@ -65,6 +55,7 @@ export default class SignInPage extends Component<any, SignInPageState> {
     onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, 
         setStatus: typeof statusSetter, setInfo: typeof userInfoSetter) => {
         e.preventDefault();
+        this.setState({ errMessage: ""});
 
         const { clickedLogin, username, password, pwVerification } = this.state;
         if(!clickedLogin && password !== pwVerification) {
@@ -72,40 +63,41 @@ export default class SignInPage extends Component<any, SignInPageState> {
             return;
         }
 
-        const url = `${process.env.REACT_APP_API_URL}/${clickedLogin ? "sign_in" : "sign_up"}`
+        //const url = `${process.env.REACT_APP_API_URL}/${clickedLogin ? "sign_in" : "sign_up"}`
+        const url = `${process.env.REACT_APP_NEW_API_URL}/api/user/${clickedLogin ? "login" : "register"}`;
         
-        await post(url, {username, password}).then(async response => await response.json())
-        .then(async response => {
-            console.log(response);
-            if(response.err) {
-                this.setState({errMessage: response.err});
-                return;
-            }
+        const fd = new FormData();
+        fd.append('username', username);
+        fd.append('password', password);
+        await post(url, fd)
+            .then(async response => {
+                if(response.status === 200) return await response.json();
 
-            if(!response.token) {
-                this.setState({ errMessage: "Произошла ошибка. Попробуйте позже."});
-                return;
-            }
+                if(response.status === 404 && clickedLogin)  this.setState({ errMessage: "Неверный логин."})
+                if(response.status === 400 && clickedLogin) this.setState({errMessage: "Неверный пароль."})
+                if(response.status === 409 && !clickedLogin)  this.setState({ errMessage: "Это имя уже занято." });
 
-            console.log(response);
-            setStatus(true, response.token);
-            const info = await getUserInfo();
-            if(info) setInfo(info);
-        }).catch(err=>console.log(err));
+                throw new Error();
+            })
+            .then(async response => {
+                console.log(response);
+                if(response.err) {
+                    this.setState({errMessage: response.err});
+                    return;
+                }
+
+                if(!response.token) {
+                    this.setState({ errMessage: "Произошла ошибка. Попробуйте позже."});
+                    return;
+                }
+
+                console.log(response);
+                setStatus(true, response.token);
+                const info = await getUserInfo();
+                if(info) setInfo(info);
+            }).catch(err=>console.log(err));
     }
-
-    renderLoginForm1 = () : ReactNode => {
-        const { username, password } = this.state;
-        return <form>
-            <input type="text" className="form-control" 
-            onChange={e=>this.setState({username: e.target.value})}
-            value={username} placeholder="Логин" />
-
-            <input type="password" className="form-control"
-            onChange={e=>this.setState({password:e.target.value})} 
-            value={password} placeholder="Пароль" />
-        </form>
-    }
+    
     renderLoginForm = () : ReactNode => {
         const { username, password } = this.state;
         return <div className="container">
@@ -122,7 +114,7 @@ export default class SignInPage extends Component<any, SignInPageState> {
                   <input className="field" type="text" placeholder="Имя пользователя" 
                   onChange={e=>this.setState({username: e.target.value})}
                   value={username} />
-                  <input className="field" type="text" placeholder="Пароль" 
+                  <input className="field" type="password" placeholder="Пароль" 
                   onChange={e=>this.setState({password: e.target.value})}
                   value={password} />
                 </div>
@@ -130,31 +122,12 @@ export default class SignInPage extends Component<any, SignInPageState> {
             </div>
           </div>
     }
-    renderRegisterForm1 = () : ReactNode => {
-        const { username, password, pwVerification } = this.state;
-        return <form>
-            <input type="text" className="form-control"
-                onChange={e=>this.setState({username: e.target.value})}
-                value={username} placeholder="Придумайте оригинальный логин" />
-
-            <input type="password" className="form-control"
-                onChange={e=>this.setState({password: e.target.value})} 
-                value={password} placeholder="Придумайте надёжный пароль" autoComplete="" />
-
-            {(pwVerification && pwVerification !== password) &&
-            <p className="text-danger text-sm m-0">Пароли не совпадают</p>}
-
-            <input type="password" className="form-control"
-                onChange={e=>this.setState({pwVerification: e.target.value})}
-                value={pwVerification} placeholder="Подтвердите пароль" autoComplete="" />
-        </form>
-    }
 
     renderRegisterForm = () : ReactNode => {
         const { username, password, pwVerification } = this.state;
         return <div className="container">
           <h2> 
-            <p>Регистрация </p>
+            <p>Регистрация</p>
           </h2>
           <div className="log-in-section__subtitle">
             <p>Уже есть аккаунт? 

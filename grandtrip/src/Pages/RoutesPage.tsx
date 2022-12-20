@@ -232,17 +232,17 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         while(!(route.lines instanceof Array)) route.lines = JSON.parse(route.lines as unknown as string);
         for (const dot of route.dots) {
             console.log(dot);
-            let newMarker = L.marker([dot.PositionX, dot.PositionY]);
-            const content = `<h5 class="display-5">${dot.name}</h5><p>${dot.desc || "Нет описания"}</p>`;
+            let newMarker = L.marker([dot.positionX, dot.positionY]);
+            const content = `<h5 class="display-5">${dot.name}</h5><p>${dot.description || "Нет описания"}</p>`;
             newMarker.bindPopup(L.popup().setContent(content));
             newMarker.addTo(map!);
             markers.push(newMarker);
         }
-        map!.setView([route.dots[0].PositionX, route.dots[0].PositionY], zoom > 13 ? zoom : 13);
+        map!.setView([route.dots[0].positionX, route.dots[0].positionY], zoom > 13 ? zoom : 13);
         console.log(route.lines);
         for (const line of route.lines) {
             let realLatLngs: {lat: number, lng: number}[] = [];
-            for(let latlng of line.latlngs) {
+            for(let latlng of line.latLngs) {
                 const unwrapped = latlng as number[];
                 realLatLngs.push({
                     lat: unwrapped[0] || (latlng as any).lat, 
@@ -268,7 +268,10 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
 
     handleAddToFavourites = async (id: number, remove: boolean) => {
         const url = `${process.env.REACT_APP_API_URL}/${remove ? "remove" : "add"}_favourite_route`;
-        await post(url, { routeId: id}).then(async response => {
+        const fd = new FormData();
+        fd.append('routeId', `${id}`);
+        
+        await post(url, fd).then(async response => {
             const { routes } = this.state;
             const { result } = routes;
 
