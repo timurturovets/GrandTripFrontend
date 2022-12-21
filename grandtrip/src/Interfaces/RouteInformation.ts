@@ -7,4 +7,7 @@ export default interface RouteInformation {
     description: string,
     lines: Line[],
     dots: Dot[],
+    author: string,
+    theme: string,
+    season: string
 }

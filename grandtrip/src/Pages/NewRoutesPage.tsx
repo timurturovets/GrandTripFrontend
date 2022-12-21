@@ -174,7 +174,7 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
         </div>}</AuthContextConsumer>
     }
 
-    handleSendAll = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    /*handleSendAll = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
         const { routes } = this.state;
@@ -222,7 +222,8 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
         }
 
         console.log(result);
-    }
+    }*/
+
     handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 

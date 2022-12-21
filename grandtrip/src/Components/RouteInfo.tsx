@@ -32,16 +32,17 @@ export default class RouteInfo extends Component<RouteInfoProps, RouteInfoState>
                 {isShown 
                 && <div className="route-div">
                         <p className="m-0">{info.description}</p>
+                        <p className="m-0">Автор: <b>{info.author}</b></p>
                         <div className="d-flex flex-row">
                             <button className="btn btn-sm btn-success"
                                 onClick={e => this.props.onRouteRendering(info.id)}>Отрисовать маршрут</button>
-                            {//isAuthenticated && 
+                            {isAuthenticated && 
                             <Link to={`/constructor?edit=${info.id}`} className="btn btn-sm btn-primary">
                                 Редактировать маршрут</Link>}
-                            <button className="btn btn-sm btn-danger" 
+                            {/*<button className="btn btn-sm btn-danger"
                             onClick={e=>this.props.onAddingToFavourites(info.id, info.isFavourite)}>
                                 {info.isFavourite ? "Убрать из избранных" : "Добавить в избранные"}
-                            </button>
+                            </button>*/}
                         </div>
                     </div>}
         </div>}
