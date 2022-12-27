@@ -392,13 +392,9 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         }
     }*/
 
-    handleThemeChange = (theme: Theme) => {
-        this.setState({theme});
-    }
+    handleThemeChange = (theme: Theme) => this.setState({theme});
 
-    handleSeasonChange = (season: Season) => {
-        this.setState({season});
-    }
+    handleSeasonChange = (season: Season) => this.setState({season});
 
     handleInfoChange = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         e.preventDefault();

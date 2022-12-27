@@ -104,7 +104,9 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
             {({isAuthenticated})=><div style={{display: 'flex'}}>
                 <aside className="sidebar">
                     <div className="sidebar__content">
-                        <button className="sidebar__close-button"> <img src="img/icons/small-arrow.svg" alt=""/><span>Скрыть меню</span></button>
+                        {/*<button className="sidebar__close-button"> 
+                            <img src="img/icons/small-arrow.svg" alt=""/><span>Скрыть меню</span></button>
+                        */}
                         <div className="sidebar__title">Поиск по параметрам</div>
                         <div className="sidebar__list">
                         <form className="sidebar__field">

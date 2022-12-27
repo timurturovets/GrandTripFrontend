@@ -9,6 +9,12 @@ interface AccountState {
     isLoading: boolean,
     createdRoutes: RouteInformation[]
 }
+
+const myStyle = {
+    overflow: 'scroll', 
+    border: '3px solid black', borderRadius: '5px',
+    height:'200px', width: '50%'
+};
 export default class Account extends Component<any, AccountState> {
     constructor(props: any) {
         super(props);
@@ -33,9 +39,7 @@ export default class Account extends Component<any, AccountState> {
             {isLoading 
                 ? <p>Загрузка...</p> 
                 : createdRoutes.length < 1 ? <p>Вы не создали ни одного маршрута.</p>
-                : <div style={{overflow: 'scroll', overflowX:'hidden', 
-                border: '3px solid black', borderRadius: '5px',
-                height:'200px', width: '50%'}}>
+                : <div style={{...myStyle, overflowX: 'hidden'}}>
                     {createdRoutes.map(r => <div key={r.id}>
                         <hr style={{margin: 0, color: 'black', width: '2px'}}/>
                         <h5><b className="m-0 h-3">{r.name}</b></h5>
@@ -47,6 +51,8 @@ export default class Account extends Component<any, AccountState> {
                 </div>)}
                 </div>
             }
+            
+            {info?.role === "Admin" && <Link to="/a" className="btn btn-primary">Админ-панель</Link>}
             <button className="btn btn-danger" onClick={this.handleLogOff}>Выйти из аккаунта</button>
             </div>
         </div>}</AuthContextConsumer>

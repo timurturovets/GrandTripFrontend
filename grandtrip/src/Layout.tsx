@@ -1,17 +1,11 @@
 import React, { ReactNode, Component } from 'react'
 import { AuthContextConsumer } from './AuthContext'
-import Footer from './Components/Footer';
 import Header from './Components/Header'
 
 interface LayoutProps {
     children: ReactNode | ReactNode[]
 }
 export default class Layout extends Component<LayoutProps, any> {
-    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-    constructor(props: LayoutProps){
-        super(props);
-    }
-
     componentDidMount() {
         this.configureContentMargin();
     }
@@ -24,7 +18,6 @@ export default class Layout extends Component<LayoutProps, any> {
                 <div id="layout-content">
                     {children}    
                 </div>
-                {/*<Footer />*/}
             </div>
         }</AuthContextConsumer>
     }

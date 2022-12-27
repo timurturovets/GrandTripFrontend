@@ -4,6 +4,7 @@ import Layout from './Layout'
 import HomePage from './Pages/HomePage'
 import OldHomePage from './Pages/OldHomePage'
 import RoutesPage from './Pages/RoutesPage'
+import AdminPage from './Pages/AdminPage'
 import BetaRoutesPage from './Pages/BetaRoutesPage'
 import NewRoutesPage from './Pages/NewRoutesPage'
 import SupportPage from './Pages/SupportPage'
@@ -19,6 +20,7 @@ export default class App extends Component {
             <Layout>
                 <Routes>
                     <Route path="/" element={<HomePage />} />
+                    <Route path="/a" element={<AdminPage />} />
                     <Route path="/oldhome" element={<OldHomePage />} />
                     <Route path="/newroutes" element={<RoutesPage />} />
                     <Route path="/betaroutes" element={<BetaRoutesPage />} />
