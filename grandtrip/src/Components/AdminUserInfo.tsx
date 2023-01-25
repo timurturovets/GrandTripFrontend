@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import UserInformation from '../Interfaces/UserInformation'
 
 interface AdminUserInfoProps {
-    info: UserInformation,
+    info: UserInformation
     onRoleChanging: (user: UserInformation, newRole: string) => void
+    onDeleting: (user: UserInformation) => void
 }
 
 interface AdminUserInfoState {
@@ -40,9 +41,16 @@ export default class AdminUserInfo extends Component<AdminUserInfoProps, AdminUs
                     <option disabled={info.role==="Admin"} value="Admin">Администратор {info.role==="Admin" && "(текущая роль)"}</option>
                 </select>
                 <button className="btn btn-outline-success" onClick={this.handleSave}>Сохранить</button>
+                <br />
+                <button className="btn btn-outline-danger" onClick={this.handleDelete}>Удалить</button>
             </div>
-            <p>Созданных маршрутов: {info.createdRoutesIds.length}</p>   
-        </div>
+            <select onChange={e=>window.location.href=`/constructor?edit=${e.target.value}`}>
+                <option defaultChecked >Созданных маршрутов: {info.createdRoutesIds.length}</option>
+                {info.createdRoutesIds.map(i => <option key={i} value={i}>
+                    ID {i}
+                </option>)}
+            </select>
+            </div>
     }
 
     handleSave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -60,5 +68,19 @@ export default class AdminUserInfo extends Component<AdminUserInfoProps, AdminUs
             return;
         }
         onRoleChanging(info, newRole);
+    }
+
+    handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+
+        const { onDeleting, info } = this.props;
+
+        if(!window.confirm(`Удалить пользователя ${info.username}?`)) return;
+
+        if(info.username === "teletraan") {
+            alert('Меня-то не трогай!');
+            return;
+        }
+        onDeleting(info);
     }
 }

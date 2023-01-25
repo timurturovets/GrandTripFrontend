@@ -58,7 +58,8 @@ export default class AdminPage extends Component<any, AdminPageState> {
                     <div style={{...myStyle, overflowX: 'hidden', borderTop: '2px solid black'}}>
                         <button className="btn btn-outline-secondary" onClick={this.showInfo}>?</button>
                         {users.map(u=><AdminUserInfo key={u.id} info={u} 
-                            onRoleChanging={this.handleRoleChanging} />)}
+                            onRoleChanging={this.handleRoleChanging}
+                            onDeleting={this.handleDeleting} />)}
                     </div>
                 </div>
             }
@@ -109,12 +110,21 @@ export default class AdminPage extends Component<any, AdminPageState> {
         const fd = new FormData();
         fd.append('userId', user.id.toString());
         fd.append('role', newRole);
-        alert(`${newRole} on ${user.username}`);
         await post(`${process.env.REACT_APP_NEW_API_URL}/api/admin/changerole`, fd)
             .then(async response => {
                 if(response.status === 200) alert(`Пользователю ${user.username} успешно установлена новая роль: ${newRole}`
                     +`\nПерезагрузите страницу, чтобы увидеть изменения`)
                 else alert(`Произошла ошибка при попытке установить автора. ${response.status}`);
             })
+    }
+
+    handleDeleting = async (user: UserInformation) => {
+        const fd = new FormData();
+        fd.append('userId', user.id.toString());
+        await post(`${process.env.REACT_APP_NEW_API_URL}/api/admin/deleteuser`, fd)
+            .then(async response => {
+                if(response.status === 200) alert('Пользователь удалён');
+                else alert('Произошла ошибка.');
+            });
     }
 }
