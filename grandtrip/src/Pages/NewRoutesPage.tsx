@@ -101,7 +101,8 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
         const { clicked, isLoading, result, error } = routes;
 
         return <AuthContextConsumer>
-            {({isAuthenticated})=><div style={{display: 'flex'}}>
+            {({isAuthenticated})=><div style={{ height: '100%' }}>
+                <div id="main-container">
                 <aside className="sidebar">
                     <div className="sidebar__content">
                         {/*<button className="sidebar__close-button"> 
@@ -172,7 +173,10 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
             </div>
             </div>
             </aside>
-                    <div id="MAP-ID"></div>
+
+            <div id="mapDiv" style={{height: '100%'}}></div>
+
+            </div>
         </div>}</AuthContextConsumer>
     }
 
@@ -376,20 +380,29 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
     showMap = () => {
         const callback = () : void => {
             console.log('anim frame');
-            const mapDiv = document.getElementById("MAP-ID");
+
+            const mapDiv = document.getElementById("mapDiv");
             if(!mapDiv) {
                 console.log("no div? :(");
                 window.requestAnimationFrame(callback);
                 return;
             };
-            mapDiv.style.height="1000px";
-            mapDiv.style.width="100%";
-            const aside = document.getElementsByTagName('aside')[0]!;
-            mapDiv.style.marginLeft = `${aside.offsetWidth}px`
-            //mapDiv.style.width=`${mapDiv.offsetWidth - aside.offsetWidth}`;
-            mapDiv.style.width="100vw;"
 
-            const map = createMap("MAP-ID", "Эрмитаж Санкт-Петербург")!
+            const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
+            //mapDiv.style.height=`${height}px`;
+
+            const container = document.getElementById('main-container')!;
+            container.style.height = `${height}px`;
+            //container.style.width = `${cont.offsetWidth}px`;
+    
+            mapDiv.style.height = container.style.height;
+            //mapDiv.style.width="100%";
+            //const aside = document.getElementsByTagName('aside')[0]!;
+            //mapDiv.style.marginLeft = `${aside.offsetWidth}px`
+            //mapDiv.style.width=`${mapDiv.offsetWidth - aside.offsetWidth}`;
+            //mapDiv.style.width="100vw;"
+
+            const map = createMap("mapDiv", "Эрмитаж Санкт-Петербург")!
             this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
         };
         window.requestAnimationFrame(callback);

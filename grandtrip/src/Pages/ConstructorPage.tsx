@@ -43,6 +43,7 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
         const cont = document.getElementById("cont")!;
         const div = cont.children[0] as HTMLElement;
         div.style.width = `${cont.offsetWidth}px`;
+        
         const container = document.getElementById('main-container')!;
         container.style.height = `${height}px`;
         container.style.width = `${cont.offsetWidth}px`;

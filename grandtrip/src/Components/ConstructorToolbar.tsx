@@ -269,11 +269,11 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                                 this.setState({tracingInfo: {...this.state.tracingInfo, tracingNow: true}});
                                 }}>Проложить маршрут между двумя точками</button>
                             }
-                        <button className="constructor-button" onClick={e=>{
+                        {/*<button className="constructor-button" onClick={e=>{
                             e.preventDefault();
                             buildingLineInfo.buildingNow = true;
-                            this.setState({buildingLineInfo: buildingLineInfo});
-                        }}>Провести линию</button>
+                            this.setState({ buildingLineInfo });
+                        }}>Провести линию</button>*/}
                         </div>
                 }
                 {this.state.browsingLines
