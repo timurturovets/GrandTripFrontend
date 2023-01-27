@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from 'react'
 import UserInformation from './Interfaces/UserInformation'
 import { statusSetter, userInfoSetter } from './Interfaces/authStatusSetter'
 import { getUserInfo } from './Functions/getUserInfo';
+import LoadingStub from './Components/LoadingStub'
 
 const { Provider, Consumer }  = React.createContext<{
     isAuthenticated: boolean,
@@ -58,7 +59,7 @@ class AuthContextProvider extends Component<AuthContextProviderProps, AuthContex
     render() {
         const {isAuthenticated, isLoading, info, setStatus, setInfo } = this.state;
         return <Provider value={{isAuthenticated, isLoading, info, setStatus, setInfo}}>
-                {isLoading ? <h1 style={{margin: "auto"}}>Загрузка..</h1> : this.props.children}
+                {isLoading ? <LoadingStub /> : this.props.children}
             </Provider>
     }
 }
