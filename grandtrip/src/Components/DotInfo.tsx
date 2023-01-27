@@ -30,7 +30,7 @@ export default class DotInfo extends Component<DotInfoProps, DotInfoState> {
         
         const { name, desc, link } = this.state;
         return <div id={`${id}`}>
-                <h3 className="text-light">Точка {id}</h3>
+                <h3>Точка {id}</h3>
                 <div className="form-group">
                     <input className="form-control" type="text" name="dotName" placeholder="Название точки"
                         defaultValue={name} onChange={e=>this.onChange(e, "name")} />
@@ -47,7 +47,7 @@ export default class DotInfo extends Component<DotInfoProps, DotInfoState> {
                     <p className="text-light">Долгота: {posX}</p>
                     <p className="text-light">Широта: {posY}</p>
                 </div>*/}
-                <button onClick={e=>this.onDelete(e)} className="constructor-button">Удалить точку</button>
+                <button onClick={e=>this.onDelete(e)} className="button button--small sidebar__element">Удалить точку</button>
             </div>
     }
 

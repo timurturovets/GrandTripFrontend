@@ -200,21 +200,25 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
     render() {
         const { name, description, tracingInfo, buildingLineInfo, 
             searchingInfo, isEditMode, theme, season } = this.state;
-        return <div className="bg-dark text-light">
+        //return <div className="bg-dark text-light">
+        return <div className="sidebar__content">
+                <div className="sidebar__title">Создание нового маршрута</div>
+                <hr className="bg-dark mt-3 mb-3" />
                 <input className="form-control" type="text" name="searchquery" placeholder="Текст поиска"
                     onChange={e => {
                         searchingInfo.searchQuery = e.target.value;
                         this.setState({searchingInfo});
                     }} value={searchingInfo.searchQuery}/>
-                <button onClick={e => this.handleSearch(e)} className="constructor-button">Найти точку</button>
+                <button onClick={e => this.handleSearch(e)} className="button button--small sidebar__element">Найти точку</button>
+                <hr className="bg-dark mt-3 mb-3" />
                 {buildingLineInfo.buildingNow 
                 ? <div>
-                    <h2 className="text-light">
+                    <h2>
                         Нажмите на карту, чтобы {buildingLineInfo.latlngs.length < 1
                             ? "поставить первую точку линии"
                             : "продолжить проводить линию"}
                     </h2>
-                    <button onClick={e=>this.endDrawingLine(e)} className="constructor-button">Закончить проводить линию</button>
+                    <button onClick={e=>this.endDrawingLine(e)} className="button button--small sidebar__element">Закончить проводить линию</button>
                 </div>
                 : tracingInfo.tracingNow
                     ? <div>
@@ -224,14 +228,14 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                             tracingInfo.startDotId = NaN;
                             tracingInfo.endDotId = NaN;
                             this.setState({tracingInfo: tracingInfo});
-                        }} className="constructor-button">Отмена</button>
+                        }} className="button button--small sidebar__element">Отмена</button>
                         <div className="form-check form-switch form-check-inline">
                             <input className="form-check-input" type="radio" name="mode" 
                                 onClick={()=>{
                                     tracingInfo.mode = "foot-walking";
                                     this.setState({tracingInfo: tracingInfo});
                                 }} defaultChecked/>
-                            <label className="form-check-label text-light" htmlFor="mode">Пешком</label>
+                            <label className="form-check-label" htmlFor="mode">Пешком</label>
                         </div>
                         <div className="form-check form-switch form-check-inline">
                             <input className="form-check-input" type="radio" name="mode" 
@@ -239,7 +243,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                                     tracingInfo.mode = "driving-car";
                                     this.setState({tracingInfo: tracingInfo});
                                 }} />
-                            <label className="form-check-label text-light" htmlFor="mode">На машине</label>
+                            <label className="form-check-label" htmlFor="mode">На машине</label>
                         </div>
                         <div className="form-group mx-sm-3">
                             <input className="form-control" 
@@ -259,17 +263,18 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                                     this.setState({tracingInfo: tracingInfo});
                                 }}/>
                         </div>
-                        <button onClick={e => this.handleTracing(e)} className="constructor-button">
+                        <button onClick={e => this.handleTracing(e)} className="button button--small sidebar__element">
                             Соединить точки</button>
+                        <hr className="bg-dark mt-3 mb-3" />
                     </div>
                     : <div>
                         {this.state.dots.length > 1
-                            && <button className="constructor-button" onClick={e => {
+                            && <button className="button button--small sidebar__element" onClick={e => {
                                 e.preventDefault();
                                 this.setState({tracingInfo: {...this.state.tracingInfo, tracingNow: true}});
                                 }}>Проложить маршрут между двумя точками</button>
                             }
-                        {/*<button className="constructor-button" onClick={e=>{
+                        {/*<button className="button button--small sidebar__element" onClick={e=>{
                             e.preventDefault();
                             buildingLineInfo.buildingNow = true;
                             this.setState({ buildingLineInfo });
@@ -278,7 +283,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                 }
                 {this.state.browsingLines
                     ? <div>
-                        <button className="constructor-button" onClick={e=>{
+                        <button className="button button--small sidebar__element" onClick={e=>{
                             e.preventDefault();
                             this.setState({browsingLines: false})
                         }}>
@@ -291,9 +296,9 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                          />
                         </div>
                     : <div>
-                        <button className="constructor-button" onClick={e => {e.preventDefault();
+                        <button className="button button--small sidebar__element" onClick={e => {e.preventDefault();
                         this.setState({browsingLines: true});}}>
-                            Просмотреть поставленные линии
+                            Просмотреть проведённые линии
                             </button>
                         <DotsList 
                         dots={this.state.dots}
@@ -301,17 +306,18 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         onDotUpdated={this.handleDotUpdate} />
                         </div>
                 }
+                <hr className="bg-dark mt-3 mb-3" />
                 {!tracingInfo.tracingNow && <div>
                         <div className="form-group">
-                        <h2 className="text-light">Информация о маршруте</h2>
+                        <h2>Информация о маршруте</h2>
                         <input type="text" name="routeName"  className="form-control" value={name || ""}
                             placeholder="Название маршрута" onChange={e=>this.handleInfoChange(e, "routeName")} />
                         <input type="text" name="routeDesc" className="form-control" value={description || ""} 
                             placeholder="Описание маршрута" onChange={e=>this.handleInfoChange(e, "routeDesc")} />
                         </div>
                         <div className="form-group">
-                        <h3 className="text-light">Добавить тематику</h3>
-                        <select className="form-select"
+                        <h3>Добавить тематику</h3>
+                        <select className="field field--small sidebar__element"
                         onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
                             <option value="none" selected={theme==="none"}>Сбросить</option>
                             <option value="modern-world" selected={theme==="modern-world"}>
@@ -330,8 +336,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         </select>
                         </div>
                         <div className="form-group">
-                            <h3 className="text-light">Выбрать сезон</h3>
-                        <select className="form-select" value={season ?? "none"}
+                            <h3>Выбрать сезон</h3>
+                        <select className="field field--small sidebar__element" value={season ?? "none"}
                             onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
                             <option value="none">Все сезоны</option>
                             <option value="summer">Лето</option>
@@ -341,7 +347,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         </select>
                         </div>
                         <div className="form-group">
-                            <button className="constructor-button" onClick={e=>this.onSubmit(e)}>
+                            <button className="button button--small sidebar__element" onClick={e=>this.onSubmit(e)}>
                                 Отправить маршрут на обработку</button>
                             {/*<button className="constructor-button" onClick={e=>this.onSendToNew(e)}>
                                 Отравить маршрут на новый бэкенд
@@ -350,7 +356,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                                 onClick={e=>this.onDelete(e)}>Удалить маршрут</button>}
                         </div>
                     </div>}
-            </div>
+                </div>
     }
 
     /*onSendToNew = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -435,7 +441,6 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         console.log(what);
         lines.splice(lines.indexOf(line), 1);
         mapLines.splice(mapLines.indexOf(mapLine), 1);
-        alert('Сохраните маршрут и перезагрузите страницу, чтобы линия пропала с карты');
         this.setState({lines, mapLines});    
     }
 
@@ -492,6 +497,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         const { name, description, theme, season, dots, lines, isEditMode, editId } = this.state;
         console.log(dots);
 
+        alert('Загрузка...');
+        
         const realDots = [...[...dots.map(d=>{
             return { Id: d.id, Name: d.name, Description: d.description,
                 PositionX: d.positionX 
@@ -536,9 +543,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             
             await post(`${process.env.REACT_APP_NEW_API_URL}/api/route/add`, fd)
             .then(async response => {
-                if(response.ok) console.log('Маршрут сохранён');
+                if(response.ok) alert('Маршрут сохранён');
                 const id = await response.json();
-                alert(id);
                 await fetch(`${process.env.REACT_APP_NEW_API_URL}/api/route/get?id=${id}`)
                     .then(async response => {
                         console.log(await response.json())

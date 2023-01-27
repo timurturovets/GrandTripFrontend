@@ -12,7 +12,7 @@ export default class LinesList extends Component<LinesListProps, any> {
     render() {
         const { lines } = this.props;
         return <div>
-            <h1 className="text-light">Список линий</h1>
+            <h2>Список линий</h2>
             <div>
                 {lines.map(line=>{
                     return <div key={line.id}>
@@ -23,6 +23,7 @@ export default class LinesList extends Component<LinesListProps, any> {
                             onHighlighted={e=>this.handleLineHighlight(e, line.id)} />
                     </div>
                 })}
+                {lines.length < 1 && <h6>Вы ещё не провели ни одну линию.</h6>}
             </div>
         </div>
     }

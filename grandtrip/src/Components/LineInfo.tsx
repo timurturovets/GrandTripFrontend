@@ -11,12 +11,12 @@ export default class LineInfo extends Component<LineInfoProps, any> {
         const { id, onHighlighted, onDeleted } = this.props;
 
         return <div>
-            <h3 className="text-light">Линия {id}</h3>
+            <h3>Линия {id}</h3>
             <button onClick={e => onHighlighted(e, id)} 
-            className="constructor-button" style={{width: '50%'}}>
+            className="button button--small sidebar__element" style={{width: '50%'}}>
                 Подсветить</button>
             <button onClick={e => onDeleted(e, id)}
-            className="constructor-button" style={{width: '50%'}}>
+            className="button button--small sidebar__element" style={{width: '50%'}}>
                 Удалить</button>
         </div>
     }

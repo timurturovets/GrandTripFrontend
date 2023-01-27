@@ -27,9 +27,12 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
         return <AuthComponent>
             <div style={{height: "100%"}}>           
                 <div id="main-container" style={{height: "100%", width: "100%"}}>
-                <div id="mapInfoDiv" className="bg-dark">
+                {/*<div id="mapInfoDiv" className="bg-dark">
                     {map && <ConstructorToolbar map={map} />}
-                </div>
+                </div>*/}
+                    <aside className="sidebar">
+                        {map && <ConstructorToolbar map={map} />}
+                    </aside>
                     <div id="mapDiv" style={{height: "100%", width: "100%"}}></div>
             </div>
             </div>
@@ -43,7 +46,7 @@ export default class ConstructorPage extends Component<any, ConstructorPageState
         const cont = document.getElementById("cont")!;
         const div = cont.children[0] as HTMLElement;
         div.style.width = `${cont.offsetWidth}px`;
-        
+
         const container = document.getElementById('main-container')!;
         container.style.height = `${height}px`;
         container.style.width = `${cont.offsetWidth}px`;

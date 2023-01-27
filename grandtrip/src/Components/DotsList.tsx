@@ -11,9 +11,10 @@ export default class DotsList extends Component<DotsListProps, any> {
     render() {
         const { dots } = this.props;
         return <div>
-        <h2 className="text-light">Список точек</h2>
+        <h2 >Список точек</h2>
         {dots.map(dot=>
-            <div key={dot.positionX+dot.positionY}>
+            <div key={dot.positionX + dot.positionY}>
+                <hr className="bg-dark mt-3 mb-3" />
                 <DotInfo 
                     id={dot.id}
                     name={dot.name}
@@ -24,10 +25,9 @@ export default class DotsList extends Component<DotsListProps, any> {
                     onDeleted={this.handleDotDeleted}
                     onFieldChanged={this.handleDotFieldChanged}
                 />
-                <hr />
                 </div>)
         }
-        {dots.length < 1 && <h3 className="text-light">Вы ещё не поставили ни одной точки.</h3>}
+        {dots.length < 1 && <h6>Вы ещё не поставили ни одной точки.</h6>}
             </div>    
     }
 

@@ -114,9 +114,9 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
                             <select className="field field--small sidebar__element"
                             onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
                             <option value="none">Любое время года</option>
-                            <option value="spring">Весна</option>
+                            {/*<option value="spring">Весна</option>
+                            <option value="autumn">Осень</option>*/}               
                             <option value="winter">Зима</option>
-                            <option value="autumn">Осень</option>
                             <option value="summer">Лето</option>
                             </select>
                             <select className="field field--small sidebar__element"
@@ -140,14 +140,17 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
                             <option value="3">1.5 часа</option>
                             <option value="4">2 часа и больше</option>
                             </select>
-                            <button className="button button--small sidebar__element" onClick={this.handleSubmit}>искать</button>
+                            <div className="d-flex flex-row">
+                                <button className="button button--small sidebar__element" onClick={this.handleSubmit}>искать</button>
+                                {isAuthenticated && 
+                        <Link to="/constructor" className="button button--bordered sidebar__bottom-button ml-5">
+                            создайте свой маршрут</Link>}
+                            </div>
                         </form>
                         </div>
                     {//</div>
     }
-                    {isAuthenticated && 
-                        <Link to="/constructor" className="button button--bordered sidebar__bottom-button">
-                            создайте свой маршрут</Link>}
+
                     {/*<button className="button button--bordered sidebar__bottom-button"
                             onClick={e=>this.handleSendAll(e)}>Отправить всё на новый бэкенд</button>*/}
                     <div id="routes">
