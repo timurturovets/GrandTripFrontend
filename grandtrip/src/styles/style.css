@@ -97,7 +97,6 @@ button,
 input,
 option {
     border-radius: unset;
-    -webkit-appearance: none !important;
     background: unset;
     background-color: unset;
 }
@@ -172,7 +171,8 @@ form {
     padding: 8px 10px;
 }
 
-.button--small:hover {
+
+/*.button--small:hover {
     padding: 5px 8px !important;
 }
 
@@ -181,7 +181,7 @@ form {
     background: transparent;
     color: black;
     padding: 9px 11px;
-}
+}*/
 
 .button * {
     display: inline-block;
