@@ -160,11 +160,10 @@ form {
     font-weight: 700;
     color: white;
     background: #4356FF;
+    border: 3px solid white;
     border-radius: 10px;
-    -webkit-transition: 0.5s;
-    -o-transition: 0.5s;
-    transition: 0.5s;
     text-decoration: none !important;
+    transition: 0.325s;
 }
 
 .button--small {
@@ -180,7 +179,6 @@ form {
     border: 3px solid #4356FF;
     background: transparent;
     color: black;
-    /*padding: 9px 11px;*/
 }
 
 .button * {
