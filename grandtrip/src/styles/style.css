@@ -174,14 +174,14 @@ form {
 
 /*.button--small:hover {
     padding: 5px 8px !important;
-}
+}*/
 
 .button:hover {
     border: 3px solid #4356FF;
     background: transparent;
     color: black;
-    padding: 9px 11px;
-}*/
+    /*padding: 9px 11px;*/
+}
 
 .button * {
     display: inline-block;
