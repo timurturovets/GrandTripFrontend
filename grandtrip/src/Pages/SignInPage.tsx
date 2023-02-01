@@ -37,14 +37,17 @@ export default class SignInPage extends Component<any, SignInPageState> {
                         : <div>
                             <div /*style={myStyle}*/>
                                 <section className="log-in-section">
-                                {clickedLogin 
-                                    ? this.renderLoginForm()
-                                    : this.renderRegisterForm()
-                                }
-                                <button onClick={e=>this.onSubmit(e, setStatus, setInfo)} 
-                                className="text-center log-in-section__button button">
-                                    {clickedLogin ? "Войти" : "Зарегистрироваться"}
-                                </button>
+                                <div className="container">
+                                  {clickedLogin 
+                                      ? this.renderLoginForm()
+                                      : this.renderRegisterForm()
+                                  }
+                                  <button onClick={e=>this.onSubmit(e, setStatus, setInfo)}
+                                  style={{margin: 0}} 
+                                  className="text-center log-in-section__button button">
+                                      {clickedLogin ? "Войти" : "Зарегистрироваться"}
+                                  </button>
+                                </div>
                                 {errMessage && <p className="text-danger">{errMessage}</p>}
                                 </section>
                             </div>
@@ -100,13 +103,13 @@ export default class SignInPage extends Component<any, SignInPageState> {
     
     renderLoginForm = () : ReactNode => {
         const { username, password } = this.state;
-        return <div className="container">
+        return <div>
             <h2> 
               <p>Вход</p>
             </h2>
             <div className="log-in-section__subtitle">
-              <p>Еще нет аккаунта? 
-                <button className="link" onClick={e=>this.setState({clickedLogin: false})}>Регистрация</button></p>
+              <p>Еще нет аккаунта?
+                <button className="link ml-3" onClick={e=>this.setState({clickedLogin: false})}> Регистрация</button></p>
             </div>
             <div className="log-in-section__fields">
               <form action=""> 
@@ -125,13 +128,13 @@ export default class SignInPage extends Component<any, SignInPageState> {
 
     renderRegisterForm = () : ReactNode => {
         const { username, password, pwVerification } = this.state;
-        return <div className="container">
+        return <div>
           <h2> 
             <p>Регистрация</p>
           </h2>
           <div className="log-in-section__subtitle">
             <p>Уже есть аккаунт? 
-                <button className="link" onClick={e=>this.setState({clickedLogin: true})}>Войти</button></p>
+                <button style={{marginLeft: '3px'}} className="link" onClick={e=>this.setState({clickedLogin: true})}> Войти</button></p>
           </div>
           <div className="log-in-section__fields">
             <form action=""> 

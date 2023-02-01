@@ -90,7 +90,7 @@ export default class HomePage extends Component {
                     </div>
                     <div className="about-us-section__text textblock">
                       <h2>О Нас</h2>
-                      <p>Привет) Мы команда ребят из СУНЦ Инженерного лицея-интерната КНИТУ-КАИ. Сайт был создан нами в сентябре 2021 на конференции «Университетская гимназия», организатор СПБГУ. Сейчас проекту чуть больше года, и он процветает (как и мы)! В него вложено много сил талантливых ребят, поэтому мы надеемся, что Вы найдете здесь что-то полезное для себя)  </p><a className="button" href="">поддержать проект</a>
+                      <p>Мы — команда из СУНЦ КНИТУ-КАИ. Этот сайт мы создали в сентябре 2021 на конференции «Университетская гимназия», организатор СПбГУ. В проект вложено много сил талантливых ребят, поэтому мы надеемся, что он сможет принести вам пользу.  </p><a className="button" href="">поддержать проект</a>
                     </div>
                   </div>
                 </section>
@@ -98,7 +98,7 @@ export default class HomePage extends Component {
                   <div className="container">
                     <div className="ideas-section__text textblock">
                       <h2>Ваши идеи смотрятся классно</h2>
-                      <p>Создайте свой собственный маршрут, отправьте его нам на обработку и дальнейшее выкладывание (как по другому сказать?) или сохраните его для себя и близких! Мы открыты к новым идеям. Пишите нам <a className="link" href="mail@grandtrip.com">на почту</a> или <a className="link" href="https://t.me/grandtripbot">в наш телеграм бот</a>.</p><a className="button" href="roads.html/create">создать маршрут</a>
+                      <p>Создайте свой собственный маршрут, отправьте его на обработку - после проверки он будет виден для всех. Или сохраните его для себя и друзей! Мы открыты к новым идеям. Пишите нам на почту: <b>grandtrip@mail.ru</b>, или <a onClick={e=>function(){e.preventDefault();alert('Телеграм-бот в разработке.')}()}>в наш телеграм бот</a>.</p><a className="button" href="roads.html/create">создать маршрут</a>
                     </div>
                     <div className="ideas-section__image"><img src="img/road.png" /></div>
                   </div>
@@ -106,10 +106,10 @@ export default class HomePage extends Component {
                     <section className="log-in-section">
                       <div className="container">
                         <h2> 
-                          <p>Регистрация </p>
-                        </h2><span className="log-in-section__subtitle">
-                          <p>Уже есть аккаунт? 
-                            <Link className="link" to="sign-in">Войти</Link></p></span>
+                          <p><Link className="link" to="sign-in">Регистрация</Link></p>
+                        </h2>{/*<span className="log-in-section__subtitle">
+                          <p>
+                            <Link className="link" to="sign-in">Войти</Link></p></span>*/}
                       </div>
                     </section>
                 </div>

@@ -19,7 +19,7 @@ export default class AuthComponent extends Component<AuthComponentProps, any> {
                     ? this.props.children
                     : function(r){
                         if(r) {
-                            alert('У вас нет доступа к этой странице.');
+                            alert('У вас нет доступа к этой странице. Перезайдите на страницу, если считаете, что произошла ошибка.');
                             window.location.href="/";
                         } else window.location.href="/account";
                         return null;
