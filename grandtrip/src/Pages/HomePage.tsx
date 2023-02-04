@@ -90,7 +90,8 @@ export default class HomePage extends Component {
                     </div>
                     <div className="about-us-section__text textblock">
                       <h2>О Нас</h2>
-                      <p>Мы — команда из СУНЦ КНИТУ-КАИ. Этот сайт мы создали в сентябре 2021 на конференции «Университетская гимназия», организатор СПбГУ. В проект вложено много сил талантливых ребят, поэтому мы надеемся, что он сможет принести вам пользу.  </p><a className="button" href="">поддержать проект</a>
+                      <p>Мы — команда из СУНЦ КНИТУ-КАИ. Этот сайт мы создали в сентябре 2021 на конференции «Университетская гимназия», организатор СПбГУ. В проект вложено много сил талантливых ребят, поэтому мы надеемся, что он сможет принести вам пользу.<br />GrandTrip - проект с открытым исходным кодом.
+                        </p><a className="button" href="https://github.com/timurturovets/GrandTripFrontend">фронтенд</a> <a className="button" href="https://github.com/timurturovets/GrandTripAPI">бэкенд</a>
                     </div>
                   </div>
                 </section>
@@ -98,7 +99,7 @@ export default class HomePage extends Component {
                   <div className="container">
                     <div className="ideas-section__text textblock">
                       <h2>Ваши идеи смотрятся классно</h2>
-                      <p>Создайте свой собственный маршрут, отправьте его на обработку - после проверки он будет виден для всех. Или сохраните его для себя и друзей! Мы открыты к новым идеям. Пишите нам на почту: <b>grandtrip@mail.ru</b>, или <a onClick={e=>function(){e.preventDefault();alert('Телеграм-бот в разработке.')}()}>в наш телеграм бот</a>.</p><a className="button" href="roads.html/create">создать маршрут</a>
+                      <p>Создайте свой собственный маршрут, отправьте его на обработку - после проверки он будет виден для всех. Или сохраните его для себя и друзей! Мы открыты к новым идеям. Пишите нам на почту: <b>grandtrip@mail.ru</b>, или <a onClick={e=>function(){e.preventDefault();alert('Телеграм-бот в разработке.')}()}>в наш телеграм-бот</a>.</p><Link className="button" to="/constructor">создать маршрут</Link>
                     </div>
                     <div className="ideas-section__image"><img src="img/road.png" /></div>
                   </div>
