@@ -312,7 +312,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         <h2>Информация о маршруте</h2>
                         <input type="text" name="routeName"  className="form-control" value={name || ""}
                             placeholder="Название маршрута" onChange={e=>this.handleInfoChange(e, "routeName")} />
-                        <input type="text" name="routeDesc" className="form-control" value={description || ""} 
+                        <textarea name="routeDesc" className="form-control" value={description || ""} 
                             placeholder="Описание маршрута" onChange={e=>this.handleInfoChange(e, "routeDesc")} />
                         </div>
                         <div className="form-group">
@@ -402,7 +402,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
 
     handleSeasonChange = (season: Season) => this.setState({season});
 
-    handleInfoChange = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+    handleInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, type: string) => {
         e.preventDefault();
 
         const { value } = e.target;

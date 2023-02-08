@@ -97,7 +97,7 @@ button,
 input,
 option {
     border-radius: unset;
-    -webkit-appearance: none !important;
+    appearance: none !important;
     background: unset;
     background-color: unset;
 }
