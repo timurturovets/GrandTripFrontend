@@ -45,6 +45,14 @@ const seasons = {
 }
 type SeasonsKey = keyof typeof seasons;
 
+
+type City = 'kzn' | 'spb'
+const cities = {
+    'Казань': 'kzn',
+    'Санкт-Петербург': 'spb'
+}
+type CitiesKey = keyof typeof cities;
+
 interface ConstructorToolbarState {
     isEditMode: boolean,
     editId: number,
@@ -53,6 +61,7 @@ interface ConstructorToolbarState {
     description: Nullable<string>,
     theme: Theme,
     season: Season,
+    city: City,
     dots: Dot[],
     lines: Line[],
     mapLines: MapLine[],
@@ -88,6 +97,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             description: null, 
             theme: "none",
             season: "none",
+            city: 'kzn',
             dots: [],
             lines: [],
             mapLines: [],
@@ -119,9 +129,6 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                     const line = L.polyline(buildingLineInfo.latlngs, {color:'blue', weight: 5});
                     buildingLineInfo.line = line;
                     mapLines.push({id: lastLineId, line: line});
-                    console.log('----------------');
-                    console.log(line);
-                    console.log('----------------');
                     lastLineId++;
                 }
                 this.setState({
@@ -169,7 +176,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                 .marker([dot.positionX, dot.positionY])
                 .bindPopup(L
                     .popup()
-                    .setContent(`<h5 class="display-5">${dot.name}</h1><p>${dot.description || "Без описания"}</p>`))
+                    .setContent(`<h5 class="display-5">${dot.name}</h5><p>${dot.description || "Без описания"}</p>`))
                 .addTo(map);
                 markers.push(marker);
                 const stateDot = {...dot, id: parseInt(dot.id)};
@@ -189,18 +196,18 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             lastLineId++;
         }
         const { name, description } = route;
-        let { theme, season } = route;
+        let { theme, season, city } = route;
 
         theme = themes[theme as ThemesKey] ? themes[theme as ThemesKey] : "none";
         season = seasons[season as SeasonsKey] ? seasons[season as SeasonsKey] : "none";
+        city = cities[city as CitiesKey] ? cities[city as CitiesKey] : "spb";
 
-        this.setState({name, description, dots, theme, season, markers, lines, mapLines, lastId, lastLineId});
+        this.setState({name, description, dots, theme, season, city, markers, lines, mapLines, lastId, lastLineId});
     }
 
     render() {
         const { name, description, tracingInfo, buildingLineInfo, 
-            searchingInfo, isEditMode, theme, season } = this.state;
-        //return <div className="bg-dark text-light">
+            searchingInfo, isEditMode, theme, season, city } = this.state;
         return <div className="sidebar__content">
                 <div className="sidebar__title">Создание нового маршрута</div>
                 <hr className="bg-dark mt-3 mb-3" />
@@ -337,14 +344,22 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                         </div>
                         <div className="form-group">
                             <h3>Выбрать сезон</h3>
-                        <select className="field field--small sidebar__element" value={season ?? "none"}
-                            onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
-                            <option value="none">Все сезоны</option>
-                            <option value="summer">Лето</option>
-                            <option value="autumn">Осень</option>
-                            <option value="winter">Зима</option>
-                            <option value="spring">Весна</option>
-                        </select>
+                            <select className="field field--small sidebar__element" value={season ?? "none"}
+                                onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
+                                <option value="none">Все сезоны</option>
+                                <option value="summer">Лето</option>
+                                <option value="autumn">Осень</option>
+                                <option value="winter">Зима</option>
+                                <option value="spring">Весна</option>
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <h3>Выбрать город</h3>
+                            <select className="field field--small sidebar__element" value={city ?? "spb"}
+                                onChange={e=>this.handleCityChange(e.target.value as City)}>
+                                    <option value="spb">Санкт-Петербург</option>
+                                    <option value="kzn">Казань</option>
+                                </select>
                         </div>
                         <div className="form-group">
                             <button className="button button--small sidebar__element" onClick={e=>this.onSubmit(e)}>
@@ -398,18 +413,20 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
         }
     }*/
 
-    handleThemeChange = (theme: Theme) => this.setState({theme});
+    handleThemeChange = (theme: Theme) => this.setState({ theme });
 
-    handleSeasonChange = (season: Season) => this.setState({season});
+    handleSeasonChange = (season: Season) => this.setState({ season });
+
+    handleCityChange = (city: City) => this.setState({ city });
 
     handleInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, type: string) => {
         e.preventDefault();
 
         const { value } = e.target;
         if(type === "routeName") {
-            this.setState({name: value});
+            this.setState({ name: value });
         } else if(type === "routeDesc") {
-            this.setState({description: value});
+            this.setState({ description: value });
         } else console.log('err');
     }
 
@@ -494,7 +511,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
     onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        const { name, description, theme, season, dots, lines, isEditMode, editId } = this.state;
+        const { name, description, theme, season, city, dots, lines, isEditMode, editId } = this.state;
         console.log(dots);
 
         alert('Загрузка...');
@@ -518,6 +535,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             fd.append('Description', description!);
             fd.append('Theme', theme!);
             fd.append('Season', season!);
+            fd.append('City', city!);
 
             console.log(realDots);
             console.log(realLines);
@@ -534,7 +552,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             fd.append('Description', description!);
             fd.append('Theme', theme!);
             fd.append('Season', season!);
-
+            fd.append('City', city!);
             console.log(realDots);
             console.log(realLines);
 
@@ -545,10 +563,6 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             .then(async response => {
                 if(response.ok) alert('Маршрут сохранён');
                 const id = await response.json();
-                await fetch(`${process.env.REACT_APP_NEW_API_URL}/api/route/get?id=${id}`)
-                    .then(async response => {
-                        console.log(await response.json())
-                    });
                 this.setState({isEditMode: true, editId: id});
             });
         }

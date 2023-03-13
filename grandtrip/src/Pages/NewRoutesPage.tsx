@@ -12,12 +12,14 @@ import createMap from '../Functions/createMap'
 type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' 
 | 'activities' | 'gastronomy' | 'abiturients'
 type Season = 'none' | 'summer' | 'winter' | 'autumn' | 'spring'
+type City = 'spb' | 'kzn'
 type Time = "none" | number
 type Nullable<T> = T | null
 
 interface RouteCriteries {
     theme: Theme,
     season: Season,
+    city: City,
     time: Time
 }
 
@@ -82,6 +84,7 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
             criteries: {
                 theme: "none",
                 season: "none",
+                city: 'spb',
                 time: 5
             },
             routes: {
@@ -118,6 +121,11 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
                             <option value="autumn">Осень</option>*/}               
                             <option value="winter">Зима</option>
                             <option value="summer">Лето</option>
+                            </select>
+                            <select className="field field--small sidebar__element"
+                            onChange={e=>this.handleCityChange(e.target.value as City)}>
+                                <option value="spb">Санкт-Петербург</option>
+                                <option value="kzn">Казань</option>
                             </select>
                             <select className="field field--small sidebar__element"
                                 onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
@@ -237,11 +245,12 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
         e.preventDefault();
 
         const { routes, criteries } = this.state;
-        const { theme, season } = criteries;
+        const { theme, season, city } = criteries;
         
         const filters = {
             theme: theme === 'none' ? "" : theme, 
-            season: season === 'none' ? "" : season
+            season: season === 'none' ? "" : season,
+            city
         };
 
         this.setState({routes: {...routes, isLoading: true}});
@@ -322,6 +331,15 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
             criteries: {
                 ...this.state.criteries,
                 theme
+            }
+        });
+    }
+
+    handleCityChange = (city: City) : void => {
+        this.setState({
+            criteries: {
+                ...this.state.criteries,
+                city
             }
         });
     }
