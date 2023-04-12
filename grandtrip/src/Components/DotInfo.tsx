@@ -36,7 +36,7 @@ export default class DotInfo extends Component<DotInfoProps, DotInfoState> {
                         defaultValue={name} onChange={e=>this.onChange(e, "name")} />
                 </div>
                 <div className="form-group">
-                    <input className="form-control" type="text" name="dotDesc" placeholder="Описание точки"
+                    <textarea className="form-control" name="dotDesc" placeholder="Описание точки"
                         defaultValue={desc} onChange={e=>this.onChange(e, "desc")} />
                 </div>
                 <div className="form-group">
@@ -57,7 +57,7 @@ export default class DotInfo extends Component<DotInfoProps, DotInfoState> {
         const { id, onDeleted } = this.props;
         onDeleted(id);
     }
-    onChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
         e.preventDefault();
 
         const { id } = this.props;

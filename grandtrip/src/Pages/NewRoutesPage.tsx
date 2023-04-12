@@ -191,56 +191,6 @@ export default class NewRoutesPage extends Component<any, NewRoutesPageState> {
         </div>}</AuthContextConsumer>
     }
 
-    /*handleSendAll = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-
-        const { routes } = this.state;
-        const { result } = routes;
-
-        for(const route of result) {
-            while(!(route.dots instanceof Array)) route.dots = JSON.parse(route.dots as unknown as string);
-            while(!(route.lines instanceof Array)) route.lines = JSON.parse(route.lines as unknown as string);
-
-            const { name, description, dots, lines } = route;
-            const fd = new FormData();
-    
-            fd.append('data.RouteName', name!);
-            fd.append('data.Description', description!);
-    
-            const realDots = [...[...dots.map(d=>{
-                return { Id: d.id, Name: d.name, Description: d.description,
-                    PositionX: d.positionX 
-                    || (d as Dot & {PositionX: number}).PositionX, PositionY: d.positionY 
-                    || (d as Dot & {PositionY: number}).PositionY }
-            })].map(d=>JSON.stringify(d))];
-    
-            const realLines = [...[...lines.map(l=>{
-                return { Id: l.id, LatLngs: l.latLngs || (l as Line & {latlngs: L.LatLngExpression}).latlngs };
-            })].map(l=>JSON.stringify(l))];
-    
-            console.log(realDots);
-            console.log(realLines);
-    
-            for (const dot of realDots) fd.append(`data.Dots`, dot);
-            for (const line of realLines) fd.append(`data.Lines`, line);
-            
-            await fetch(`${process.env.REACT_APP_NEW_API_URL}/api/route/add`, {
-                method: 'POST',
-                body: fd
-            }).then(async response => {
-                if(response.ok) console.log('Маршрут сохранён');
-                const id = await response.json().catch(err=>alert(err));
-                alert(id);
-                await fetch(`${process.env.REACT_APP_NEW_API_URL}/api/route/get?id=${id}`)
-                    .then(async response => {
-                        console.log(await response.json())
-                    }).catch(err=>alert(err));
-            });
-        }
-
-        console.log(result);
-    }*/
-
     handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
