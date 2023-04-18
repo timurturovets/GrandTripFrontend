@@ -49,6 +49,8 @@ type SeasonsKey = keyof typeof seasons;
 
 type City = 'kzn' | 'spb'
 
+type Duration = 'none' | '1h' | '2h' | '4h' | '1d'
+
 interface ConstructorToolbarState {
     isEditMode: boolean,
     editId: number,
@@ -58,6 +60,7 @@ interface ConstructorToolbarState {
     theme: Theme,
     season: Season,
     city: City,
+    duration: Duration,
     dots: Dot[],
     lines: Line[],
     mapLines: MapLine[],
@@ -94,6 +97,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             theme: "none",
             season: "none",
             city: 'kzn',
+            duration: 'none',
             dots: [],
             lines: [],
             mapLines: [],
@@ -192,16 +196,19 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             lastLineId++;
         }
         const { name, description } = route;
-        let { theme, season, city } = route;
+        let { theme, season, city, duration } = route;
 
         theme = themes[theme as ThemesKey] ? themes[theme as ThemesKey] : "none";
         season = seasons[season as SeasonsKey] ? seasons[season as SeasonsKey] : "none";
-        this.setState({name, description, dots, theme, season, city, markers, lines, mapLines, lastId, lastLineId});
+        this.setState({name, description,
+            theme, season, city, duration,
+             markers, dots, lines, 
+             mapLines, lastId, lastLineId});
     }
 
     render() {
         const { name, description, tracingInfo, buildingLineInfo, 
-            searchingInfo, isEditMode, theme, season, city } = this.state;
+            searchingInfo, isEditMode, theme, season, city, duration } = this.state;
         return <div className="sidebar__content">
                 <div className="sidebar__title">Создание нового маршрута</div>
                 <hr className="bg-dark mt-3 mb-3" />
@@ -356,12 +363,24 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
                                 </select>
                         </div>
                         <div className="form-group">
+                            <h3>Длительность маршрута</h3>
+                            <select className="field field--small sidebar__element" value={duration ?? "none"}
+                                onChange={e=>this.handleDurationChange(e.target.value as Duration)}>
+                                    <option value="none">Неважно</option>
+                                    <option value="1h">1 час</option>
+                                    <option value="2h">2 часа</option>
+                                    <option value="4h">4 часа</option>
+                                    <option value="1d">1 день</option>
+                                </select>
+                        </div>
+                        <div className="form-group">
                             <button className="button button--small sidebar__element" onClick={e=>this.onSubmit(e)}>
                                 Отправить маршрут на обработку</button>
                             {isEditMode && <button className="btn btn-outline-danger" style={{width: '100%'}}
                                 onClick={e=>this.onDelete(e)}>Удалить маршрут</button>}
                         </div>
-                    </div>}
+                    </div>
+                }
                 </div>
     }
 
@@ -370,6 +389,8 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
     handleSeasonChange = (season: Season) => this.setState({ season });
 
     handleCityChange = (city: City) => this.setState({ city });
+
+    handleDurationChange = (duration: Duration) => this.setState({ duration });
 
     handleInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, type: string) => {
         e.preventDefault();
@@ -463,7 +484,10 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
     onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        const { name, description, theme, season, city, dots, lines, isEditMode, editId } = this.state;
+        const { name, description, 
+            theme, season, city, duration, 
+            dots, lines, 
+            isEditMode, editId } = this.state;
         console.log(dots);
 
         alert('Загрузка...');
@@ -488,7 +512,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             fd.append('Theme', theme!);
             fd.append('Season', season!);
             fd.append('City', city!);
-
+            fd.append('Duration', duration!)
             console.log(realDots);
             console.log(realLines);
 
@@ -505,6 +529,7 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
             fd.append('Theme', theme!);
             fd.append('Season', season!);
             fd.append('City', city!);
+            fd.append('Duration', duration!);
             console.log(realDots);
             console.log(realLines);
 

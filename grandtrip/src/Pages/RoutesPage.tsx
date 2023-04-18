@@ -12,13 +12,15 @@ import createMap from '../Functions/createMap'
 type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' 
 | 'activities' | 'gastronomy' | 'abiturients'
 type Season = 'none' | 'summer' | 'winter' | 'autumn' | 'spring'
-type Time = "none" | number
+type City = 'spb' | 'kzn'
+type Duration = "none" | "1h" | "2h" | "4h" | "1d"
 type Nullable<T> = T | null
 
 interface RouteCriteries {
     theme: Theme,
     season: Season,
-    time: Time
+    city: City,
+    duration: Duration
 }
 
 interface MapInfo {
@@ -45,17 +47,17 @@ interface StateRoutes {
     error?: string
 }
 
-interface RoutesPageState {
+interface NewRoutesPageState {
     shareInfo: ShareInfo,
     mapInfo: MapInfo,
     criteries: RouteCriteries
     routes: StateRoutes
 }
 
-export default class RoutesPage extends Component<any, RoutesPageState> {
-    constructor(props: any) {
+export default class RoutesPage extends Component<any, NewRoutesPageState> {
+    constructor(props: any){
         super(props);
-        
+
         const isFromRef = window.location.pathname === "/share" 
             && new URLSearchParams(window.location.search).has('r');
 
@@ -82,7 +84,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             criteries: {
                 theme: "none",
                 season: "none",
-                time: 5
+                city: 'spb',
+                duration: "none"
             },
             routes: {
                 clicked: false, 
@@ -92,7 +95,6 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             }
         }
     }
-
     componentDidMount() {
         this.showMap();
     }
@@ -101,52 +103,56 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         const { isFromRef, refRoute, loading } = shareInfo;
         const { clicked, isLoading, result, error } = routes;
 
-        return <AuthContextConsumer>{({isAuthenticated, info})=>
-        <div style={{textAlign: "left", display: "flex"}}>
-        <div id="MySideNav" className="text-center">
-            <div className="bg-dark text-light p-3">
-                <label>Время года: </label>
-                <select className="form-select" onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
-                    <option value="none">Любое</option>
-                    <option value="summer">Лето</option>
-                    <option value="autumn">Осень</option>
-                    <option value="winter">Зима</option>
-                    <option value="spring">Весна</option>
-                </select>
-                <label>Тематика: </label>
-                <select className="form-select" onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
-                    <option value="none">Выбрать все</option>
-                    <option value="modern-world">Современный мир</option>
-                    <option value="history">История</option>
-                    <option value="islands">Острова и парки</option>
-                    <option value="films">Фильмы</option>
-                    <option value="literature">Литературный дворик</option>
-                    <option value="activities">Физические активности</option>
-                    <option value="gastronomy">Гастрономия</option>
-                    <option value="abiturients">Абитуриентам</option>
-                </select>
-                <label> Длительность: </label>
-                <div className="duration-input-wrapper">
-                    <div className="form-group">
-                        <select className="form-select"
-                        onChange={e=>this.setState({criteries:
-                         {...criteries, time: parseInt(e.target.value)}})}>
-                            <option value={1}>1 час</option>
-                            <option value={2}>2 часа</option>
-                            <option value={3}>3 часа</option>
-                            <option value={24}>1 день</option>
-                         </select>
-                    </div>
-                </div>
-                <button onClick={e=>this.handleSubmit(e)} className="btn btn-success">
-                    OK
-                </button>
-            </div>
-
-            <div id="routes">
-                {isAuthenticated && 
-                <Link to="/constructor" className="btn btn-outline-success" style={{width: "100%"}}>
-                    Создать новый маршрут</Link>}
+        return <AuthContextConsumer>
+            {({isAuthenticated})=><div style={{ height: '100%' }}>
+                <div id="main-container">
+                <aside className="sidebar">
+                    <div className="sidebar__content">
+                        <div className="sidebar__title">Поиск по параметрам</div>
+                        <div className="sidebar__list">
+                        <form className="sidebar__field">
+                            <select className="field field--small sidebar__element"
+                            onChange={e=>this.handleSeasonChange(e.target.value as Season)}>
+                            <option value="none">Любое время года</option>            
+                            <option value="winter">Зима</option>
+                            <option value="summer">Лето</option>
+                            </select>
+                            <select className="field field--small sidebar__element"
+                            onChange={e=>this.handleCityChange(e.target.value as City)}>
+                                <option value="spb">Санкт-Петербург</option>
+                                <option value="kzn">Казань</option>
+                            </select>
+                            <select className="field field--small sidebar__element"
+                                onChange={e=>this.handleThemeChange(e.target.value as Theme)}>
+                                <option value="none">Все тематики</option>
+                                <option value="modern-world">Современный мир</option>
+                                <option value="history">История</option>
+                                <option value="islands">Острова и парки</option>
+                                <option value="films">Фильмы</option>
+                                <option value="literature">Литературный дворик</option>
+                                <option value="activities">Физические активности</option>
+                                <option value="gastronomy">Гастрономия</option>
+                                <option value="abiturients">Абитуриентам</option>
+                            </select>
+                            <select className="field field--small sidebar__element"
+                            onChange={e=>this.setState({criteries:
+                                {...criteries, duration: e.target.value as Duration}})}>
+                            <option selected disabled value="default">Длительность прогулки</option>
+                            <option value="none">Неважно</option>
+                            <option value="1h">1 час</option>
+                            <option value="2h">2 часа</option>
+                            <option value="4h">4 часа</option>
+                            <option value="1d">1 день</option>
+                            </select>
+                            <div className="d-flex flex-row">
+                                <button className="button button--small sidebar__element" onClick={this.handleSubmit}>искать</button>
+                                {isAuthenticated && 
+                        <Link to="/constructor" className="button button--bordered sidebar__bottom-button ml-5">
+                            создайте свой маршрут</Link>}
+                            </div>
+                        </form>
+                        </div>
+                    <div id="routes">
                     
                 {isFromRef 
                     ? loading || !refRoute
@@ -167,29 +173,33 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                                 onAddingToFavourites={this.handleAddToFavourites} /></div>)
                 }
             </div>
-        </div>
-         <div id="main-container" style={{height:'100%', width: '100%'}}>
-                <div id="MAP-ID" style={{height:'100%', width: '100%'}}></div>
             </div>
-        </div>}
-        </AuthContextConsumer>
+            </aside>
+
+            <div id="mapDiv" style={{height: '100%'}}></div>
+
+            </div>
+        </div>}</AuthContextConsumer>
     }
 
     handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        const { criteries } = this.state;
-        const { theme, season } = criteries;
+        const { routes, criteries } = this.state;
+        const { theme, season, city, duration } = criteries;
         
-        const filters = JSON.stringify({
-            theme, season
-        });
-        console.log(filters);
-        console.log(process.env.REACT_APP_API_URL);
-        this.setState({routes: {...this.state.routes, isLoading: true}});
+        const filters = {
+            theme: theme === 'none' ? "" : theme, 
+            season: season === 'none' ? "" : season,
+            city,
+            duration: duration === "none" ? "" : duration
+        };
 
-        await get(`${process.env.REACT_APP_API_URL}/routes/getroutes`, { filters }).then(async res=>{
+        this.setState({routes: {...routes, isLoading: true}});
+
+        await get(`${process.env.REACT_APP_NEW_API_URL}/api/route/getall`, filters).then(async res=>{
             const routes = (await res.json()).routes;
+            console.log(routes);
             const routeInformations: (RouteInformation & {isFavourite: boolean})[] = [];
             for(const route of routes) {
                 if(route) routeInformations.push(route);
@@ -203,12 +213,14 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                     isLoading: false
                 }
             });
+
             const container = document.getElementById('main-container')!;   
             const sideNav = document.getElementById('MySideNav')!;
             sideNav.style.height = container.style.height;
         }).catch(err=>{
-            alert('Произошла ошибка. Попробуйте позже.');
-        })
+            console.log(err);
+            //alert('Произошла ошибка. Попробуйте позже.');
+        });
     }
 
     handleRouteRendering = (routeId: number) => {
@@ -249,7 +261,6 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
                     lng: unwrapped[1] || (latlng as any).lng 
                 });
             }
-            console.log(realLatLngs);
             const l = L.polyline(realLatLngs, { color: 'rgba(255, 157, 18, 1)', weight: 5 })
                 .addTo(map!);
             mapLines.push(l);
@@ -266,11 +277,20 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         });
     }
 
+    handleCityChange = (city: City) : void => {
+        this.setState({
+            criteries: {
+                ...this.state.criteries,
+                city
+            }
+        });
+    }
+
     handleAddToFavourites = async (id: number, remove: boolean) => {
         const url = `${process.env.REACT_APP_API_URL}/${remove ? "remove" : "add"}_favourite_route`;
         const fd = new FormData();
         fd.append('routeId', `${id}`);
-        
+
         await post(url, fd).then(async response => {
             const { routes } = this.state;
             const { result } = routes;
@@ -281,7 +301,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             route.isFavourite = !remove;
             this.setState({routes: {...routes, result}});
         }).catch(err=>{
-            alert('Произошла ошибка. Попробуйте позже.')
+            console.log(err);
+            //alert('284. Произошла ошибка. Попробуйте позже.')
         });
     }
 
@@ -295,14 +316,14 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
         });
     }
 
-    handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) : void => {
-        const time = e.target.value as Time;
+    handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) : void => {
+        const duration = e.target.value as Duration;
 
         const { criteries } = this.state;
         this.setState({
             criteries:{
                 ...criteries,
-                time
+                duration
             }
         });
     }
@@ -322,7 +343,8 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
     showMap = () => {
         const callback = () : void => {
             console.log('anim frame');
-            const mapDiv = document.getElementById("MAP-ID");
+
+            const mapDiv = document.getElementById("mapDiv");
             if(!mapDiv) {
                 console.log("no div? :(");
                 window.requestAnimationFrame(callback);
@@ -330,10 +352,20 @@ export default class RoutesPage extends Component<any, RoutesPageState> {
             };
 
             const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
+            //mapDiv.style.height=`${height}px`;
+
             const container = document.getElementById('main-container')!;
             container.style.height = `${height}px`;
+            //container.style.width = `${cont.offsetWidth}px`;
+    
+            mapDiv.style.height = container.style.height;
+            //mapDiv.style.width="100%";
+            //const aside = document.getElementsByTagName('aside')[0]!;
+            //mapDiv.style.marginLeft = `${aside.offsetWidth}px`
+            //mapDiv.style.width=`${mapDiv.offsetWidth - aside.offsetWidth}`;
+            //mapDiv.style.width="100vw;"
 
-            const map = createMap("MAP-ID", "Эрмитаж Санкт-Петербург")!
+            const map = createMap("mapDiv", "Эрмитаж Санкт-Петербург")!
             this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
         };
         window.requestAnimationFrame(callback);
