@@ -108,8 +108,8 @@ export default class SignInPage extends Component<any, SignInPageState> {
               <p>Вход</p>
             </h2>
             <div className="log-in-section__subtitle">
-              <p>Еще нет аккаунта?
-                <button className="link ml-3" onClick={e=>this.setState({clickedLogin: false})}> Регистрация</button></p>
+              <p>Еще нет аккаунта? 
+                <button className="link ml-3" onClick={e=>this.setState({clickedLogin: false})}>Регистрация</button></p>
             </div>
             <div className="log-in-section__fields">
               <form action=""> 
@@ -134,7 +134,7 @@ export default class SignInPage extends Component<any, SignInPageState> {
           </h2>
           <div className="log-in-section__subtitle">
             <p>Уже есть аккаунт? 
-                <button style={{marginLeft: '3px'}} className="link" onClick={e=>this.setState({clickedLogin: true})}> Войти</button></p>
+                <button style={{marginLeft: '3px'}} className="link" onClick={e=>this.setState({clickedLogin: true})}>Войти</button></p>
           </div>
           <div className="log-in-section__fields">
             <form action=""> 

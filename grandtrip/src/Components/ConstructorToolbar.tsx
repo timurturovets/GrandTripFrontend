@@ -20,6 +20,7 @@ interface MapLine {
 }
 
 type Nullable<T> = T | null
+
 type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' 
 | 'activities' | 'gastronomy' | 'abiturients'
 const themes = {
@@ -47,11 +48,6 @@ type SeasonsKey = keyof typeof seasons;
 
 
 type City = 'kzn' | 'spb'
-const cities = {
-    'Казань': 'kzn',
-    'Санкт-Петербург': 'spb'
-}
-type CitiesKey = keyof typeof cities;
 
 interface ConstructorToolbarState {
     isEditMode: boolean,
@@ -200,8 +196,6 @@ export default class ConstructorToolbar extends Component<ConstructorToolbarProp
 
         theme = themes[theme as ThemesKey] ? themes[theme as ThemesKey] : "none";
         season = seasons[season as SeasonsKey] ? seasons[season as SeasonsKey] : "none";
-        city = cities[city as CitiesKey] ? cities[city as CitiesKey] : "spb";
-
         this.setState({name, description, dots, theme, season, city, markers, lines, mapLines, lastId, lastLineId});
     }
 
