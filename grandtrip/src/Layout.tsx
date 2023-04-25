@@ -12,7 +12,8 @@ export default class Layout extends Component<LayoutProps, any> {
 
     render() {
         const { children } = this.props;
-        return <AuthContextConsumer>{({isAuthenticated, info})=>
+        return <AuthContextConsumer>
+            {({isAuthenticated, info})=>
             <div style={{height: '100%'}}>
                 <Header isAuthenticated={isAuthenticated} info={info} />
                 <div id="layout-content">
