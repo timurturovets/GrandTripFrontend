@@ -39,6 +39,8 @@ export default class RouteInfo extends Component<RouteInfoProps, RouteInfoState>
                             {isAuthenticated && 
                             <Link to={`/constructor?edit=${info.id}`} className="btn btn-sm btn-primary">
                                 Редактировать маршрут</Link>}
+                            <Link to={`/route?id=${info.id}`} className="btn btn-sm btn-primary">
+                                Пройти маршрут</Link>
                             {/*<button className="btn btn-sm btn-danger"
                             onClick={e=>this.props.onAddingToFavourites(info.id, info.isFavourite)}>
                                 {info.isFavourite ? "Убрать из избранных" : "Добавить в избранные"}

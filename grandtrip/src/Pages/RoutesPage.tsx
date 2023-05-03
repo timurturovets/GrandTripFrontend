@@ -5,8 +5,7 @@ import { get, post } from '../Functions/requests'
 import L from 'leaflet'
 import RouteInfo from '../Components/RouteInfo'
 import RouteInformation from '../Interfaces/RouteInformation'
-import Dot from '../Interfaces/Dot'
-import Line from '../Interfaces/Line'
+import MapInfo from '../Interfaces/MapInfo'
 import createMap from '../Functions/createMap'
 
 type Theme = 'none' | 'modern-world' | 'history' | 'islands' | 'films' | 'literature' 
@@ -21,16 +20,6 @@ interface RouteCriteries {
     season: Season,
     city: City,
     duration: Duration
-}
-
-interface MapInfo {
-    enabled: boolean,
-    map?: L.Map,
-    center: number[],
-    dots: Dot[],
-    lines: Line[],
-    markers: L.Marker[],
-    mapLines: L.Polyline[]
 }
 
 interface ShareInfo {
@@ -227,10 +216,7 @@ export default class RoutesPage extends Component<any, NewRoutesPageState> {
         console.log(routeId);
         const { result } = this.state.routes;
         let { map, markers, mapLines } = this.state.mapInfo;
-        //const center = map!.getCenter();
         const zoom = map!.getZoom();
-        /*map!.remove();
-        this.handleShowMap(center as L.LatLng, zoom);*/
         for(const marker of this.state.mapInfo.markers) {
             marker.remove();
         }
@@ -245,7 +231,7 @@ export default class RoutesPage extends Component<any, NewRoutesPageState> {
         for (const dot of route.dots) {
             console.log(dot);
             let newMarker = L.marker([dot.positionX, dot.positionY]);
-            const content = `<h5 class="display-5">${dot.name}</h5><p>${dot.description || "Нет описания"}</p>`;
+            const content = `<h6><b>${dot.name}</b></h6><p class="m-0">${dot.description || "Нет описания"}</p>`;
             newMarker.bindPopup(L.popup().setContent(content));
             newMarker.addTo(map!);
             markers.push(newMarker);
@@ -302,7 +288,6 @@ export default class RoutesPage extends Component<any, NewRoutesPageState> {
             this.setState({routes: {...routes, result}});
         }).catch(err=>{
             console.log(err);
-            //alert('284. Произошла ошибка. Попробуйте позже.')
         });
     }
 
@@ -328,42 +313,21 @@ export default class RoutesPage extends Component<any, NewRoutesPageState> {
         });
     }
 
-    /*handleShowMap = (center?: number[] | L.LatLng, zoom?: number) => {
-        const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
-        const container = document.getElementById('main-container')!;
-        container.style.height = `${height}px`;
-        container.style.width = `${document.body.offsetWidth}px`;
-
-        const map = createMap("MAP-ID", "Санкт-Петербург")! 
-        this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
-
-        center && map.setView(center as L.LatLngExpression, zoom || 13);
-    }*/
-
     showMap = () => {
         const callback = () : void => {
-            console.log('anim frame');
-
             const mapDiv = document.getElementById("mapDiv");
+
             if(!mapDiv) {
-                console.log("no div? :(");
                 window.requestAnimationFrame(callback);
                 return;
             };
 
             const height = window.innerHeight - document.getElementsByTagName('header')[0]!.offsetHeight;
-            //mapDiv.style.height=`${height}px`;
 
             const container = document.getElementById('main-container')!;
             container.style.height = `${height}px`;
-            //container.style.width = `${cont.offsetWidth}px`;
     
             mapDiv.style.height = container.style.height;
-            //mapDiv.style.width="100%";
-            //const aside = document.getElementsByTagName('aside')[0]!;
-            //mapDiv.style.marginLeft = `${aside.offsetWidth}px`
-            //mapDiv.style.width=`${mapDiv.offsetWidth - aside.offsetWidth}`;
-            //mapDiv.style.width="100vw;"
 
             const map = createMap("mapDiv", "Эрмитаж Санкт-Петербург")!
             this.setState({mapInfo: {...this.state.mapInfo, map, enabled: true}});
